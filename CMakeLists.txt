@@ -186,8 +186,6 @@ if(NOT DEFINED $ENV{ANDROID_KEYSTORE_PASS})
   set(ENV{ANDROID_KEYSTORE_PASS} android)
 endif()
 
-message(STATUS "passwords '$ENV{ANDROID_KEY_PASS}' '$ENV{ANDROID_KEYSTORE_PASS}'")
-
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros.apk
   COMMENT "Signing android_ros-unsigned.apk to make android_ros.apk"
