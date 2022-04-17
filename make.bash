@@ -54,11 +54,11 @@ cd -
 # Compile resources using aapt2
 mkdir build/compiled_resources
 
-~/android-sdk/build-tools/30.0.2/aapt2 compile hello_android/res/values/strings.xml -o build/compiled_resources
-~/android-sdk/build-tools/30.0.2/aapt2 compile hello_android/res/mipmap-hdpi/ic_launcher.png -o build/compiled_resources
-~/android-sdk/build-tools/30.0.2/aapt2 compile hello_android/res/mipmap-mdpi/ic_launcher.png -o build/compiled_resources
-~/android-sdk/build-tools/30.0.2/aapt2 compile hello_android/res/mipmap-xhdpi/ic_launcher.png -o build/compiled_resources
-~/android-sdk/build-tools/30.0.2/aapt2 compile hello_android/res/mipmap-xxhdpi/ic_launcher.png -o build/compiled_resources
+~/android-sdk/build-tools/30.0.2/aapt2 compile res/values/strings.xml -o build/compiled_resources
+~/android-sdk/build-tools/30.0.2/aapt2 compile res/mipmap-hdpi/ic_launcher.png -o build/compiled_resources
+~/android-sdk/build-tools/30.0.2/aapt2 compile res/mipmap-mdpi/ic_launcher.png -o build/compiled_resources
+~/android-sdk/build-tools/30.0.2/aapt2 compile res/mipmap-xhdpi/ic_launcher.png -o build/compiled_resources
+~/android-sdk/build-tools/30.0.2/aapt2 compile res/mipmap-xxhdpi/ic_launcher.png -o build/compiled_resources
 
 ~/android-sdk/build-tools/30.0.2/aapt2 link \
   -o install/hello_android-nolibs.apk \
