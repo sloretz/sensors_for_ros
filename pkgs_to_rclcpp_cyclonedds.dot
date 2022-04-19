@@ -8,7 +8,6 @@ digraph graphname {
   "rosgraph_msgs";
   "rmw_cyclonedds_cpp";
   "rcl_interfaces";
-  "unique_identifier_msgs";
   "rmw_dds_common";
   "builtin_interfaces";
   "rosidl_default_runtime";
@@ -130,9 +129,6 @@ digraph graphname {
   "rcl_interfaces" -> "builtin_interfaces" [color="#0000ff:#ff0000"];
   "rcl_interfaces" -> "ament_cmake" [color="#0000ff"];
   "rcl_interfaces" -> "rosidl_default_runtime" [color="#ff0000"];
-  "unique_identifier_msgs" -> "rosidl_default_generators" [color="#0000ff"];
-  "unique_identifier_msgs" -> "ament_cmake" [color="#0000ff"];
-  "unique_identifier_msgs" -> "rosidl_default_runtime" [color="#ff0000"];
   "rmw_dds_common" -> "rosidl_default_generators" [color="#0000ff"];
   "rmw_dds_common" -> "rosidl_runtime_cpp" [color="#0000ff:#ff0000"];
   "rmw_dds_common" -> "rcutils" [color="#0000ff:#ff0000"];
