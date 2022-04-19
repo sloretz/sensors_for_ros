@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <activity android:name="android.app.NativeActivity" label="@APP_TITLE@">
+        <activity android:name="android.app.NativeActivity" label="@string/app_title@">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="@LIB_NAME@" />

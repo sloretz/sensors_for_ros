@@ -73,7 +73,6 @@ ExternalProject_Add(hello_android
 )
 
 # Configure the manifest
-set(APP_TITLE "Hello Android")  # TODO this can be in a resource file instead
 set(NAMESPACE "loretz.shane")
 set(MIN_SDK_VERSION 30)
 set(TARGET_SDK_VERSION 30)
