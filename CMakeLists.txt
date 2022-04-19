@@ -82,9 +82,6 @@ configure_file(
   AndroidManifest.xml
   @ONLY)
 
-
-# ${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml
-
 # Create a hello_anrdoid-install target so we can use it's output to make an APK
 ExternalProject_Add_StepTargets(hello_android "install")
 
