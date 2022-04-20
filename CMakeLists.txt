@@ -71,6 +71,8 @@ ExternalProject_Add(hello_android
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/hello_android
 )
+# Create a hello_anrdoid-install target so we can use it's output to make an APK
+ExternalProject_Add_StepTargets(hello_android "install")
 
 # Configure the manifest
 set(NAMESPACE "loretz.shane")
@@ -81,9 +83,6 @@ configure_file(
   AndroidManifest.xml.in
   AndroidManifest.xml
   @ONLY)
-
-# Create a hello_anrdoid-install target so we can use it's output to make an APK
-ExternalProject_Add_StepTargets(hello_android "install")
 
 # Make a place for compiled resources to go
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources)
