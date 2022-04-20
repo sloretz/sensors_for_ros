@@ -1,0 +1,99 @@
+# rosinstall_generator --format repos --upstream-devel --rosdistro rolling rclcpp libstatistics_collector rcl rmw_implementation std_msgs statistics_msgs rosgraph_msgs rmw_cyclonedds_cpp rcl_interfaces rmw_dds_common builtin_interfaces rosidl_default_runtime rosidl_default_generators rosidl_typesupport_cpp rosidl_typesupport_c rosidl_typesupport_introspection_cpp rosidl_generator_cpp rcl_yaml_param_parser rcl_logging_spdlog rcl_logging_noop rosidl_typesupport_introspection_c rosidl_runtime_cpp rosidl_generator_c rmw rcl_logging_interface libyaml_vendor rosidl_runtime_c rcpputils rosidl_cmake rcutils tracetools rosidl_parser spdlog_vendor rosidl_typesupport_interface rosidl_adapter rmw_implementation_cmake ament_index_cpp ament_cmake_ros ament_cmake rosidl_cli ament_cmake_gen_version_h ament_index_python cyclonedds ament_cmake_target_dependencies ament_cmake_export_targets ament_cmake_export_interfaces ament_cmake_export_dependencies iceoryx_binding_c ament_cmake_version ament_cmake_python ament_cmake_libraries ament_cmake_include_directories ament_cmake_export_link_flags ament_cmake_export_libraries ament_cmake_export_include_directories ament_cmake_export_definitions iceoryx_posh ament_cmake_core iceoryx_hoofs ament_package
+repositories:
+  ament_cmake:
+    type: git
+    url: https://github.com/ament/ament_cmake.git
+    version: master
+  ament_cmake_ros:
+    type: git
+    url: https://github.com/ros2/ament_cmake_ros.git
+    version: master
+  ament_index:
+    type: git
+    url: https://github.com/ament/ament_index.git
+    version: master
+  ament_package:
+    type: git
+    url: https://github.com/ament/ament_package.git
+    version: master
+  common_interfaces:
+    type: git
+    url: https://github.com/ros2/common_interfaces.git
+    version: master
+  cyclonedds:
+    type: git
+    url: https://github.com/eclipse-cyclonedds/cyclonedds.git
+    version: releases/0.8.x
+  iceoryx:
+    type: git
+    url: https://github.com/eclipse-iceoryx/iceoryx.git
+    version: release_2.0
+  libstatistics_collector:
+    type: git
+    url: https://github.com/ros-tooling/libstatistics_collector.git
+    version: master
+  libyaml_vendor:
+    type: git
+    url: https://github.com/ros2/libyaml_vendor.git
+    version: master
+  rcl:
+    type: git
+    url: https://github.com/ros2/rcl.git
+    version: master
+  rcl_interfaces:
+    type: git
+    url: https://github.com/ros2/rcl_interfaces.git
+    version: master
+  rcl_logging:
+    type: git
+    url: https://github.com/ros2/rcl_logging.git
+    version: master
+  rclcpp:
+    type: git
+    url: https://github.com/ros2/rclcpp.git
+    version: master
+  rcpputils:
+    type: git
+    url: https://github.com/ros2/rcpputils.git
+    version: master
+  rcutils:
+    type: git
+    url: https://github.com/ros2/rcutils.git
+    version: master
+  rmw:
+    type: git
+    url: https://github.com/ros2/rmw.git
+    version: master
+  rmw_cyclonedds:
+    type: git
+    url: https://github.com/ros2/rmw_cyclonedds.git
+    version: master
+  rmw_dds_common:
+    type: git
+    url: https://github.com/ros2/rmw_dds_common.git
+    version: master
+  rmw_implementation:
+    type: git
+    url: https://github.com/ros2/rmw_implementation.git
+    version: master
+  ros2_tracing:
+    type: git
+    url: https://gitlab.com/ros-tracing/ros2_tracing.git
+    version: master
+  rosidl:
+    type: git
+    url: https://github.com/ros2/rosidl.git
+    version: master
+  rosidl_defaults:
+    type: git
+    url: https://github.com/ros2/rosidl_defaults.git
+    version: master
+  rosidl_typesupport:
+    type: git
+    url: https://github.com/ros2/rosidl_typesupport.git
+    version: master
+  spdlog_vendor:
+    type: git
+    url: https://github.com/ros2/spdlog_vendor.git
+    version: master
+

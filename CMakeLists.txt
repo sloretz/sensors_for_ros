@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 project(anroid_ros-superbuild)
 
@@ -63,6 +63,35 @@ set(android_cmake_args
   -DANDROID_ABI=arm64-v8a
   -DANDROID_PLATFORM=android-${minimum_target_sdk}
 )
+
+# Make place to install Python packages
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ros/_python_)
+
+ExternalProject_Add(ros-ament_package
+  DOWNLOAD_COMMAND ""
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  TEST_COMMAND ""
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ros/ament_package"
+  INSTALL_COMMAND
+    pip install
+      -t "${CMAKE_CURRENT_BINARY_DIR}/ros/_python_"
+      --no-deps
+      "${CMAKE_CURRENT_SOURCE_DIR}/ros/ament_package"
+)
+ExternalProject_Add_StepTargets(ros-ament_package "install")
+
+ExternalProject_Add(ros-ament_cmake_core
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/ros/_python_ "${CMAKE_COMMAND}"
+  DEPENDS
+    ros-ament_package-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ros/ament_cmake/ament_cmake_core"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/ros/ament_cmake_core
+)
+ExternalProject_Add_StepTargets(ros-ament_cmake_core "install")
 
 ExternalProject_Add(hello_android
   DOWNLOAD_COMMAND ""
