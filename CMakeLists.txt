@@ -67,6 +67,9 @@ set(android_cmake_args
 # Make place to install Python packages we depend on
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/deps/_python_)
 
+# A list of CMAKE args for find_packaging the location of each dep
+set(deps_cmake_DIR_args)
+
 ExternalProject_Add(deps-ament_package
   DOWNLOAD_COMMAND ""
   CONFIGURE_COMMAND ""
@@ -93,6 +96,7 @@ ExternalProject_Add(deps-ament_cmake_core
     -DBUILD_TESTING=OFF
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_core "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake")
 
 ExternalProject_Add(deps-ament_cmake_export_libraries
   DOWNLOAD_COMMAND ""
@@ -104,13 +108,12 @@ ExternalProject_Add(deps-ament_cmake_export_libraries
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_export_libraries"
   CMAKE_ARGS
     ${android_cmake_args}
+    ${deps_cmake_DIR_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_libraries
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_export_libraries "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_libraries_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_libraries/share/ament_cmake_export_libraries/cmake")
 
 ExternalProject_Add(deps-ament_cmake_export_definitions
   DOWNLOAD_COMMAND ""
@@ -123,12 +126,11 @@ ExternalProject_Add(deps-ament_cmake_export_definitions
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_definitions
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_export_definitions "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_definitions_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_definitions/share/ament_cmake_export_definitions/cmake")
 
 ExternalProject_Add(deps-ament_cmake_export_include_directories
   DOWNLOAD_COMMAND ""
@@ -141,12 +143,11 @@ ExternalProject_Add(deps-ament_cmake_export_include_directories
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_include_directories
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_export_include_directories "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_include_directories_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_include_directories/share/ament_cmake_export_include_directories/cmake")
 
 ExternalProject_Add(deps-ament_cmake_export_link_flags
   DOWNLOAD_COMMAND ""
@@ -159,12 +160,11 @@ ExternalProject_Add(deps-ament_cmake_export_link_flags
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_link_flags
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_export_link_flags "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_link_flags_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_link_flags/share/ament_cmake_export_link_flags/cmake")
 
 ExternalProject_Add(deps-ament_cmake_include_directories
   DOWNLOAD_COMMAND ""
@@ -177,12 +177,11 @@ ExternalProject_Add(deps-ament_cmake_include_directories
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_include_directories
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_include_directories "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_include_directories_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_include_directories/share/ament_cmake_include_directories/cmake")
 
 ExternalProject_Add(deps-ament_cmake_libraries
   DOWNLOAD_COMMAND ""
@@ -195,12 +194,11 @@ ExternalProject_Add(deps-ament_cmake_libraries
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_libraries
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_libraries "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_libraries_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_libraries/share/ament_cmake_libraries/cmake")
 
 ExternalProject_Add(deps-ament_cmake_version
   DOWNLOAD_COMMAND ""
@@ -213,12 +211,11 @@ ExternalProject_Add(deps-ament_cmake_version
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_version
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_version "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_version_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_version/share/ament_cmake_version/cmake")
 
 ExternalProject_Add(deps-ament_cmake_python
   DOWNLOAD_COMMAND ""
@@ -231,12 +228,11 @@ ExternalProject_Add(deps-ament_cmake_python
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_python
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_python "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_python_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_python/share/ament_cmake_python/cmake")
 
 ExternalProject_Add(deps-ament_cmake_gen_version_h
   DOWNLOAD_COMMAND ""
@@ -249,12 +245,155 @@ ExternalProject_Add(deps-ament_cmake_gen_version_h
   CMAKE_ARGS
     ${android_cmake_args}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_gen_version_h
-    -Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake
+    ${deps_cmake_DIR_args}
     -DBUILD_TESTING=OFF
-    # TODO(sloretz) why doesn't setting prefix path work?
-    # -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_gen_version_h "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_gen_version_h_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_gen_version_h/share/ament_cmake_gen_version_h/cmake")
+
+ExternalProject_Add(deps-ament_cmake_export_targets
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_export_libraries-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_export_targets"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_targets
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_export_targets "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_targets_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_targets/share/ament_cmake_export_targets/cmake")
+
+ExternalProject_Add(deps-ament_cmake_export_interfaces
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_export_libraries-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_export_interfaces"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_interfaces
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_export_interfaces "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_interfaces_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_interfaces/share/ament_cmake_export_interfaces/cmake")
+
+ExternalProject_Add(deps-ament_cmake_target_dependencies
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_include_directories-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_target_dependencies"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_target_dependencies
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_target_dependencies "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_target_dependencies_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_target_dependencies/share/ament_cmake_target_dependencies/cmake")
+
+ExternalProject_Add(deps-ament_cmake_export_dependencies
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_libraries-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_export_dependencies"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_dependencies
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_export_dependencies "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_dependencies_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_dependencies/share/ament_cmake_export_dependencies/cmake")
+
+ExternalProject_Add(deps-ament_cmake_test
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_python-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_test"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_test
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_test "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_test_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_test/share/ament_cmake_test/cmake")
+
+ExternalProject_Add(deps-ament_cmake
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_package-install
+    deps-ament_cmake_core-install
+    deps-ament_cmake_export_definitions-install
+    deps-ament_cmake_export_include_directories-install
+    deps-ament_cmake_export_libraries-install
+    deps-ament_cmake_export_link_flags-install
+    deps-ament_cmake_include_directories-install
+    deps-ament_cmake_libraries-install
+    deps-ament_cmake_version-install
+    deps-ament_cmake_python-install
+    deps-ament_cmake_gen_version_h-install
+    deps-ament_cmake_export_targets-install
+    deps-ament_cmake_export_interfaces-install
+    deps-ament_cmake_target_dependencies-install
+    deps-ament_cmake_export_dependencies-install
+    deps-ament_cmake_test-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake/share/ament_cmake/cmake")
+
+ExternalProject_Add(deps-ament_cmake_ros
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake_ros/ament_cmake_ros"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_ros
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_ros "install")
+
+
+
+##################################
+# Android specific projects
+##################################
 
 ExternalProject_Add(hello_android
   DOWNLOAD_COMMAND ""
