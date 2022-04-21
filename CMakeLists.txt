@@ -373,6 +373,61 @@ ExternalProject_Add(deps-ament_cmake
 ExternalProject_Add_StepTargets(deps-ament_cmake "install")
 list(APPEND deps_cmake_DIR_args "-Dament_cmake_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake/share/ament_cmake/cmake")
 
+ExternalProject_Add(deps-ament_cmake_gtest
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_test-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_gtest"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_gtest
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_gtest "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_gtest_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_gtest/share/ament_cmake_gtest/cmake")
+
+ExternalProject_Add(deps-ament_cmake_gmock
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_test-install
+    deps-ament_cmake_gtest-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_gmock"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_gmock
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_gmock "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_gmock_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_gmock/share/ament_cmake_gmock/cmake")
+
+ExternalProject_Add(deps-ament_cmake_pytest
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_core-install
+    deps-ament_cmake_test-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_pytest"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_pytest
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-ament_cmake_pytest "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_pytest_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_pytest/share/ament_cmake_pytest/cmake")
+
 ExternalProject_Add(deps-ament_cmake_ros
   DOWNLOAD_COMMAND ""
   CMAKE_COMMAND "${CMAKE_COMMAND}" -E
@@ -380,6 +435,9 @@ ExternalProject_Add(deps-ament_cmake_ros
     "${CMAKE_COMMAND}"
   DEPENDS
     deps-ament_cmake-install
+    deps-ament_cmake_gtest-install
+    deps-ament_cmake_gmock-install
+    deps-ament_cmake_pytest-install
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake_ros/ament_cmake_ros"
   CMAKE_ARGS
     ${android_cmake_args}
@@ -388,6 +446,24 @@ ExternalProject_Add(deps-ament_cmake_ros
     -DBUILD_TESTING=OFF
 )
 ExternalProject_Add_StepTargets(deps-ament_cmake_ros "install")
+list(APPEND deps_cmake_DIR_args "-Dament_cmake_ros_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_ros/share/ament_cmake_ros/cmake")
+
+ExternalProject_Add(deps-rcutils
+  DOWNLOAD_COMMAND ""
+  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
+    "${CMAKE_COMMAND}"
+  DEPENDS
+    deps-ament_cmake_ros-install
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/rcutils/"
+  CMAKE_ARGS
+    ${android_cmake_args}
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/rcutils
+    ${deps_cmake_DIR_args}
+    -DBUILD_TESTING=OFF
+)
+ExternalProject_Add_StepTargets(deps-rcutils "install")
+list(APPEND deps_cmake_DIR_args "-Drcutils_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/rcutils/share/rcutils/cmake")
 
 
 
