@@ -31,6 +31,8 @@
 #include <android/log.h>
 #include <android_native_app_glue.h>
 
+#include <rcutils/time.h>
+
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "native-activity", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "native-activity", __VA_ARGS__))
 
@@ -168,9 +170,19 @@ static void engine_draw_frame(struct engine* engine) {
         return;
     }
 
+    rcutils_time_point_value_t now;
+    rcutils_ret_t ret = rcutils_system_time_now(&now);
+    float red = 0.0f;
+    float green = 0.0f;
+    float blue = 0.0f;
+    if (RCUTILS_RET_OK != ret) {
+      red = 1.0;
+    } else {
+      green = now % 256 / 256.0f;
+    }
+
     // Just fill the screen with a color.
-    glClearColor(((float)engine->state.x)/engine->width, engine->state.angle,
-                 ((float)engine->state.y)/engine->height, 1);
+    glClearColor(red, green, blue, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
     eglSwapBuffers(engine->display, engine->surface);
