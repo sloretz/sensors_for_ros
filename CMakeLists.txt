@@ -69,6 +69,8 @@ set(android_cmake_args
 # Make place to install Python packages we depend on
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/deps/_python_)
 
+include(dep_build.cmake)
+
 # A list of CMAKE args for find_packaging the location of each dep
 set(deps_cmake_DIR_args)
 
@@ -86,69 +88,43 @@ ExternalProject_Add(deps-ament_package
 )
 ExternalProject_Add_StepTargets(deps-ament_package "install")
 
-ExternalProject_Add(deps-ament_cmake_core
-  DOWNLOAD_COMMAND ""
-  CMAKE_COMMAND "${CMAKE_COMMAND}" -E env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_ "${CMAKE_COMMAND}"
-  DEPENDS
-    deps-ament_package-install
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_core"
+dep_build(ament_cmake_core CMAKE
+  SOURCE_DIR "deps/ament_cmake/ament_cmake_core"
+  DEPENDENCIES
+    ament_package
   CMAKE_ARGS
     ${android_cmake_args}
-    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core
-    -DBUILD_TESTING=OFF
 )
-ExternalProject_Add_StepTargets(deps-ament_cmake_core "install")
 list(APPEND deps_cmake_DIR_args "-Dament_cmake_core_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_core/share/ament_cmake_core/cmake")
 
-ExternalProject_Add(deps-ament_cmake_export_libraries
-  DOWNLOAD_COMMAND ""
-  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
-    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
-    "${CMAKE_COMMAND}"
-  DEPENDS
-    deps-ament_cmake_core-install
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_export_libraries"
+dep_build(ament_cmake_export_libraries CMAKE
+  SOURCE_DIR "deps/ament_cmake/ament_cmake_export_libraries"
+  DEPENDENCIES
+    ament_cmake_core
   CMAKE_ARGS
     ${android_cmake_args}
     ${deps_cmake_DIR_args}
-    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_libraries
-    -DBUILD_TESTING=OFF
 )
-ExternalProject_Add_StepTargets(deps-ament_cmake_export_libraries "install")
 list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_libraries_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_libraries/share/ament_cmake_export_libraries/cmake")
 
-ExternalProject_Add(deps-ament_cmake_export_definitions
-  DOWNLOAD_COMMAND ""
-  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
-    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
-    "${CMAKE_COMMAND}"
-  DEPENDS
-    deps-ament_cmake_core-install
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_export_definitions"
+dep_build(ament_cmake_export_definitions CMAKE
+  SOURCE_DIR "deps/ament_cmake/ament_cmake_export_definitions"
+  DEPENDENCIES
+    ament_cmake_core
   CMAKE_ARGS
     ${android_cmake_args}
-    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_definitions
     ${deps_cmake_DIR_args}
-    -DBUILD_TESTING=OFF
 )
-ExternalProject_Add_StepTargets(deps-ament_cmake_export_definitions "install")
 list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_definitions_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_definitions/share/ament_cmake_export_definitions/cmake")
 
-ExternalProject_Add(deps-ament_cmake_export_include_directories
-  DOWNLOAD_COMMAND ""
-  CMAKE_COMMAND "${CMAKE_COMMAND}" -E
-    env PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/deps/_python_
-    "${CMAKE_COMMAND}"
-  DEPENDS
-    deps-ament_cmake_core-install
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/ament_cmake/ament_cmake_export_include_directories"
+dep_build(ament_cmake_export_include_directories CMAKE
+  SOURCE_DIR "deps/ament_cmake/ament_cmake_export_include_directories"
+  DEPENDENCIES
+    ament_cmake_core
   CMAKE_ARGS
     ${android_cmake_args}
-    -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_include_directories
     ${deps_cmake_DIR_args}
-    -DBUILD_TESTING=OFF
 )
-ExternalProject_Add_StepTargets(deps-ament_cmake_export_include_directories "install")
 list(APPEND deps_cmake_DIR_args "-Dament_cmake_export_include_directories_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_export_include_directories/share/ament_cmake_export_include_directories/cmake")
 
 ExternalProject_Add(deps-ament_cmake_export_link_flags
