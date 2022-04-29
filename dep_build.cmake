@@ -9,7 +9,7 @@
 # Append 
 
 function(dep_build name)
-  cmake_parse_arguments(ARG "CMAKE;PIP" "DEPENDENCIES;SOURCE_DIR" "CMAKE_ARGS" ${ARGN})
+  cmake_parse_arguments(ARG "CMAKE;PIP" "SOURCE_DIR" "CMAKE_ARGS;DEPENDENCIES" ${ARGN})
   if(ARG_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "dep_build() given unknown arguments: "
       "${ARG_UNPARSED_ARGUMENTS}")
@@ -53,13 +53,15 @@ function(dep_build name)
       DOWNLOAD_COMMAND ""
       # Assume every CMake package might need access to installed python packages when building
       CMAKE_COMMAND "${CMAKE_COMMAND}" -E
-        env PYTHONPATH=${pip_install_dir}
+        env
+          "PYTHONPATH=${pip_install_dir}"
         "${CMAKE_COMMAND}"
       DEPENDS
         ${dependency_targets}
         SOURCE_DIR "${ARG_SOURCE_DIR}"
       CMAKE_ARGS
-        -DCMAKE_INSTALL_PREFIX=${cmake_install_dir}
+        "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
+        "-DCMAKE_INSTALL_PREFIX=${cmake_install_dir}"
         -DBUILD_TESTING=OFF
         ${ARG_CMAKE_ARGS}
     )
@@ -67,8 +69,6 @@ function(dep_build name)
 
   # Add an install target so other external projects can depend on it
   ExternalProject_Add_StepTargets("${dep_name}" "install")
-  # TODO how to make this work?
-  # list(APPEND deps_cmake_DIR_args "-Dament_cmake_ros_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/ament_cmake_ros/share/ament_cmake_ros/cmake")
 endfunction()
 
 
