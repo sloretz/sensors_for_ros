@@ -1,6 +1,3 @@
-
-
-
 # Inputs:
 #   Name to give to the rule
 #   path to the source code
@@ -53,22 +50,33 @@ function(dep_build name)
       DOWNLOAD_COMMAND ""
       # Assume every CMake package might need access to installed python packages when building
       CMAKE_COMMAND "${CMAKE_COMMAND}" -E
-        env
-          "PYTHONPATH=${pip_install_dir}"
-        "${CMAKE_COMMAND}"
+      env
+      "PYTHONPATH=${pip_install_dir}"
+      "${CMAKE_COMMAND}"
       DEPENDS
-        ${dependency_targets}
-        SOURCE_DIR "${ARG_SOURCE_DIR}"
+      ${dependency_targets}
+      SOURCE_DIR "${ARG_SOURCE_DIR}"
       CMAKE_ARGS
-        "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
-        "-DCMAKE_INSTALL_PREFIX=${cmake_install_dir}"
-        -DBUILD_TESTING=OFF
-        ${ARG_CMAKE_ARGS}
-    )
+      "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
+      "-DCMAKE_INSTALL_PREFIX=${cmake_install_dir}"
+      -DBUILD_TESTING=OFF
+      ${ARG_CMAKE_ARGS})
+  elseif(ARG_PIP)
+    ExternalProject_Add(${dep_name}
+      DOWNLOAD_COMMAND ""
+      CONFIGURE_COMMAND ""
+      BUILD_COMMAND ""
+      TEST_COMMAND ""
+      DEPENDS
+      ${dependency_targets}
+      SOURCE_DIR "${ARG_SOURCE_DIR}"
+      INSTALL_COMMAND
+      pip install
+      -t "${CMAKE_CURRENT_BINARY_DIR}/deps/_python_"
+      --no-deps
+      "${ARG_SOURCE_DIR}")
   endif()
 
   # Add an install target so other external projects can depend on it
   ExternalProject_Add_StepTargets("${dep_name}" "install")
 endfunction()
-
-
