@@ -69,9 +69,11 @@ set(android_cmake_args
 # Make place to install Python packages we depend on
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/deps/_python_)
 
-
 include(dependencies.cmake)
-build_all_dependencies()
+
+build_native_dependencies()
+
+build_crosscompile_dependencies()
 
 ##################################
 # Android specific projects

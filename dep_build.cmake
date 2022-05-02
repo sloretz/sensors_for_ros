@@ -37,11 +37,12 @@ function(dep_build name)
 
   # Assume each dependency was also called with `dep_build` and has an install target
   list(APPEND dependency_targets)
-  foreach(_dependency ${DEPENDENCIES})
+  foreach(_dependency ${ARG_DEPENDENCIES})
     set(_dep_target "deps-${_dependency}-install")
-    list(APPEND dependency_targets ${_dep_target})
     if(NOT TARGET ${_dep_target})
-      message(FATAL_ERROR "Dependency target ${_dep_target} does not exist")
+      message(WARNING "Dependency target ${_dep_target} does not exist")
+    else()
+      list(APPEND dependency_targets ${_dep_target})
     endif()
   endforeach()
 

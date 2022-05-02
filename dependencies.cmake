@@ -1,7 +1,13 @@
 include(dep_build.cmake)
 
+macro(build_native_dependencies)
+  dep_build(cyclonedds-native CMAKE
+    SOURCE_DIR "deps/cyclonedds"
+    DEPENDENCIES libssl-dev bison
+    CMAKE_ARGS "-DBUILD_DDSCONF=ON")
+endmacro()
 
-macro(build_all_dependencies)
+macro(build_crosscompile_dependencies)
   dep_build(ament_index_python PIP
     SOURCE_DIR "deps/ament_index/ament_index_python"
     DEPENDENCIES )
@@ -153,11 +159,11 @@ macro(build_all_dependencies)
   #    SOURCE_DIR "deps/iceoryx/iceoryx_binding_c"
   #    DEPENDENCIES cmake iceoryx_posh iceoryx_hoofs iceoryx_posh iceoryx_hoofs
   #    CMAKE_ARGS ${android_cmake_args})
-  #  
-  #  dep_build(cyclonedds CMAKE
-  #    SOURCE_DIR "deps/cyclonedds"
-  #    DEPENDENCIES cmake libssl-dev bison iceoryx_binding_c iceoryx_posh iceoryx_utils libssl-dev bison iceoryx_binding_c iceoryx_posh iceoryx_utils
-  #    CMAKE_ARGS ${android_cmake_args})
+  
+  dep_build(cyclonedds CMAKE
+    SOURCE_DIR "deps/cyclonedds"
+    DEPENDENCIES cmake libssl-dev bison iceoryx_binding_c iceoryx_posh iceoryx_utils libssl-dev bison iceoryx_binding_c iceoryx_posh iceoryx_utils cyclonedds-native
+    CMAKE_ARGS ${android_cmake_args})
   
   dep_build(rcutils CMAKE
     SOURCE_DIR "deps/rcutils"
