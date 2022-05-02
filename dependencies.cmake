@@ -4,7 +4,9 @@ macro(build_native_dependencies)
   dep_build(cyclonedds-native CMAKE
     SOURCE_DIR "deps/cyclonedds"
     DEPENDENCIES libssl-dev bison
-    CMAKE_ARGS "-DBUILD_DDSCONF=ON")
+    CMAKE_ARGS "-DBUILD_DDSCONF=ON"
+    # TODO(sloretz) is SSL required for sros2? if so, figure out how to enable
+    "-DENABLE_SSL=OFF")
 endmacro()
 
 macro(build_crosscompile_dependencies)
@@ -163,7 +165,12 @@ macro(build_crosscompile_dependencies)
   dep_build(cyclonedds CMAKE
     SOURCE_DIR "deps/cyclonedds"
     DEPENDENCIES iceoryx_binding_c bison iceoryx_utils iceoryx_posh cmake libssl-dev
-    CMAKE_ARGS ${android_cmake_args})
+    CMAKE_ARGS
+      ${android_cmake_args}
+      # allow finding native ddsconf tool
+      "-DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/cyclonedds-native"
+      # TODO(sloretz) is SSL required for sros2? if so, figure out how to enable
+      "-DENABLE_SSL=OFF")
   
   dep_build(rcutils CMAKE
     SOURCE_DIR "deps/rcutils"
