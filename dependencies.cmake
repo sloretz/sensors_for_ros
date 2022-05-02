@@ -181,66 +181,66 @@ macro(build_crosscompile_dependencies)
     SOURCE_DIR "deps/rcpputils"
     DEPENDENCIES ament_cmake_ros ament_cmake rcutils
     CMAKE_ARGS ${android_cmake_args})
-  
-  #dep_build(libyaml_vendor CMAKE
-  #  SOURCE_DIR "deps/libyaml_vendor"
-  #  DEPENDENCIES git ament_cmake
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rcl_logging_interface CMAKE
-  #  SOURCE_DIR "deps/rcl_logging/rcl_logging_interface"
-  #  DEPENDENCIES ament_cmake_ros rcutils
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rcl_logging_noop CMAKE
-  #  SOURCE_DIR "deps/rcl_logging/rcl_logging_noop"
-  #  DEPENDENCIES python3-empy ament_cmake_ros rcutils rcl_logging_interface
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rmw_implementation_cmake CMAKE
-  #  SOURCE_DIR "deps/rmw/rmw_implementation_cmake"
-  #  DEPENDENCIES ament_cmake
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_adapter CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_adapter"
-  #  DEPENDENCIES ament_cmake
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_cli PIP
-  #  SOURCE_DIR "deps/rosidl/rosidl_cli"
-  #  DEPENDENCIES )
-  #
-  #dep_build(rosidl_cmake CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_cmake"
-  #  DEPENDENCIES ament_cmake_python ament_cmake
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_parser CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_parser"
-  #  DEPENDENCIES ament_cmake
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_typesupport_interface CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_typesupport_interface"
-  #  DEPENDENCIES ament_cmake
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_runtime_c CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_runtime_c"
-  #  DEPENDENCIES rosidl_typesupport_interface ament_cmake_ros rcutils
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rmw CMAKE
-  #  SOURCE_DIR "deps/rmw/rmw"
-  #  DEPENDENCIES ament_cmake_ros rosidl_runtime_c ament_cmake_version rcutils
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rcl_yaml_param_parser CMAKE
-  #  SOURCE_DIR "deps/rcl/rcl_yaml_param_parser"
-  #  DEPENDENCIES yaml libyaml_vendor ament_cmake_ros rmw rcutils
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
+
+  dep_build(libyaml_vendor CMAKE
+    SOURCE_DIR "deps/libyaml_vendor"
+    DEPENDENCIES git ament_cmake
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rcl_logging_interface CMAKE
+    SOURCE_DIR "deps/rcl_logging/rcl_logging_interface"
+    DEPENDENCIES ament_cmake_ros rcutils
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rcl_logging_noop CMAKE
+    SOURCE_DIR "deps/rcl_logging/rcl_logging_noop"
+    DEPENDENCIES python3-empy ament_cmake_ros rcutils rcl_logging_interface
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rmw_implementation_cmake CMAKE
+    SOURCE_DIR "deps/rmw/rmw_implementation_cmake"
+    DEPENDENCIES ament_cmake
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_adapter CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_adapter"
+    DEPENDENCIES ament_cmake
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_cli PIP
+    SOURCE_DIR "deps/rosidl/rosidl_cli"
+    DEPENDENCIES )
+
+  dep_build(rosidl_cmake CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_cmake"
+    DEPENDENCIES ament_cmake_python ament_cmake
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_parser CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_parser"
+    DEPENDENCIES ament_cmake
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_typesupport_interface CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_typesupport_interface"
+    DEPENDENCIES ament_cmake
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_runtime_c CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_runtime_c"
+    DEPENDENCIES rosidl_typesupport_interface ament_cmake_ros rcutils
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rmw CMAKE
+    SOURCE_DIR "deps/rmw/rmw"
+    DEPENDENCIES ament_cmake_ros rosidl_runtime_c ament_cmake_version rcutils
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rcl_yaml_param_parser CMAKE
+    SOURCE_DIR "deps/rcl/rcl_yaml_param_parser"
+    DEPENDENCIES yaml libyaml_vendor ament_cmake_ros rmw rcutils
+    CMAKE_ARGS ${android_cmake_args})
+
   #dep_build(rosidl_generator_c CMAKE
   #  SOURCE_DIR "deps/rosidl/rosidl_generator_c"
   #  DEPENDENCIES ament_cmake_python ament_cmake_ros
