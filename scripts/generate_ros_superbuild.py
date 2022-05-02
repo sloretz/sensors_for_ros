@@ -32,7 +32,7 @@ def _build_depends(pkg):
     deps.extend(pkg.build_depends)
     # TODO(sloretz) interface packages need group depends?
 
-    just_names = [dep.name for dep in deps]
+    just_names = set([dep.name for dep in deps])
     rendered = ' '.join(just_names)
     return rendered
 
