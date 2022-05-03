@@ -67,3 +67,10 @@ If the native build supports SSL, but the cross compiled does not, then compile 
 
 The `catkin_pkg.topological_order.topological_order` function does seem to order by exported dependencies, but the exported package objects don't have that information built in.
 I had to make the `generate_ros_superbuild.py` script transitively lookup exported dependencies so`make -jN` on the superbuild would work.
+
+## Vendor package is inconvenient when scripting a superbuild
+
+`rcl_yaml_param_parser` can't find `yamlConfig.cmake` because of the way I've written `dep_build` to install packages to separate folders.
+CMake can find a package with `<prefix>/<name>*/(cmake|CMake)/`, but the `<name>` here is `libyaml_vendor` instead of `yaml`.
+
+Not sure how I'll work around this.
