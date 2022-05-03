@@ -86,15 +86,13 @@ ExternalProject_Add(hello_android
   "${CMAKE_COMMAND}"
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hello_android"
   DEPENDS
-  deps-rcutils-install
+  deps-rcutils
   CMAKE_ARGS
   ${android_cmake_args}
   "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
   -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/hello_android
   # -DCMAKE_VERBOSE_MAKEFILE=ON
   )
-# Create a hello_anrdoid-install target so we can use it's output to make an APK
-ExternalProject_Add_StepTargets(hello_android "install")
 
 # Configure the manifest
 set(NAMESPACE "loretz.shane")
@@ -179,7 +177,7 @@ add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/librcutils.so
   COMMENT "Copying rcutils libs to folder for zipping"
   DEPENDS
-  deps-rcutils-install
+  deps-rcutils
   WORKING_DIRECTORY
   ${CMAKE_CURRENT_BINARY_DIR}/deps/rcutils
   COMMAND
@@ -193,7 +191,7 @@ add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/libnative-activity.so
   COMMENT "Copying hello_android's libs to folder for zipping"
   DEPENDS
-  hello_android-install
+  hello_android
   WORKING_DIRECTORY
   ${CMAKE_CURRENT_BINARY_DIR}/hello_android
   COMMAND

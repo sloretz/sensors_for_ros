@@ -38,7 +38,7 @@ function(dep_build name)
   # Assume each dependency was also called with `dep_build` and has an install target
   list(APPEND dependency_targets)
   foreach(_dependency ${ARG_DEPENDENCIES})
-    set(_dep_target "deps-${_dependency}-install")
+    set(_dep_target "deps-${_dependency}")
     if(NOT TARGET ${_dep_target})
       message(WARNING "Dependency target ${_dep_target} does not exist")
     else()
@@ -77,7 +77,4 @@ function(dep_build name)
       --no-deps
       "${ARG_SOURCE_DIR}")
   endif()
-
-  # Add an install target so other external projects can depend on it
-  ExternalProject_Add_StepTargets("${dep_name}" "install")
 endfunction()
