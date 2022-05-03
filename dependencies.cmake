@@ -183,60 +183,60 @@ macro(build_crosscompile_dependencies)
     DEPENDENCIES python3-pytest ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
     CMAKE_ARGS ${android_cmake_args})
   
-  #dep_build(libyaml_vendor CMAKE
-  #  SOURCE_DIR "deps/libyaml_vendor"
-  #  DEPENDENCIES git python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rcl_logging_interface CMAKE
-  #  SOURCE_DIR "deps/rcl_logging/rcl_logging_interface"
-  #  DEPENDENCIES python3-pytest ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rcl_logging_noop CMAKE
-  #  SOURCE_DIR "deps/rcl_logging/rcl_logging_noop"
-  #  DEPENDENCIES python3-pytest ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock python3-empy google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets rcl_logging_interface ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rmw_implementation_cmake CMAKE
-  #  SOURCE_DIR "deps/rmw/rmw_implementation_cmake"
-  #  DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_adapter CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_adapter"
-  #  DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_cli PIP
-  #  SOURCE_DIR "deps/rosidl/rosidl_cli"
-  #  DEPENDENCIES )
-  #
-  #dep_build(rosidl_cmake CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_cmake"
-  #  DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_parser CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_parser"
-  #  DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_typesupport_interface CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_typesupport_interface"
-  #  DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rosidl_runtime_c CMAKE
-  #  SOURCE_DIR "deps/rosidl/rosidl_runtime_c"
-  #  DEPENDENCIES python3-pytest rosidl_typesupport_interface ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
-  #dep_build(rmw CMAKE
-  #  SOURCE_DIR "deps/rmw/rmw"
-  #  DEPENDENCIES python3-pytest rosidl_typesupport_interface ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test rcutils python3-importlib-metadata ament_cmake_python rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_gtest ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
-  #  CMAKE_ARGS ${android_cmake_args})
-  #
+  dep_build(libyaml_vendor CMAKE
+    SOURCE_DIR "deps/libyaml_vendor"
+    DEPENDENCIES git python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rcl_logging_interface CMAKE
+    SOURCE_DIR "deps/rcl_logging/rcl_logging_interface"
+    DEPENDENCIES python3-pytest ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rcl_logging_noop CMAKE
+    SOURCE_DIR "deps/rcl_logging/rcl_logging_noop"
+    DEPENDENCIES python3-pytest ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock python3-empy google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets rcl_logging_interface ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rmw_implementation_cmake CMAKE
+    SOURCE_DIR "deps/rmw/rmw_implementation_cmake"
+    DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_adapter CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_adapter"
+    DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_cli PIP
+    SOURCE_DIR "deps/rosidl/rosidl_cli"
+    DEPENDENCIES )
+
+  dep_build(rosidl_cmake CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_cmake"
+    DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_parser CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_parser"
+    DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_typesupport_interface CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_typesupport_interface"
+    DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rosidl_runtime_c CMAKE
+    SOURCE_DIR "deps/rosidl/rosidl_runtime_c"
+    DEPENDENCIES python3-pytest rosidl_typesupport_interface ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
+  dep_build(rmw CMAKE
+    SOURCE_DIR "deps/rmw/rmw"
+    DEPENDENCIES python3-pytest rosidl_typesupport_interface ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test rcutils python3-importlib-metadata ament_cmake_python rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_gtest ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
+    CMAKE_ARGS ${android_cmake_args})
+
   #dep_build(rcl_yaml_param_parser CMAKE
   #  SOURCE_DIR "deps/rcl/rcl_yaml_param_parser"
   #  DEPENDENCIES python3-pytest rosidl_typesupport_interface yaml ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test rcutils python3-importlib-metadata ament_cmake_python libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools rmw ament_cmake_export_targets ament_package
