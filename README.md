@@ -73,4 +73,58 @@ I had to make the `generate_ros_superbuild.py` script transitively lookup export
 `rcl_yaml_param_parser` can't find `yamlConfig.cmake` because of the way I've written `dep_build` to install packages to separate folders.
 CMake can find a package with `<prefix>/<name>*/(cmake|CMake)/`, but the `<name>` here is `libyaml_vendor` instead of `yaml`.
 
-Not sure how I'll work around this.
+I worked around it by passing `-Dyaml_DIR` to all downstream packages.
+
+## Typesupports are found using the ament index
+
+```
+CMake Error at /home/sloretz/android_ros/build/deps/rosidl_typesupport_c/share/rosidl_typesupport_c/cmake/get_used_typesupports.cmake:35 (message):
+  No 'rosidl_typesupport_c' found
+Call Stack (most recent call first):
+  /home/sloretz/android_ros/build/deps/rosidl_typesupport_c/share/rosidl_typesupport_c/cmake/rosidl_typesupport_c-extras.cmake:8 (get_used_typesupports)
+  /home/sloretz/android_ros/build/deps/rosidl_typesupport_c/share/rosidl_typesupport_c/cmake/rosidl_typesupport_cConfig.cmake:41 (include)
+  /home/sloretz/android_ros/build/deps/rosidl_default_generators/share/rosidl_default_generators/cmake/rosidl_default_generators-extras.cmake:21 (find_package)
+  /home/sloretz/android_ros/build/deps/rosidl_default_generators/share/rosidl_default_generators/cmake/rosidl_default_generatorsConfig.cmake:41 (include)
+  CMakeLists.txt:14 (find_package)
+```
+
+I'll work around it by setting `AMENT_PREFIX_PATH` in dep-build.
+I could also work around this by using a "merged" install space.
+
+## Need PYTHONPATH to be set for CMake projects
+
+I'm installing Python packages with PIP into `deps/_python_`, but CMake packages are installed to `deps/${name}`
+How do I update PYTHONPATH for CMake packages that install Python modules?
+Ament feature to override python install dir?
+It looks like [`PYTHON_INSTALL_DIR`](https://github.com/ament/ament_cmake/blob/b84cf9e6f2a61d8f9fc5a90c02dc2b5cb63e7f76/ament_cmake_python/ament_cmake_python-extras.cmake#L44) will do what I want.
+
+```
+CMake Error at /home/sloretz/android_ros/build/deps/rosidl_adapter/share/rosidl_adapter/cmake/rosidl_adapt_interfaces.cmake:59 (message):
+  execute_process(/usr/bin/python3.8 -m rosidl_adapter --package-name
+  builtin_interfaces --arguments-file
+  /home/sloretz/android_ros/build/deps-builtin_interfaces-prefix/src/deps-builtin_interfaces-build/rosidl_adapter__arguments__builtin_interfaces.json
+  --output-dir
+  /home/sloretz/android_ros/build/deps-builtin_interfaces-prefix/src/deps-builtin_interfaces-build/rosidl_adapter/builtin_interfaces
+  --output-file
+  /home/sloretz/android_ros/build/deps-builtin_interfaces-prefix/src/deps-builtin_interfaces-build/rosidl_adapter/builtin_interfaces.idls)
+  returned error code 1:
+
+  /usr/bin/python3.8: No module named rosidl_adapter
+
+Call Stack (most recent call first):
+  /home/sloretz/android_ros/build/deps/rosidl_cmake/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:130 (rosidl_adapt_interfaces)
+  CMakeLists.txt:16 (rosidl_generate_interfaces)
+```
+
+## rosidl_generator_c expects relative PYTHON_INSTALL_DIR
+
+```
+CMake Error at /home/sloretz/android_ros/build/deps/rosidl_generator_c/share/rosidl_generator_c/cmake/rosidl_generator_c_generate_interfaces.cmake:69 (message):
+  Target dependency
+  '/home/sloretz/android_ros/build/deps/rosidl_generator_c/share/rosidl_generator_c/cmake/../../..//home/sloretz/android_ros/build/deps/_python_/rosidl_generator_c/__init__.py'
+  does not exist
+Call Stack (most recent call first):
+  /home/sloretz/android_ros/build/deps/ament_cmake_core/share/ament_cmake_core/cmake/core/ament_execute_extensions.cmake:48 (include)
+  /home/sloretz/android_ros/build/deps/rosidl_cmake/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:286 (ament_execute_extensions)
+  CMakeLists.txt:16 (rosidl_generate_interfaces)
+```

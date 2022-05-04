@@ -35,14 +35,16 @@ function(dep_build name)
   # Place where Python packages get installed
   set(pip_install_dir "${CMAKE_CURRENT_BINARY_DIR}/deps/_python_")
 
-  # Assume each dependency was also called with `dep_build` and has an install target
+  set(ament_prefix_path)
   list(APPEND dependency_targets)
   foreach(_dependency ${ARG_DEPENDENCIES})
+    # Assume each dependency was also called with `dep_build`
     set(_dep_target "deps-${_dependency}")
     if(NOT TARGET ${_dep_target})
       message(WARNING "Dependency target ${_dep_target} does not exist")
     else()
       list(APPEND dependency_targets ${_dep_target})
+      set(ament_prefix_path "${ament_prefix_path}:${CMAKE_CURRENT_BINARY_DIR}/deps/${_dependency}")
     endif()
   endforeach()
 
@@ -53,6 +55,7 @@ function(dep_build name)
       CMAKE_COMMAND "${CMAKE_COMMAND}" -E
       env
       "PYTHONPATH=${pip_install_dir}"
+      "AMENT_PREFIX_PATH=${ament_prefix_path}"
       "${CMAKE_COMMAND}"
       DEPENDS
       ${dependency_targets}
@@ -61,6 +64,7 @@ function(dep_build name)
       "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
       "-DCMAKE_INSTALL_PREFIX=${cmake_install_dir}"
       -DBUILD_TESTING=OFF
+      "-DPYTHON_INSTALL_DIR=../_python_"
       ${ARG_CMAKE_ARGS})
   elseif(ARG_PIP)
     ExternalProject_Add(${dep_name}
