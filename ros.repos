@@ -23,7 +23,7 @@ repositories:
   cyclonedds:
     type: git
     url: https://github.com/eclipse-cyclonedds/cyclonedds.git
-    version: releases/0.8.x
+    version: releases/0.9.x
   iceoryx:
     type: git
     url: https://github.com/eclipse-iceoryx/iceoryx.git
