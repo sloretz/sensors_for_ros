@@ -49,14 +49,17 @@ function(dep_build name)
   endforeach()
 
   if(ARG_CMAKE)
-    ExternalProject_Add(${dep_name}
-      DOWNLOAD_COMMAND ""
-      # Assume every CMake package might need access to installed python packages when building
-      CMAKE_COMMAND "${CMAKE_COMMAND}" -E
+    set(cmake_with_env "${CMAKE_COMMAND}" -E
       env
       "PYTHONPATH=${pip_install_dir}"
       "AMENT_PREFIX_PATH=${ament_prefix_path}"
-      "${CMAKE_COMMAND}"
+      "${CMAKE_COMMAND}")
+
+    ExternalProject_Add(${dep_name}
+      DOWNLOAD_COMMAND ""
+      # Assume every CMake package might need access to installed python packages when building
+      CMAKE_COMMAND ${cmake_with_env}
+      BUILD_COMMAND ${cmake_with_env} --build .
       DEPENDS
       ${dependency_targets}
       SOURCE_DIR "${ARG_SOURCE_DIR}"

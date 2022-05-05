@@ -128,3 +128,25 @@ Call Stack (most recent call first):
   /home/sloretz/android_ros/build/deps/rosidl_cmake/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:286 (ament_execute_extensions)
   CMakeLists.txt:16 (rosidl_generate_interfaces)
 ```
+
+## rosidl generators use add_custom_command, but PYTHONPATH not available to them
+
+I'm not sure how the rosidl generator inputs are supposed to work.
+`add_custom_command` runs at build time, so the PYTHONPATH given to the CMake invocation
+is not necessarily available to the make invocation.
+
+I'll work around this by making `dep_build` set `PYTHONPATH` in the build command.
+
+Maybe the rosidl generators should pass the ENV at CMake time to the Python process?
+
+```
+[  5%] Generating C code for ROS interfaces SLORETZ /home/sloretz/android_ros/build/deps/_python_
+[ 11%] Generating C++ code for ROS interfaces
+['/home/sloretz/android_ros/build/deps/rosidl_generator_c/lib/rosidl_generator_c', '/usr/lib/python38.zip', '/usr/lib/python3.8', '/usr/lib/python3.8/lib-dynload', '/usr/local/lib/python3.8/dist-packages', '/usr/lib/python3/dist-packages']
+['/home/sloretz/android_ros/build/deps/rosidl_generator_c/share/rosidl_generator_c/cmake/../../../lib/rosidl_generator_c/rosidl_generator_c', '--generator-arguments-file', '/home/sloretz/android_ros/build/deps-builtin_interfaces-prefix/src/deps-builtin_interfaces-build/rosidl_generator_c__arguments.json']
+Traceback (most recent call last):
+  File "/home/sloretz/android_ros/build/deps/rosidl_generator_c/share/rosidl_generator_c/cmake/../../../lib/rosidl_generator_c/rosidl_generator_c", line 11, in <module>
+    from rosidl_generator_c import generate_c
+ModuleNotFoundError: No module named 'rosidl_generator_c'
+CMakeFiles/builtin_interfaces__rosidl_generator_c.dir/build.make:87: recipe for target 'rosidl_generator_c/builtin_interfaces/msg/duration.h' failed
+```
