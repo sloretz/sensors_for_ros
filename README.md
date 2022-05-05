@@ -150,3 +150,23 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'rosidl_generator_c'
 CMakeFiles/builtin_interfaces__rosidl_generator_c.dir/build.make:87: recipe for target 'rosidl_generator_c/builtin_interfaces/msg/duration.h' failed
 ```
+
+## rosidl_typesupport_cpp sneakily depends on rosidl_typesupport_introspection_c
+
+`rosidl_typesupport_c` when found tries to find other typesupports that use it.
+If not, it has a fatal error.
+The only package in this workspace that uses it is `rosidl_typesupport_introspection_c`.
+This means `rosidl_typesupport_cpp` can't `find_package(rosidl_typesupport_c` until after `rosidl_typesupport_introspection_c` is built.
+
+```
+CMake Error at /home/sloretz/android_ros/build/deps/rosidl_typesupport_c/share/rosidl_typesupport_c/cmake/get_used_typesupports.cmake:35 (message):
+  No 'rosidl_typesupport_c' found
+Call Stack (most recent call first):
+  /home/sloretz/android_ros/build/deps/rosidl_typesupport_c/share/rosidl_typesupport_c/cmake/rosidl_typesupport_c-extras.cmake:8 (get_used_typesupports)
+  /home/sloretz/android_ros/build/deps/rosidl_typesupport_c/share/rosidl_typesupport_c/cmake/rosidl_typesupport_cConfig.cmake:41 (include)
+  CMakeLists.txt:20 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/home/sloretz/android_ros/build/deps-rosidl_typesupport_cpp-prefix/src/deps-rosidl_typesupport_cpp-build/CMakeFiles/CMakeOutput.log".
+```
