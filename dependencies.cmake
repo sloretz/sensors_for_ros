@@ -1,8 +1,8 @@
 include(dep_build.cmake)
 
 macro(build_native_dependencies)
-  # Prefix with `native-` so find_package() can't normally find CycloneDDS here
-  dep_build(native-cyclonedds CMAKE
+  dep_build(cyclonedds CMAKE
+    NATIVE
     SOURCE_DIR "deps/cyclonedds"
     DEPENDENCIES libssl-dev bison
     CMAKE_ARGS "-DBUILD_DDSCONF=ON"
@@ -172,7 +172,7 @@ macro(build_crosscompile_dependencies)
     CMAKE_ARGS
       ${extra_cmake_args}
       # allow finding native ddsconf tool
-      "-DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/native-cyclonedds"
+      "-DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/native-deps/native-cyclonedds"
       # TODO(sloretz) is SSL required for sros2? if so, figure out how to enable
       "-DENABLE_SSL=OFF")
   
@@ -192,7 +192,7 @@ macro(build_crosscompile_dependencies)
     CMAKE_ARGS ${extra_cmake_args})
 
   # HACK yaml location
-  list(APPEND extra_cmake_args "-Dyaml_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/libyaml_vendor/cmake")
+  # list(APPEND extra_cmake_args "-Dyaml_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/libyaml_vendor/cmake")
 
   dep_build(rcl_logging_interface CMAKE
     SOURCE_DIR "deps/rcl_logging/rcl_logging_interface"
@@ -277,7 +277,7 @@ macro(build_crosscompile_dependencies)
     SOURCE_DIR "deps/rosidl_typesupport/rosidl_typesupport_cpp"
     DEPENDENCIES python3-pytest rosidl_runtime_cpp rosidl_typesupport_interface ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core rosidl_typesupport_introspection_cpp ament_cmake_version ament_cmake_test python3-importlib-metadata rcutils ament_cmake_python rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator ament_cmake_gtest gmock_vendor ament_cmake python3 ament_cmake_gmock python3-empy google-mock ament_cmake_export_definitions rosidl_typesupport_c rosidl_cmake python3-setuptools ament_cmake_export_targets rcpputils ament_package
     # Hack, need a typesupport using rosidl_typesupport_c to exist before cpp typesupport can be built
-    rosidl_typesupport_introspection_c
+    # rosidl_typesupport_introspection_c
     CMAKE_ARGS ${extra_cmake_args})
 
   dep_build(rosidl_typesupport_introspection_cpp CMAKE
@@ -417,6 +417,9 @@ macro(build_crosscompile_dependencies)
   dep_build(rcl CMAKE
     SOURCE_DIR "deps/rcl/rcl"
     DEPENDENCIES python3-pytest rosidl_typesupport_interface rcl_yaml_param_parser yaml ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor tracetools ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules ament_index_cpp ament_cmake_core ament_cmake_version ament_cmake_test rcutils python3-importlib-metadata ament_cmake_python rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces ament_cmake_gtest gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools rmw ament_cmake_export_targets rcpputils rcl_logging_interface ament_package
+    # Hack, need a typesupport using rosidl_typesupport_c to exist on ament_prefix_path to find rosidl_typesupport_c/cpp
+    # rosidl_typesupport_introspection_c
+    # rosidl_typesupport_introspection_cpp
     CMAKE_ARGS ${extra_cmake_args})
 
   #dep_build(libstatistics_collector CMAKE

@@ -6,7 +6,7 @@
 # Append 
 
 function(dep_build name)
-  cmake_parse_arguments(ARG "CMAKE;PIP" "SOURCE_DIR" "CMAKE_ARGS;DEPENDENCIES" ${ARGN})
+  cmake_parse_arguments(ARG "CMAKE;PIP;NATIVE" "SOURCE_DIR" "CMAKE_ARGS;DEPENDENCIES" ${ARGN})
   if(ARG_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "dep_build() given unknown arguments: "
       "${ARG_UNPARSED_ARGUMENTS}")
@@ -29,11 +29,20 @@ function(dep_build name)
     message(FATAL_ERROR "SOURCE_DIR must exist: ${ARG_SOURCE_DIR}")
   endif()
 
+  if(ARG_NATIVE)
+    # Prefix with `native-` so find_package() can't normally find CycloneDDS here
+    set(name "native-${name}")
+  endif()
+
   set(dep_name "deps-${name}")
   # Place where CMake packges get installed
-  set(cmake_install_dir "${CMAKE_CURRENT_BINARY_DIR}/deps/${name}")
+  set(cmake_install_dir "${CMAKE_CURRENT_BINARY_DIR}/deps")
   # Place where Python packages get installed
   set(pip_install_dir "${CMAKE_CURRENT_BINARY_DIR}/deps/_python_")
+  if(ARG_NATIVE)
+    set(cmake_install_dir "${CMAKE_CURRENT_BINARY_DIR}/native-deps")
+    set(pip_install_dir "${CMAKE_CURRENT_BINARY_DIR}/native-deps/_python_")
+  endif()
 
   set(ament_prefix_path)
   list(APPEND dependency_targets)
@@ -44,7 +53,6 @@ function(dep_build name)
       message(WARNING "Dependency target ${_dep_target} does not exist")
     else()
       list(APPEND dependency_targets ${_dep_target})
-      set(ament_prefix_path "${ament_prefix_path}:${CMAKE_CURRENT_BINARY_DIR}/deps/${_dependency}")
     endif()
   endforeach()
 
@@ -52,7 +60,7 @@ function(dep_build name)
     set(cmake_with_env "${CMAKE_COMMAND}" -E
       env
       "PYTHONPATH=${pip_install_dir}"
-      "AMENT_PREFIX_PATH=${ament_prefix_path}"
+      "AMENT_PREFIX_PATH=${cmake_install_dir}"
       "${CMAKE_COMMAND}")
 
     ExternalProject_Add(${dep_name}
@@ -64,10 +72,10 @@ function(dep_build name)
       ${dependency_targets}
       SOURCE_DIR "${ARG_SOURCE_DIR}"
       CMAKE_ARGS
-      "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
+      "-DCMAKE_FIND_ROOT_PATH=${cmake_install_dir}"
       "-DCMAKE_INSTALL_PREFIX=${cmake_install_dir}"
       -DBUILD_TESTING=OFF
-      "-DPYTHON_INSTALL_DIR=../_python_"
+      "-DPYTHON_INSTALL_DIR=_python_"
       ${ARG_CMAKE_ARGS})
   elseif(ARG_PIP)
     ExternalProject_Add(${dep_name}
@@ -80,7 +88,7 @@ function(dep_build name)
       SOURCE_DIR "${ARG_SOURCE_DIR}"
       INSTALL_COMMAND
       pip install
-      -t "${CMAKE_CURRENT_BINARY_DIR}/deps/_python_"
+      -t "${pip_install_dir}"
       --no-deps
       "${ARG_SOURCE_DIR}")
   endif()

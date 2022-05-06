@@ -179,7 +179,7 @@ add_custom_command(
   DEPENDS
   deps-rcutils
   WORKING_DIRECTORY
-  ${CMAKE_CURRENT_BINARY_DIR}/deps/rcutils
+  ${CMAKE_CURRENT_BINARY_DIR}/deps/
   COMMAND
   ${CMAKE_COMMAND} -E copy_if_different
   "lib/librcutils.so"
