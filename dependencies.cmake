@@ -417,10 +417,10 @@ macro(build_crosscompile_dependencies)
   dep_build(rcl CMAKE
     SOURCE_DIR "deps/rcl/rcl"
     DEPENDENCIES python3-pytest rosidl_typesupport_interface rcl_yaml_param_parser yaml ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor tracetools ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules ament_index_cpp ament_cmake_core ament_cmake_version ament_cmake_test rcutils python3-importlib-metadata ament_cmake_python rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces ament_cmake_gtest gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools rmw ament_cmake_export_targets rcpputils rcl_logging_interface ament_package
-    # Hack, need a typesupport using rosidl_typesupport_c to exist on ament_prefix_path to find rosidl_typesupport_c/cpp
-    # rosidl_typesupport_introspection_c
-    # rosidl_typesupport_introspection_cpp
-    CMAKE_ARGS ${extra_cmake_args})
+    CMAKE_ARGS ${extra_cmake_args}
+    # Don't use spdlog because there's no home directory to write to
+    -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
+    )
 
   dep_build(libstatistics_collector CMAKE
     SOURCE_DIR "deps/libstatistics_collector"

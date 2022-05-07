@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 project(hello_android)
 
-find_package(rcutils REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 add_library(native_app_glue STATIC
@@ -20,7 +22,8 @@ target_link_libraries(native-activity PRIVATE
     EGL
     GLESv1_CM
     log
-    rcutils::rcutils)
+    rclcpp::rclcpp
+    ${std_msgs_TARGETS})
 # TODO(sloretz) use target_link_options in CMake 3.13
 set_property(TARGET native-activity APPEND_STRING PROPERTY LINK_FLAGS " -u ANativeActivity_onCreate")
 

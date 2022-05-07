@@ -64,6 +64,7 @@ function(dep_build name)
       "${CMAKE_COMMAND}")
 
     ExternalProject_Add(${dep_name}
+      # BUILD_ALWAYS ON
       DOWNLOAD_COMMAND ""
       # Assume every CMake package might need access to installed python packages when building
       CMAKE_COMMAND ${cmake_with_env}
@@ -79,6 +80,7 @@ function(dep_build name)
       ${ARG_CMAKE_ARGS})
   elseif(ARG_PIP)
     ExternalProject_Add(${dep_name}
+      # BUILD_ALWAYS ON
       DOWNLOAD_COMMAND ""
       CONFIGURE_COMMAND ""
       BUILD_COMMAND ""

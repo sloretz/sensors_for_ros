@@ -31,7 +31,8 @@
 #include <android/log.h>
 #include <android_native_app_glue.h>
 
-#include <rcutils/time.h>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/color_rgba.hpp>
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "native-activity", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "native-activity", __VA_ARGS__))
@@ -62,6 +63,9 @@ struct engine {
     int32_t width;
     int32_t height;
     struct saved_state state;
+
+    std_msgs::msg::ColorRGBA color = std_msgs::msg::ColorRGBA(
+      rosidl_runtime_cpp::MessageInitialization::ZERO);
 };
 
 /**
@@ -170,16 +174,9 @@ static void engine_draw_frame(struct engine* engine) {
         return;
     }
 
-    rcutils_time_point_value_t now;
-    rcutils_ret_t ret = rcutils_system_time_now(&now);
-    float red = 0.0f;
-    float green = 0.0f;
-    float blue = 0.0f;
-    if (RCUTILS_RET_OK != ret) {
-      red = 1.0;
-    } else {
-      green = now % 256 / 256.0f;
-    }
+    float red = engine->color.r;
+    float green = engine->color.g;
+    float blue = engine->color.b;
 
     // Just fill the screen with a color.
     glClearColor(red, green, blue, 1);
@@ -348,9 +345,27 @@ void android_main(struct android_app* state) {
         engine.state = *(struct saved_state*)state->savedState;
     }
 
+    // Initial color is red
+    engine.color.r = 1.0f;
+    engine.color.g = 0.0f;
+    engine.color.b = 0.0f;
+    engine.color.a = 1.0f;
+
+    // Initialize rclcpp
+    // TODO(sloretz) options for ROS_DOMAIN_ID and maybe node name
+    rclcpp::init(0, nullptr);
+    auto node = std::make_shared<rclcpp::Node>("android_demo");
+
+    auto exec = rclcpp::executors::StaticSingleThreadedExecutor();
+    exec.add_node(node);
+
     // loop waiting for stuff to do.
 
-    while (true) {
+    bool exitting = false;
+    while (not exitting) {
+        // Do some ROS work, but not too much to affect the UI
+        exec.spin_some(std::chrono::milliseconds(10));
+
         // Read all pending events.
         int ident;
         int events;
@@ -382,8 +397,8 @@ void android_main(struct android_app* state) {
 
             // Check if we are exiting.
             if (state->destroyRequested != 0) {
-                engine_term_display(&engine);
-                return;
+                exitting = true;
+                break;
             }
         }
 
@@ -399,5 +414,8 @@ void android_main(struct android_app* state) {
             engine_draw_frame(&engine);
         }
     }
+
+    rclcpp::shutdown();
+    engine_term_display(&engine);
 }
 //END_INCLUDE(all)

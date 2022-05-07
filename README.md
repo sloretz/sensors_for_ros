@@ -170,3 +170,22 @@ Call Stack (most recent call first):
 -- Configuring incomplete, errors occurred!
 See also "/home/sloretz/android_ros/build/deps-rosidl_typesupport_cpp-prefix/src/deps-rosidl_typesupport_cpp-build/CMakeFiles/CMakeOutput.log".
 ```
+
+## Failed to configure logging
+
+Might need an android specific logger.
+I'll use the noop logging for now.
+It looks like the CMake variable `RCL_LOGGING_IMPLEMENTATION` is the one I need to set.
+
+
+```
+05-07 15:15:43.986  2980  3006 E libc++abi: terminating with uncaught exception of type rclcpp::exceptions::RCLError: failed to configure logging: Failed to get logging directory, at /home/sloretz/android_ros/deps/rcl_logging/rcl_logging_spdlog/src/rcl_logging_spdlog.cpp:83
+```
+
+## rmw implementation invalid???
+
+Not sure how to fix this yet.
+
+```
+05-07 15:29:28.641  3452  3486 E libc++abi: terminating with uncaught exception of type rclcpp::exceptions::RCLError: failed to initialize rcl node: rcl node's rmw handle is invalid, at /home/sloretz/android_ros/deps/rcl/rcl/src/rcl/node.c:416
+```
