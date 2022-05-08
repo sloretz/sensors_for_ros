@@ -189,3 +189,7 @@ Not sure how to fix this yet.
 ```
 05-07 15:29:28.641  3452  3486 E libc++abi: terminating with uncaught exception of type rclcpp::exceptions::RCLError: failed to initialize rcl node: rcl node's rmw handle is invalid, at /home/sloretz/android_ros/deps/rcl/rcl/src/rcl/node.c:416
 ```
+
+`ndk-gdb` doesn't quite work.
+This page seems useful
+https://www.amongbytes.com/post/201804-debugging-on-android/
