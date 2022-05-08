@@ -354,7 +354,12 @@ void android_main(struct android_app* state) {
     // Initialize rclcpp
     // TODO(sloretz) options for ROS_DOMAIN_ID and maybe node name
     rclcpp::init(0, nullptr);
+    auto logger = rclcpp::get_logger("NativeActivity");
+    RCLCPP_INFO(logger, "Hello from main.cpp");
+
     auto node = std::make_shared<rclcpp::Node>("android_demo");
+
+    RCLCPP_INFO(node->get_logger(), "Hello from node logger in main.cpp");
 
     auto exec = rclcpp::executors::StaticSingleThreadedExecutor();
     exec.add_node(node);

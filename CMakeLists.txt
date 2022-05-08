@@ -228,7 +228,9 @@ set(deps_libs
   librcl_interfaces__rosidl_typesupport_introspection_c.so
   librcl_lifecycle.so
   librcl_logging_interface.so
+  librcl_logging_android.so
   librcl_logging_noop.so
+  librcl_logging_rcutils.so
   librcl_logging_spdlog.so
   librcl.so
   librcl_yaml_param_parser.so
@@ -357,7 +359,9 @@ foreach(lib ${deps_libs})
     deps-rmw
     deps-rosidl_runtime_cpp
     deps-rosidl_typesupport_c
+    deps-rcl_logging_android
     deps-rcl_logging_noop
+    deps-rcl_logging_rcutils
     deps-rcl_logging_spdlog
     deps-rosidl_typesupport_cpp
     deps-rcl_yaml_param_parser
