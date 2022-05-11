@@ -359,6 +359,14 @@ void android_main(struct android_app* state) {
 
     auto node = std::make_shared<rclcpp::Node>("android_demo");
 
+    auto sub = rclcpp::create_subscription<std_msgs::msg::ColorRGBA>(
+        node, "color", rclcpp::QoS(1), [&engine](const std_msgs::msg::ColorRGBA & color) {
+          engine.color.r = color.r;
+          engine.color.g = color.g;
+          engine.color.b = color.b;
+          engine.color.a = color.a;
+        });
+
     RCLCPP_INFO(node->get_logger(), "Hello from node logger in main.cpp");
 
     auto exec = rclcpp::executors::StaticSingleThreadedExecutor();
@@ -393,9 +401,9 @@ void android_main(struct android_app* state) {
                     ASensorEvent event;
                     while (ASensorEventQueue_getEvents(engine.sensorEventQueue,
                                                        &event, 1) > 0) {
-                        LOGI("accelerometer: x=%f y=%f z=%f",
-                             event.acceleration.x, event.acceleration.y,
-                             event.acceleration.z);
+                        // LOGI("accelerometer: x=%f y=%f z=%f",
+                        //      event.acceleration.x, event.acceleration.y,
+                        //      event.acceleration.z);
                     }
                 }
             }
