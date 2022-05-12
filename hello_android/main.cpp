@@ -360,7 +360,9 @@ void android_main(struct android_app* state) {
     auto node = std::make_shared<rclcpp::Node>("android_demo");
 
     auto sub = rclcpp::create_subscription<std_msgs::msg::ColorRGBA>(
-        node, "color", rclcpp::QoS(1), [&engine](const std_msgs::msg::ColorRGBA & color) {
+        node, "color", rclcpp::QoS(1), [&engine, &logger](const std_msgs::msg::ColorRGBA & color) {
+          RCLCPP_INFO(logger, "Got new color message (%f, %f, %f, %f)",
+              color.r, color.g, color.b, color.a);
           engine.color.r = color.r;
           engine.color.g = color.g;
           engine.color.b = color.b;
