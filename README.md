@@ -2,6 +2,33 @@
 
 Build ROS on android using a CMake superbuild and native activities - no Java or Kotlin.
 
+## Building Installing and running
+
+Build the software
+
+```
+mkdir build
+cd build
+cmake ../ -DANDROID_HOME=/home/sloretz/android-sdk/
+make -j`nproc`
+```
+
+Install the APK in the build directory onto a device.
+
+```
+adb install -r android_ros.apk
+```
+
+Use logcat to view the logs from the app
+```
+adb logcat
+```
+
+The main activity can be started directly from the CLI
+```
+adb shell am start -n loretz.shane/android.app.NativeActivity
+```
+
 # Lessons
 
 ## Native dependencies
@@ -182,14 +209,17 @@ It looks like the CMake variable `RCL_LOGGING_IMPLEMENTATION` is the one I need 
 05-07 15:15:43.986  2980  3006 E libc++abi: terminating with uncaught exception of type rclcpp::exceptions::RCLError: failed to configure logging: Failed to get logging directory, at /home/sloretz/android_ros/deps/rcl_logging/rcl_logging_spdlog/src/rcl_logging_spdlog.cpp:83
 ```
 
-## rmw implementation invalid???
+## rmw implementation invalid - can't create node
 
-Not sure how to fix this yet.
 
 ```
 05-07 15:29:28.641  3452  3486 E libc++abi: terminating with uncaught exception of type rclcpp::exceptions::RCLError: failed to initialize rcl node: rcl node's rmw handle is invalid, at /home/sloretz/android_ros/deps/rcl/rcl/src/rcl/node.c:416
 ```
 
-`ndk-gdb` doesn't quite work.
-This page seems useful
-https://www.amongbytes.com/post/201804-debugging-on-android/
+This was caused by not having the permissions needed to access the network.
+Adding those permissions to the manifest fixed it.
+
+```xml
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
