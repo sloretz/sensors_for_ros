@@ -32,7 +32,10 @@
 #include <android_native_app_glue.h>
 
 #include <rclcpp/rclcpp.hpp>
+
 #include <std_msgs/msg/color_rgba.hpp>
+
+#include "color_listener.hpp"
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "native-activity", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "native-activity", __VA_ARGS__))
@@ -357,19 +360,7 @@ void android_main(struct android_app* state) {
     auto logger = rclcpp::get_logger("NativeActivity");
     RCLCPP_INFO(logger, "Hello from main.cpp");
 
-    auto node = std::make_shared<rclcpp::Node>("android_demo");
-
-    auto sub = rclcpp::create_subscription<std_msgs::msg::ColorRGBA>(
-        node, "color", rclcpp::QoS(1), [&engine, &logger](const std_msgs::msg::ColorRGBA & color) {
-          RCLCPP_INFO(logger, "Got new color message (%f, %f, %f, %f)",
-              color.r, color.g, color.b, color.a);
-          engine.color.r = color.r;
-          engine.color.g = color.g;
-          engine.color.b = color.b;
-          engine.color.a = color.a;
-        });
-
-    RCLCPP_INFO(node->get_logger(), "Hello from node logger in main.cpp");
+    auto node = std::make_shared<ColorListener>("android_demo");
 
     auto exec = rclcpp::executors::StaticSingleThreadedExecutor();
     exec.add_node(node);
@@ -380,6 +371,9 @@ void android_main(struct android_app* state) {
     while (not exitting) {
         // Do some ROS work, but not too much to affect the UI
         exec.spin_some(std::chrono::milliseconds(10));
+
+        // Update UI with color listener
+        engine.color = node->color();
 
         // Read all pending events.
         int ident;
