@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13)
 
 project(hello_android)
 
@@ -37,5 +37,18 @@ target_link_libraries(native-activity PRIVATE
 
 # TODO(sloretz) use target_link_options in CMake 3.13
 set_property(TARGET native-activity APPEND_STRING PROPERTY LINK_FLAGS " -u ANativeActivity_onCreate")
+
+add_library(gui STATIC gui.cc)
+target_link_libraries(gui PUBLIC
+    log
+    EGL
+    GLESv1_CM)
+
+add_library(android-ros SHARED android_entry_point.cpp)
+target_link_libraries(android-ros PRIVATE
+    android
+    log
+    gui)
+target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
 
 install(TARGETS native-activity DESTINATION lib)

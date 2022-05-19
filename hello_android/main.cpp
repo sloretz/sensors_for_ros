@@ -41,15 +41,6 @@
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "native-activity", __VA_ARGS__))
 
 /**
- * Our saved state data.
- */
-struct saved_state {
-    float angle;
-    int32_t x;
-    int32_t y;
-};
-
-/**
  * Shared state for our app.
  */
 struct engine {
@@ -65,7 +56,6 @@ struct engine {
     EGLContext context;
     int32_t width;
     int32_t height;
-    struct saved_state state;
 
     std_msgs::msg::ColorRGBA color = std_msgs::msg::ColorRGBA(
       rosidl_runtime_cpp::MessageInitialization::ZERO);
@@ -151,7 +141,6 @@ static int engine_init_display(struct engine* engine) {
     engine->surface = surface;
     engine->width = w;
     engine->height = h;
-    engine->state.angle = 0;
 
     // Check openGL on the system
     auto opengl_info = {GL_VENDOR, GL_RENDERER, GL_VERSION, GL_EXTENSIONS};
@@ -214,9 +203,8 @@ static void engine_term_display(struct engine* engine) {
 static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) {
     auto* engine = (struct engine*)app->userData;
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-        engine->animating = 1;
-        engine->state.x = AMotionEvent_getX(event, 0);
-        engine->state.y = AMotionEvent_getY(event, 0);
+        // AMotionEvent_getX(event, 0);
+        // AMotionEvent_getY(event, 0);
         return 1;
     }
     return 0;
@@ -229,10 +217,7 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
     auto* engine = (struct engine*)app->userData;
     switch (cmd) {
         case APP_CMD_SAVE_STATE:
-            // The system has asked us to save our current state.  Do so.
-            engine->app->savedState = malloc(sizeof(struct saved_state));
-            *((struct saved_state*)engine->app->savedState) = engine->state;
-            engine->app->savedStateSize = sizeof(struct saved_state);
+            // The system has asked us to save our current state.
             break;
         case APP_CMD_INIT_WINDOW:
             // The window is being shown, get it ready.
@@ -255,6 +240,8 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
                                                engine->accelerometerSensor,
                                                (1000L/60)*1000);
             }
+            // Also start drawing stuff on the screen
+            engine->animating = 1;
             break;
         case APP_CMD_LOST_FOCUS:
             // When our app loses focus, we stop monitoring the accelerometer.
@@ -272,22 +259,8 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
     }
 }
 
-/*
- * AcquireASensorManagerInstance(void)
- *    Workaround ASensorManager_getInstance() deprecation false alarm
- *    for Android-N and before, when compiling with NDK-r15
- */
-#include <dlfcn.h>
-ASensorManager* AcquireASensorManagerInstance(android_app* app) {
-
-  if(!app)
-    return nullptr;
-
-  typedef ASensorManager *(*PF_GETINSTANCEFORPACKAGE)(const char *name);
-  void* androidHandle = dlopen("libandroid.so", RTLD_NOW);
-  auto getInstanceForPackageFunc = (PF_GETINSTANCEFORPACKAGE)
-      dlsym(androidHandle, "ASensorManager_getInstanceForPackage");
-  if (getInstanceForPackageFunc) {
+std::string GetPackageName(android_app * app)
+{
     JNIEnv* env = nullptr;
     app->activity->vm->AttachCurrentThread(&env, nullptr);
 
@@ -295,29 +268,11 @@ ASensorManager* AcquireASensorManagerInstance(android_app* app) {
     jmethodID midGetPackageName = env->GetMethodID(android_content_Context,
                                                    "getPackageName",
                                                    "()Ljava/lang/String;");
-    auto packageName= (jstring)env->CallObjectMethod(app->activity->clazz,
+    auto packageName = (jstring)env->CallObjectMethod(app->activity->clazz,
                                                         midGetPackageName);
 
-    const char *nativePackageName = env->GetStringUTFChars(packageName, nullptr);
-    ASensorManager* mgr = getInstanceForPackageFunc(nativePackageName);
-    env->ReleaseStringUTFChars(packageName, nativePackageName);
-    app->activity->vm->DetachCurrentThread();
-    if (mgr) {
-      dlclose(androidHandle);
-      return mgr;
-    }
-  }
-
-  typedef ASensorManager *(*PF_GETINSTANCE)();
-  auto getInstanceFunc = (PF_GETINSTANCE)
-      dlsym(androidHandle, "ASensorManager_getInstance");
-  // by all means at this point, ASensorManager_getInstance should be available
-  assert(getInstanceFunc);
-  dlclose(androidHandle);
-
-  return getInstanceFunc();
+    return std::string(env->GetStringUTFChars(packageName, nullptr));
 }
-
 
 /**
  * This is the main entry point of a native application that is using
@@ -333,8 +288,10 @@ void android_main(struct android_app* state) {
     state->onInputEvent = engine_handle_input;
     engine.app = state;
 
+    std::string packageName = GetPackageName(state);
+
     // Prepare to monitor accelerometer
-    engine.sensorManager = AcquireASensorManagerInstance(state);
+    engine.sensorManager = ASensorManager_getInstanceForPackage(packageName.c_str());
     engine.accelerometerSensor = ASensorManager_getDefaultSensor(
                                         engine.sensorManager,
                                         ASENSOR_TYPE_ACCELEROMETER);
@@ -345,7 +302,6 @@ void android_main(struct android_app* state) {
 
     if (state->savedState != nullptr) {
         // We are starting with a previous saved state; restore from it.
-        engine.state = *(struct saved_state*)state->savedState;
     }
 
     // Initial color is red
@@ -370,6 +326,7 @@ void android_main(struct android_app* state) {
     bool exitting = false;
     while (not exitting) {
         // Do some ROS work, but not too much to affect the UI
+        // TODO I think I want this in its own thread, or drawing in its own thread
         exec.spin_some(std::chrono::milliseconds(10));
 
         // Update UI with color listener
@@ -413,11 +370,6 @@ void android_main(struct android_app* state) {
 
         if (engine.animating) {
             // Done with events; draw next animation frame.
-            engine.state.angle += .01f;
-            if (engine.state.angle > 1) {
-                engine.state.angle = 0;
-            }
-
             // Drawing is throttled to the screen update rate, so there
             // is no need to do timing here.
             engine_draw_frame(&engine);
