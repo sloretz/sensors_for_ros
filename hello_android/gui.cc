@@ -6,17 +6,34 @@
 
 using android_ros::GUI;
 
-GUI::GUI() {
-// TODO(sloretz) raise if EGL display can't be initialized
-// InitializeDisplay();
-// TODO(sloretz) Start thread to draw window
+GUI::GUI() {}
+
+GUI::~GUI() { Stop(); }
+
+void GUI::DrawingLoop() {
+  while (not exit_loop_.load()) {
+    GUI::DrawFrame();
+  }
 }
 
-GUI::~GUI(){
-	TerminateDisplay();
+bool GUI::Start(ANativeWindow* window) {
+  bool display_initialized = InitializeDisplay(window);
+  if (display_initialized) {
+    draw_thread_ = std::thread(&GUI::DrawingLoop, this);
+  }
+  return display_initialized;
 }
 
-bool GUI::InitializeDisplay(ANativeWindow * window) {
+void GUI::Stop() {
+  if (draw_thread_.joinable()) {
+    // Join drawing thread
+    exit_loop_.store(true);
+    draw_thread_.join();
+  }
+  TerminateDisplay();
+}
+
+bool GUI::InitializeDisplay(ANativeWindow* window) {
   // Copied from
   // https://developer.android.com/ndk/samples/sample_na
   // initialize OpenGL ES and EGL
@@ -77,8 +94,7 @@ bool GUI::InitializeDisplay(ANativeWindow * window) {
    * As soon as we picked a EGLConfig, we can safely reconfigure the
    * ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID. */
   eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &format);
-  surface =
-      eglCreateWindowSurface(display, config, window, nullptr);
+  surface = eglCreateWindowSurface(display, config, window, nullptr);
   context = eglCreateContext(display, config, nullptr, nullptr);
 
   if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {

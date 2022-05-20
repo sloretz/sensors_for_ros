@@ -81,14 +81,14 @@ static void onLowMemory(ANativeActivity* activity) {
 static void onNativeWindowCreated(ANativeActivity* activity,
                                   ANativeWindow* window) {
   LOGI("NativeWindowCreated: %p -- %p\n", activity, window);
-  GetApp(activity)->gui_.InitializeDisplay(window);
+  GetApp(activity)->gui_.Start(window);
 }
 
 /// The drawing window for this native activity is going to be destroyed.
 static void onNativeWindowDestroyed(ANativeActivity* activity,
                                     ANativeWindow* window) {
   LOGI("NativeWindowDestroyed: %p -- %p\n", activity, window);
-  GetApp(activity)->gui_.TerminateDisplay();
+  GetApp(activity)->gui_.Stop();
 }
 
 /// The drawing window for this native activity needs to be redrawn.
@@ -97,7 +97,7 @@ static void onNativeWindowRedrawNeeded(ANativeActivity* activity,
   LOGI("NativeWindowRedrawNeeded: %p -- %p\n", activity, window);
 }
 
-/// The drawing window for this native activity needs to be redrawn.
+/// The drawing window for this native activity has been resized.
 static void onNativeWindowResized(ANativeActivity* activity,
                                   ANativeWindow* window) {
   LOGI("NativeWindowResized: %p -- %p\n", activity, window);
@@ -155,5 +155,6 @@ void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
   activity->callbacks->onInputQueueCreated = onInputQueueCreated;
   activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
 
+  // User data
   activity->instance = CreateApp(activity);
 }
