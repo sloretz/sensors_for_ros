@@ -4,6 +4,12 @@
 
 #include <memory>
 
+#include <android/native_window.h>
+
+#include "imgui.h"
+#include "imgui_impl_android.h"
+#include "imgui_impl_opengl3.h"
+
 using android_ros::GUI;
 
 GUI::GUI() {}
@@ -15,6 +21,7 @@ void GUI::DrawingLoop(ANativeWindow* window,
   LOGI("Entered DrawingLoop()");
   // Display initialization MUST happen in drawing thread
   InitializeDisplay(window);
+  InitializeDearImGui(window);
   DrawFrame();
   promise_first_frame.set_value();
 
@@ -76,18 +83,15 @@ void GUI::Stop() {
 bool GUI::InitializeDisplay(ANativeWindow* window) {
   // Copied from
   // https://developer.android.com/ndk/samples/sample_na
-  // initialize OpenGL ES and EGL
+  // and
+  // https://github.com/ocornut/imgui/blob/e346059eef140c5a8611581f3e6c8b8816d6998e/examples/example_android_opengl3/main.cpp#L51-L65
 
-  /*
-   * Here specify the attributes of the desired configuration.
-   * Below, we select an EGLConfig with at least 8 bits per color
-   * component compatible with on-screen windows
-   */
-  const EGLint attribs[] = {EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-                            EGL_BLUE_SIZE,    8,
-                            EGL_GREEN_SIZE,   8,
-                            EGL_RED_SIZE,     8,
-                            EGL_NONE};
+  const EGLint egl_attributes[] = {EGL_BLUE_SIZE,    8,
+                                   EGL_GREEN_SIZE,   8,
+                                   EGL_RED_SIZE,     8,
+                                   EGL_DEPTH_SIZE,   24,
+                                   EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                                   EGL_NONE};
   EGLint w, h, format;
   EGLint numConfigs;
   EGLConfig config = nullptr;
@@ -98,49 +102,24 @@ bool GUI::InitializeDisplay(ANativeWindow* window) {
 
   eglInitialize(display, nullptr, nullptr);
 
-  /* Here, the application chooses the configuration it desires.
-   * find the best match if possible, otherwise use the very first one
-   */
-  eglChooseConfig(display, attribs, nullptr, 0, &numConfigs);
-  std::unique_ptr<EGLConfig[]> supportedConfigs(new EGLConfig[numConfigs]);
-  assert(supportedConfigs);
-  eglChooseConfig(display, attribs, supportedConfigs.get(), numConfigs,
-                  &numConfigs);
-  assert(numConfigs);
-  auto i = 0;
-  for (; i < numConfigs; i++) {
-    auto& cfg = supportedConfigs[i];
-    EGLint r, g, b, d;
-    if (eglGetConfigAttrib(display, cfg, EGL_RED_SIZE, &r) &&
-        eglGetConfigAttrib(display, cfg, EGL_GREEN_SIZE, &g) &&
-        eglGetConfigAttrib(display, cfg, EGL_BLUE_SIZE, &b) &&
-        eglGetConfigAttrib(display, cfg, EGL_DEPTH_SIZE, &d) && r == 8 &&
-        g == 8 && b == 8 && d == 0) {
-      config = supportedConfigs[i];
-      break;
-    }
-  }
-  if (i == numConfigs) {
-    config = supportedConfigs[0];
+  // Get the first matching config
+  EGLConfig egl_config;
+  eglChooseConfig(display, egl_attributes, &egl_config, 1, &numConfigs);
+  EGLint egl_format;
+  eglGetConfigAttrib(display, egl_config, EGL_NATIVE_VISUAL_ID, &egl_format);
+  ANativeWindow_setBuffersGeometry(window, 0, 0, egl_format);
+
+  const EGLint egl_context_attributes[] = {EGL_CONTEXT_CLIENT_VERSION, 3,
+                                           EGL_NONE};
+  context = eglCreateContext(display, egl_config, EGL_NO_CONTEXT,
+                             egl_context_attributes);
+
+  if (context == EGL_NO_CONTEXT) {
+    LOGW("eglCreateContext() returned EGL_NO_CONTEXT");
   }
 
-  if (config == nullptr) {
-    LOGW("Unable to initialize EGLConfig");
-    return false;
-  }
-
-  /* EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
-   * guaranteed to be accepted by ANativeWindow_setBuffersGeometry().
-   * As soon as we picked a EGLConfig, we can safely reconfigure the
-   * ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID. */
-  eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &format);
-  surface = eglCreateWindowSurface(display, config, window, nullptr);
-  context = eglCreateContext(display, config, nullptr, nullptr);
-
-  if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
-    LOGW("Unable to eglMakeCurrent");
-    return false;
-  }
+  surface = eglCreateWindowSurface(display, egl_config, window, NULL);
+  eglMakeCurrent(display, surface, surface, context);
 
   eglQuerySurface(display, surface, EGL_WIDTH, &w);
   eglQuerySurface(display, surface, EGL_HEIGHT, &h);
@@ -159,28 +138,120 @@ bool GUI::InitializeDisplay(ANativeWindow* window) {
     auto info = glGetString(name);
     LOGI("OpenGL Info: %s", info);
   }
-  // Initialize GL state.
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-  glEnable(GL_CULL_FACE);
-  glShadeModel(GL_SMOOTH);
-  glDisable(GL_DEPTH_TEST);
 
   return true;
 }
 
+void GUI::InitializeDearImGui(ANativeWindow* window) {
+  // Setup Dear ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+
+  // Disable loading/saving of .ini file from disk.
+  io.IniFilename = NULL;
+
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
+
+  // Setup Platform/Renderer backends
+  ImGui_ImplAndroid_Init(window);
+  ImGui_ImplOpenGL3_Init("#version 300 es");
+
+  ImFontConfig font_cfg;
+  font_cfg.SizePixels = 22.0f;
+  io.Fonts->AddFontDefault(&font_cfg);
+  ImGui::GetStyle().ScaleAllSizes(3.0f);
+}
+
+void GUI::TerminateDearImGui() {
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplAndroid_Shutdown();
+  ImGui::DestroyContext();
+}
+
 void GUI::DrawFrame() {
-  float red = 1.0f;
-  float green = 0.0f;
-  float blue = 0.0f;
+  ImGuiIO& io = ImGui::GetIO();
+  if (display_ == EGL_NO_DISPLAY) return;
 
-  // Just fill the screen with a color.
-  glClearColor(red, green, blue, 1);
-  glClear(GL_COLOR_BUFFER_BIT);
+  // Our state
+  static bool show_demo_window = true;
+  static bool show_another_window = false;
+  static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-  if (EGL_TRUE != eglSwapBuffers(display_, surface_)) {
-    EGLint egl_error = eglGetError();
-    LOGW("Failed to swap EGL buffers %d", egl_error);
+  // Poll Unicode characters via JNI
+  // FIXME: do not call this every frame because of JNI overhead
+  // PollUnicodeChars();
+
+  // Open on-screen (soft) input if requested by Dear ImGui
+  static bool WantTextInputLast = false;
+  // if (io.WantTextInput && !WantTextInputLast)
+  //    ShowSoftKeyboardInput();
+  WantTextInputLast = io.WantTextInput;
+
+  // Start the Dear ImGui frame
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplAndroid_NewFrame();
+  ImGui::NewFrame();
+
+  // 1. Show the big demo window (Most of the sample code is in
+  // ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear
+  // ImGui!).
+  if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
+
+  // 2. Show a simple window that we create ourselves. We use a Begin/End pair
+  // to created a named window.
+  {
+    static float f = 0.0f;
+    static int counter = 0;
+
+    ImGui::Begin("Hello, world!");  // Create a window called "Hello, world!"
+                                    // and append into it.
+
+    ImGui::Text("This is some useful text.");  // Display some text (you can use
+                                               // a format strings too)
+    ImGui::Checkbox(
+        "Demo Window",
+        &show_demo_window);  // Edit bools storing our window open/close state
+    ImGui::Checkbox("Another Window", &show_another_window);
+
+    ImGui::SliderFloat("float", &f, 0.0f,
+                       1.0f);  // Edit 1 float using a slider from 0.0f to 1.0f
+    ImGui::ColorEdit3(
+        "clear color",
+        (float*)&clear_color);  // Edit 3 floats representing a color
+
+    if (ImGui::Button("Button"))  // Buttons return true when clicked (most
+                                  // widgets return true when edited/activated)
+      counter++;
+    ImGui::SameLine();
+    ImGui::Text("counter = %d", counter);
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
   }
+
+  // 3. Show another simple window.
+  if (show_another_window) {
+    ImGui::Begin(
+        "Another Window",
+        &show_another_window);  // Pass a pointer to our bool variable (the
+                                // window will have a closing button that will
+                                // clear the bool when clicked)
+    ImGui::Text("Hello from another window!");
+    if (ImGui::Button("Close Me")) show_another_window = false;
+    ImGui::End();
+  }
+
+  // Rendering
+  ImGui::Render();
+  glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+  glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w,
+               clear_color.z * clear_color.w, clear_color.w);
+  glClear(GL_COLOR_BUFFER_BIT);
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  eglSwapBuffers(display_, surface_);
 }
 
 void GUI::TerminateDisplay() {

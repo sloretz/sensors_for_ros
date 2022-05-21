@@ -8,11 +8,22 @@ find_package(std_msgs REQUIRED)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-add_library(gui STATIC gui.cc)
+add_library(gui STATIC
+    gui.cc
+    DearImGui/imgui.cpp
+    DearImGui/imgui_demo.cpp
+    DearImGui/imgui_draw.cpp
+    DearImGui/imgui_tables.cpp
+    DearImGui/imgui_widgets.cpp
+    DearImGui/backends/imgui_impl_android.cpp
+    DearImGui/backends/imgui_impl_opengl3.cpp)
+target_include_directories(gui PRIVATE
+    DearImGui
+    DearImGui/backends)
 target_link_libraries(gui PUBLIC
     log
     EGL
-    GLESv1_CM)
+    GLESv3)
 
 add_library(android-ros SHARED android_entry_point.cpp)
 target_link_libraries(android-ros PRIVATE

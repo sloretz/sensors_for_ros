@@ -24,6 +24,8 @@ class GUI {
 
 
  private:
+  void InitializeDearImGui(ANativeWindow* window);
+  void TerminateDearImGui();
   bool InitializeDisplay(ANativeWindow* window);
   void TerminateDisplay();
   void DrawFrame();
