@@ -1,0 +1,3 @@
+[submodule "hello_android/DearImGui"]
+	path = hello_android/DearImGui
+	url = git@github.com:ocornut/imgui.git
