@@ -152,10 +152,8 @@ void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
   activity->callbacks->onWindowFocusChanged = onWindowFocusChanged;
   activity->callbacks->onNativeWindowCreated = onNativeWindowCreated;
   activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
-  // activity->callbacks->onNativeWindowRedrawNeeded = onNativeWindowRedrawNeeded;
-  // Intentionally don't register this callback because of
-  // https://stackoverflow.com/a/32602246
-  // activity->callbacks->onNativeWindowResized = onNativeWindowResized;
+  activity->callbacks->onNativeWindowRedrawNeeded = onNativeWindowRedrawNeeded;
+  activity->callbacks->onNativeWindowResized = onNativeWindowResized;
   activity->callbacks->onInputQueueCreated = onInputQueueCreated;
   activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
 
