@@ -47,7 +47,7 @@ void GUI::CheckInput() {
       continue;
     }
     int32_t handled = 0;
-    // TODO pass the event to Dear Imgui
+    handled = ImGui_ImplAndroid_HandleInputEvent(event);
     AInputQueue_finishEvent(iqueue_, event, handled);
   }
 }
@@ -62,7 +62,8 @@ void GUI::RemoveInputQueue() {
   iqueue_ = nullptr;
 }
 
-void GUI::Start(ANativeWindow* window) {
+void GUI::Start(ANativeActivity* activity, ANativeWindow* window) {
+  activity_ = activity;
   exit_loop_.store(false);
   std::promise<void> promise_first_frame;
   std::future<void> first_frame_drawn = promise_first_frame.get_future();
@@ -78,6 +79,7 @@ void GUI::Stop() {
     draw_thread_.join();
   }
   TerminateDisplay();
+  activity_ = nullptr;
 }
 
 bool GUI::InitializeDisplay(ANativeWindow* window) {
@@ -185,8 +187,7 @@ void GUI::DrawFrame() {
 
   // Open on-screen (soft) input if requested by Dear ImGui
   static bool WantTextInputLast = false;
-  // if (io.WantTextInput && !WantTextInputLast)
-  //    ShowSoftKeyboardInput();
+  if (io.WantTextInput && !WantTextInputLast) ShowSoftKeyboardInput();
   WantTextInputLast = io.WantTextInput;
 
   // Start the Dear ImGui frame
@@ -270,4 +271,36 @@ void GUI::TerminateDisplay() {
   display_ = EGL_NO_DISPLAY;
   context_ = EGL_NO_CONTEXT;
   surface_ = EGL_NO_SURFACE;
+}
+
+// Copied from
+// https://github.com/ocornut/imgui/blob/e346059eef140c5a8611581f3e6c8b8816d6998e/examples/example_android_opengl3/main.cpp#L286-L316
+int GUI::ShowSoftKeyboardInput()
+{
+    JavaVM* java_vm = activity_->vm;
+    JNIEnv* java_env = NULL;
+
+    jint jni_return = java_vm->GetEnv((void**)&java_env, JNI_VERSION_1_6);
+    if (jni_return == JNI_ERR)
+        return -1;
+
+    jni_return = java_vm->AttachCurrentThread(&java_env, NULL);
+    if (jni_return != JNI_OK)
+        return -2;
+
+    jclass native_activity_clazz = java_env->GetObjectClass(activity_->clazz);
+    if (native_activity_clazz == NULL)
+        return -3;
+
+    jmethodID method_id = java_env->GetMethodID(native_activity_clazz, "showSoftInput", "()V");
+    if (method_id == NULL)
+        return -4;
+
+    java_env->CallVoidMethod(activity_->clazz, method_id);
+
+    jni_return = java_vm->DetachCurrentThread();
+    if (jni_return != JNI_OK)
+        return -5;
+
+    return 0;
 }

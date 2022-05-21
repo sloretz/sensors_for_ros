@@ -83,7 +83,7 @@ static void onLowMemory(ANativeActivity* activity) {
 static void onNativeWindowCreated(ANativeActivity* activity,
                                   ANativeWindow* window) {
   LOGI("NativeWindowCreated: %p -- %p\n", activity, window);
-  GetApp(activity)->gui_.Start(window);
+  GetApp(activity)->gui_.Start(activity, window);
 }
 
 /// The drawing window for this native activity is going to be destroyed.
