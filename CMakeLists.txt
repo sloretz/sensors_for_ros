@@ -94,6 +94,8 @@ ExternalProject_Add(hello_android
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hello_android"
   DEPENDS
   deps-rclcpp
+  deps-rclcpp_lifecycle
+  deps-std_msgs
   CMAKE_ARGS
   ${android_cmake_args}
   "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
@@ -105,7 +107,7 @@ ExternalProject_Add(hello_android
 set(NAMESPACE "loretz.shane")
 set(MIN_SDK_VERSION 30)
 set(TARGET_SDK_VERSION 30)
-set(LIB_NAME "native-activity")
+set(LIB_NAME "android-ros")
 configure_file(
   AndroidManifest.xml.in
   AndroidManifest.xml
@@ -113,64 +115,38 @@ configure_file(
 
 # Make a place for compiled resources to go
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources)
+# Make a list of compiled resources for copying
+set(aapt2_compiled_resources)
+macro(aapt2_compile input output)
+add_custom_command(
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/${output}"
+  COMMENT "compiling ${input} -> ${output}"
+  COMMAND ${android_aapt2} compile
+  "${CMAKE_CURRENT_SOURCE_DIR}/${input}"
+  -o "${CMAKE_CURRENT_BINARY_DIR}/compiled_resources"
+  )
+  list(APPEND aapt2_compiled_resources "${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/${output}")
+endmacro()
 
 # Compile resources
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/values_strings.arsc.flat
-  COMMENT "compiling res/values/strings.xml"
-  COMMAND ${android_aapt2} compile
-  ${CMAKE_CURRENT_SOURCE_DIR}/res/values/strings.xml
-  -o ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources
-  )
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-hdpi_ic_launcher.png.flat
-  COMMENT "compiling res/mipmap-hdpi/ic_launcher.png"
-  COMMAND ${android_aapt2} compile
-  ${CMAKE_CURRENT_SOURCE_DIR}/res/mipmap-hdpi/ic_launcher.png
-  -o ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources
-  )
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-mdpi_ic_launcher.png.flat
-  COMMENT "compiling res/mipmap-mdpi/ic_launcher.png"
-  COMMAND ${android_aapt2} compile
-  ${CMAKE_CURRENT_SOURCE_DIR}/res/mipmap-mdpi/ic_launcher.png
-  -o ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources
-  )
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-xhdpi_ic_launcher.png.flat
-  COMMENT "compiling res/mipmap-xhdpi/ic_launcher.png"
-  COMMAND ${android_aapt2} compile
-  ${CMAKE_CURRENT_SOURCE_DIR}/res/mipmap-xhdpi/ic_launcher.png
-  -o ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources
-  )
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-xxhdpi_ic_launcher.png.flat
-  COMMENT "compiling res/mipmap-xxhdpi/ic_launcher.png"
-  COMMAND ${android_aapt2} compile
-  ${CMAKE_CURRENT_SOURCE_DIR}/res/mipmap-xxhdpi/ic_launcher.png
-  -o ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources
-  )
+aapt2_compile(res/values/strings.xml values_strings.arsc.flat)
+aapt2_compile(res/mipmap-hdpi/ic_launcher.png mipmap-hdpi_ic_launcher.png.flat)
+aapt2_compile(res/mipmap-mdpi/ic_launcher.png mipmap-mdpi_ic_launcher.png.flat)
+aapt2_compile(res/mipmap-xhdpi/ic_launcher.png mipmap-xhdpi_ic_launcher.png.flat)
+aapt2_compile(res/mipmap-xxhdpi/ic_launcher.png mipmap-xxhdpi_ic_launcher.png.flat)
 
 # Link resources into an APK that doesn't have the libs yet
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.apk
-  COMMENT "linking android_ros-nolibs.apk"
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip"
+  COMMENT "linking android_ros-nolibs.zip"
   DEPENDS
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/values_strings.arsc.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-hdpi_ic_launcher.png.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-mdpi_ic_launcher.png.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-xhdpi_ic_launcher.png.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-xxhdpi_ic_launcher.png.flat
+  ${aapt2_compiled_resources}
   COMMAND ${android_aapt2} link
-  -o "${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.apk"
+  -o "${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip"
   -I "${android_jar}"
   --manifest "${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml"
   -R
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/values_strings.arsc.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-hdpi_ic_launcher.png.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-mdpi_ic_launcher.png.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-xhdpi_ic_launcher.png.flat
-  ${CMAKE_CURRENT_BINARY_DIR}/compiled_resources/mipmap-xxhdpi_ic_launcher.png.flat
+  ${aapt2_compiled_resources}
   --auto-add-overlay
   )
 
@@ -179,267 +155,168 @@ add_custom_command(
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI})
 
-# I'm sure I don't need all these, but I don't know how to run ldd on different arch
-set(deps_libs
-  libactionlib_msgs__rosidl_generator_c.so
-  libactionlib_msgs__rosidl_typesupport_cpp.so
-  libactionlib_msgs__rosidl_typesupport_c.so
-  libactionlib_msgs__rosidl_typesupport_introspection_cpp.so
-  libactionlib_msgs__rosidl_typesupport_introspection_c.so
-  libament_index_cpp.so
-  libbuiltin_interfaces__rosidl_generator_c.so
-  libbuiltin_interfaces__rosidl_typesupport_cpp.so
-  libbuiltin_interfaces__rosidl_typesupport_c.so
-  libbuiltin_interfaces__rosidl_typesupport_introspection_cpp.so
-  libbuiltin_interfaces__rosidl_typesupport_introspection_c.so
-  libcomposition_interfaces__rosidl_generator_c.so
-  libcomposition_interfaces__rosidl_typesupport_cpp.so
-  libcomposition_interfaces__rosidl_typesupport_c.so
-  libcomposition_interfaces__rosidl_typesupport_introspection_cpp.so
-  libcomposition_interfaces__rosidl_typesupport_introspection_c.so
-  libddsc.so
-  libdiagnostic_msgs__rosidl_generator_c.so
-  libdiagnostic_msgs__rosidl_typesupport_cpp.so
-  libdiagnostic_msgs__rosidl_typesupport_c.so
-  libdiagnostic_msgs__rosidl_typesupport_introspection_cpp.so
-  libdiagnostic_msgs__rosidl_typesupport_introspection_c.so
-  libgeometry_msgs__rosidl_generator_c.so
-  libgeometry_msgs__rosidl_typesupport_cpp.so
-  libgeometry_msgs__rosidl_typesupport_c.so
-  libgeometry_msgs__rosidl_typesupport_introspection_cpp.so
-  libgeometry_msgs__rosidl_typesupport_introspection_c.so
-  liblibstatistics_collector.so
-  liblifecycle_msgs__rosidl_generator_c.so
-  liblifecycle_msgs__rosidl_typesupport_cpp.so
-  liblifecycle_msgs__rosidl_typesupport_c.so
-  liblifecycle_msgs__rosidl_typesupport_introspection_cpp.so
-  liblifecycle_msgs__rosidl_typesupport_introspection_c.so
-  libnav_msgs__rosidl_generator_c.so
-  libnav_msgs__rosidl_typesupport_cpp.so
-  libnav_msgs__rosidl_typesupport_c.so
-  libnav_msgs__rosidl_typesupport_introspection_cpp.so
-  libnav_msgs__rosidl_typesupport_introspection_c.so
-  librclcpp_lifecycle.so
-  librclcpp.so
-  librcl_interfaces__rosidl_generator_c.so
-  librcl_interfaces__rosidl_typesupport_cpp.so
-  librcl_interfaces__rosidl_typesupport_c.so
-  librcl_interfaces__rosidl_typesupport_introspection_cpp.so
-  librcl_interfaces__rosidl_typesupport_introspection_c.so
-  librcl_lifecycle.so
-  librcl_logging_interface.so
-  librcl_logging_android.so
-  librcl_logging_noop.so
-  librcl_logging_rcutils.so
-  librcl_logging_spdlog.so
-  librcl.so
-  librcl_yaml_param_parser.so
-  librcpputils.so
-  librcutils.so
-  librmw_cyclonedds_cpp.so
-  librmw_dds_common__rosidl_generator_c.so
-  librmw_dds_common__rosidl_typesupport_cpp.so
-  librmw_dds_common__rosidl_typesupport_c.so
-  librmw_dds_common__rosidl_typesupport_introspection_cpp.so
-  librmw_dds_common__rosidl_typesupport_introspection_c.so
-  librmw_dds_common.so
-  librmw.so
-  librosgraph_msgs__rosidl_generator_c.so
-  librosgraph_msgs__rosidl_typesupport_cpp.so
-  librosgraph_msgs__rosidl_typesupport_c.so
-  librosgraph_msgs__rosidl_typesupport_introspection_cpp.so
-  librosgraph_msgs__rosidl_typesupport_introspection_c.so
-  librosidl_runtime_c.so
-  librosidl_typesupport_cpp.so
-  librosidl_typesupport_c.so
-  librosidl_typesupport_introspection_cpp.so
-  librosidl_typesupport_introspection_c.so
-  libsensor_msgs__rosidl_generator_c.so
-  libsensor_msgs__rosidl_typesupport_cpp.so
-  libsensor_msgs__rosidl_typesupport_c.so
-  libsensor_msgs__rosidl_typesupport_introspection_cpp.so
-  libsensor_msgs__rosidl_typesupport_introspection_c.so
-  libshape_msgs__rosidl_generator_c.so
-  libshape_msgs__rosidl_typesupport_cpp.so
-  libshape_msgs__rosidl_typesupport_c.so
-  libshape_msgs__rosidl_typesupport_introspection_cpp.so
-  libshape_msgs__rosidl_typesupport_introspection_c.so
-  libspdlog.so
-  libstatistics_msgs__rosidl_generator_c.so
-  libstatistics_msgs__rosidl_typesupport_cpp.so
-  libstatistics_msgs__rosidl_typesupport_c.so
-  libstatistics_msgs__rosidl_typesupport_introspection_cpp.so
-  libstatistics_msgs__rosidl_typesupport_introspection_c.so
-  libstd_msgs__rosidl_generator_c.so
-  libstd_msgs__rosidl_typesupport_cpp.so
-  libstd_msgs__rosidl_typesupport_c.so
-  libstd_msgs__rosidl_typesupport_introspection_cpp.so
-  libstd_msgs__rosidl_typesupport_introspection_c.so
-  libstd_srvs__rosidl_generator_c.so
-  libstd_srvs__rosidl_typesupport_cpp.so
-  libstd_srvs__rosidl_typesupport_c.so
-  libstd_srvs__rosidl_typesupport_introspection_cpp.so
-  libstd_srvs__rosidl_typesupport_introspection_c.so
-  libstereo_msgs__rosidl_generator_c.so
-  libstereo_msgs__rosidl_typesupport_cpp.so
-  libstereo_msgs__rosidl_typesupport_c.so
-  libstereo_msgs__rosidl_typesupport_introspection_cpp.so
-  libstereo_msgs__rosidl_typesupport_introspection_c.so
-  libtracetools.so
-  libtracetools_status.so
-  libtrajectory_msgs__rosidl_generator_c.so
-  libtrajectory_msgs__rosidl_typesupport_cpp.so
-  libtrajectory_msgs__rosidl_typesupport_c.so
-  libtrajectory_msgs__rosidl_typesupport_introspection_cpp.so
-  libtrajectory_msgs__rosidl_typesupport_introspection_c.so
-  libvisualization_msgs__rosidl_generator_c.so
-  libvisualization_msgs__rosidl_typesupport_cpp.so
-  libvisualization_msgs__rosidl_typesupport_c.so
-  libvisualization_msgs__rosidl_typesupport_introspection_cpp.so
-  libvisualization_msgs__rosidl_typesupport_introspection_c.so
-  libyaml.so)
+# Copy cross-compiled libraries to a folder to include in the zip
+set(copied_android_libs)
+macro(copy_android_lib from_target lib_path)
+  if(NOT TARGET ${from_target})
+    message(FATAL_ERROR "${from_target} isn't a target. There must be a typo")
+  endif()
 
-# Copy library to ABI specific folder
-foreach(lib ${deps_libs})
-  set(destination "${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/${lib}")
-  list(APPEND deps_libs_zippable "${destination}")
-
-  add_custom_target("copy_${lib}"
-    ALL
-    BYPRODUCTS "${destination}"
-    COMMENT "Copying ${lib} to folder for zipping"
+  get_filename_component(libname "${lib_path}" NAME)
+  add_custom_command(
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/${libname}"
+    COMMENT "Copying ${lib_path} to lib/${ANDROID_ABI}/${libname}"
     DEPENDS
-    deps-ament_index_python
-    deps-ament_package
-    deps-domain_coordinator
-    deps-rosidl_cli
-    deps-ament_cmake_core
-    deps-cyclonedds
-    deps-ament_cmake_export_include_directories
-    deps-ament_cmake_export_dependencies
-    deps-ament_cmake_export_definitions
-    deps-ament_cmake_export_link_flags
-    deps-ament_cmake_export_targets
-    deps-ament_cmake_gmock
-    deps-ament_cmake_export_interfaces
-    deps-ament_cmake_export_libraries
-    deps-ament_cmake_include_directories
-    deps-ament_cmake_pytest
-    deps-ament_cmake_gtest
-    deps-ament_cmake_libraries
-    deps-ament_cmake_gen_version_h
-    deps-ament_cmake_nose
-    deps-ament_cmake_python
-    deps-ament_cmake_target_dependencies
-    deps-ament_cmake_version
-    deps-ament_cmake
-    deps-ament_cmake_google_benchmark
-    deps-ament_cmake_test
-    deps-ament_cmake_ros
-    deps-rosidl_adapter
-    deps-ament_cmake_auto
-    deps-libyaml_vendor
-    deps-rosidl_cmake
-    deps-common_interfaces
-    deps-ament_index_cpp
-    deps-rmw_implementation_cmake
-    deps-rosidl_parser
-    deps-rosidl_default_generators
-    deps-rosidl_typesupport_introspection_c
-    deps-spdlog_vendor
-    deps-rosidl_generator_c
-    deps-rosidl_typesupport_interface
-    deps-rosidl_generator_cpp
-    deps-rosidl_default_runtime
-    deps-rcutils
-    deps-tracetools
-    deps-rosidl_runtime_c
-    deps-rcpputils
-    deps-rcl_logging_interface
-    deps-rmw
-    deps-rosidl_runtime_cpp
-    deps-rosidl_typesupport_c
-    deps-rcl_logging_android
-    deps-rcl_logging_noop
-    deps-rcl_logging_rcutils
-    deps-rcl_logging_spdlog
-    deps-rosidl_typesupport_cpp
-    deps-rcl_yaml_param_parser
-    deps-rosidl_typesupport_introspection_cpp
-    deps-rmw_dds_common
-    deps-lifecycle_msgs
-    deps-std_srvs
-    deps-builtin_interfaces
-    deps-rosgraph_msgs
-    deps-rmw_cyclonedds_cpp
-    deps-std_msgs
-    deps-statistics_msgs
-    deps-rcl_interfaces
-    deps-rmw_implementation
-    deps-geometry_msgs
-    deps-composition_interfaces
-    deps-actionlib_msgs
-    deps-rcl
-    deps-trajectory_msgs
-    deps-diagnostic_msgs
-    deps-sensor_msgs
-    deps-nav_msgs
-    deps-shape_msgs
-    deps-rcl_lifecycle
-    deps-libstatistics_collector
-    deps-visualization_msgs
-    deps-stereo_msgs
-    deps-rclcpp
-    deps-rclcpp_lifecycle
-    WORKING_DIRECTORY
-    ${CMAKE_CURRENT_BINARY_DIR}/deps/
+    "${from_target}"
+    "${lib_path}"
     COMMAND
     ${CMAKE_COMMAND} -E copy_if_different
-    "lib/${lib}"
+    "${lib_path}"
     "${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/"
-    )
-endforeach()
-
-# Copy hello_android's library to ABI specific folder
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/libnative-activity.so
-  COMMENT "Copying hello_android's libs to folder for zipping"
-  DEPENDS
-  hello_android
-  WORKING_DIRECTORY
-  ${CMAKE_CURRENT_BINARY_DIR}/hello_android
-  COMMAND
-  ${CMAKE_COMMAND} -E copy_if_different
-  "lib/libnative-activity.so"
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/"
   )
+  list(APPEND copied_android_libs "${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/${libname}")
+endmacro()
+
+copy_android_lib(hello_android "hello_android/lib/libandroid-ros.so")
+copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-ament_index_cpp "deps/lib/libament_index_cpp.so")
+copy_android_lib(deps-builtin_interfaces "deps/lib/libbuiltin_interfaces__rosidl_generator_c.so")
+copy_android_lib(deps-builtin_interfaces "deps/lib/libbuiltin_interfaces__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-builtin_interfaces "deps/lib/libbuiltin_interfaces__rosidl_typesupport_c.so")
+copy_android_lib(deps-builtin_interfaces "deps/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-builtin_interfaces "deps/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-composition_interfaces "deps/lib/libcomposition_interfaces__rosidl_generator_c.so")
+copy_android_lib(deps-composition_interfaces "deps/lib/libcomposition_interfaces__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-composition_interfaces "deps/lib/libcomposition_interfaces__rosidl_typesupport_c.so")
+copy_android_lib(deps-composition_interfaces "deps/lib/libcomposition_interfaces__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-composition_interfaces "deps/lib/libcomposition_interfaces__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-cyclonedds "deps/lib/libddsc.so")
+copy_android_lib(deps-diagnostic_msgs "deps/lib/libdiagnostic_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-diagnostic_msgs "deps/lib/libdiagnostic_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-diagnostic_msgs "deps/lib/libdiagnostic_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-diagnostic_msgs "deps/lib/libdiagnostic_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-diagnostic_msgs "deps/lib/libdiagnostic_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-geometry_msgs "deps/lib/libgeometry_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-geometry_msgs "deps/lib/libgeometry_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-geometry_msgs "deps/lib/libgeometry_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-geometry_msgs "deps/lib/libgeometry_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-geometry_msgs "deps/lib/libgeometry_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-libstatistics_collector "deps/lib/liblibstatistics_collector.so")
+copy_android_lib(deps-lifecycle_msgs "deps/lib/liblifecycle_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-lifecycle_msgs "deps/lib/liblifecycle_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-lifecycle_msgs "deps/lib/liblifecycle_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-lifecycle_msgs "deps/lib/liblifecycle_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-lifecycle_msgs "deps/lib/liblifecycle_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-nav_msgs "deps/lib/libnav_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-nav_msgs "deps/lib/libnav_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-nav_msgs "deps/lib/libnav_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-nav_msgs "deps/lib/libnav_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-nav_msgs "deps/lib/libnav_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-rclcpp_lifecycle "deps/lib/librclcpp_lifecycle.so")
+copy_android_lib(deps-rclcpp "deps/lib/librclcpp.so")
+copy_android_lib(deps-rcl_interfaces "deps/lib/librcl_interfaces__rosidl_generator_c.so")
+copy_android_lib(deps-rcl_interfaces "deps/lib/librcl_interfaces__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-rcl_interfaces "deps/lib/librcl_interfaces__rosidl_typesupport_c.so")
+copy_android_lib(deps-rcl_interfaces "deps/lib/librcl_interfaces__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-rcl_interfaces "deps/lib/librcl_interfaces__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-rcl_lifecycle "deps/lib/librcl_lifecycle.so")
+copy_android_lib(deps-rcl_logging_interface "deps/lib/librcl_logging_interface.so")
+copy_android_lib(deps-rcl_logging_android "deps/lib/librcl_logging_android.so")
+copy_android_lib(deps-rcl "deps/lib/librcl.so")
+copy_android_lib(deps-rcl_yaml_param_parser "deps/lib/librcl_yaml_param_parser.so")
+copy_android_lib(deps-rcpputils "deps/lib/librcpputils.so")
+copy_android_lib(deps-rcutils "deps/lib/librcutils.so")
+copy_android_lib(deps-rmw_cyclonedds_cpp "deps/lib/librmw_cyclonedds_cpp.so")
+copy_android_lib(deps-rmw_dds_common "deps/lib/librmw_dds_common__rosidl_generator_c.so")
+copy_android_lib(deps-rmw_dds_common "deps/lib/librmw_dds_common__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-rmw_dds_common "deps/lib/librmw_dds_common__rosidl_typesupport_c.so")
+copy_android_lib(deps-rmw_dds_common "deps/lib/librmw_dds_common__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-rmw_dds_common "deps/lib/librmw_dds_common__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-rmw_dds_common "deps/lib/librmw_dds_common.so")
+copy_android_lib(deps-rmw "deps/lib/librmw.so")
+copy_android_lib(deps-rosgraph_msgs "deps/lib/librosgraph_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-rosgraph_msgs "deps/lib/librosgraph_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-rosgraph_msgs "deps/lib/librosgraph_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-rosgraph_msgs "deps/lib/librosgraph_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-rosgraph_msgs "deps/lib/librosgraph_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-rosidl_runtime_c "deps/lib/librosidl_runtime_c.so")
+copy_android_lib(deps-rosidl_typesupport_cpp "deps/lib/librosidl_typesupport_cpp.so")
+copy_android_lib(deps-rosidl_typesupport_c "deps/lib/librosidl_typesupport_c.so")
+copy_android_lib(deps-rosidl_typesupport_introspection_cpp "deps/lib/librosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-rosidl_typesupport_introspection_c "deps/lib/librosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-sensor_msgs "deps/lib/libsensor_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-sensor_msgs "deps/lib/libsensor_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-sensor_msgs "deps/lib/libsensor_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-sensor_msgs "deps/lib/libsensor_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-sensor_msgs "deps/lib/libsensor_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-shape_msgs "deps/lib/libshape_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-shape_msgs "deps/lib/libshape_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-shape_msgs "deps/lib/libshape_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-shape_msgs "deps/lib/libshape_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-shape_msgs "deps/lib/libshape_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-statistics_msgs "deps/lib/libstatistics_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-statistics_msgs "deps/lib/libstatistics_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-statistics_msgs "deps/lib/libstatistics_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-statistics_msgs "deps/lib/libstatistics_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-statistics_msgs "deps/lib/libstatistics_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-std_msgs "deps/lib/libstd_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-std_msgs "deps/lib/libstd_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-std_msgs "deps/lib/libstd_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-std_msgs "deps/lib/libstd_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-std_msgs "deps/lib/libstd_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-std_srvs "deps/lib/libstd_srvs__rosidl_generator_c.so")
+copy_android_lib(deps-std_srvs "deps/lib/libstd_srvs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-std_srvs "deps/lib/libstd_srvs__rosidl_typesupport_c.so")
+copy_android_lib(deps-std_srvs "deps/lib/libstd_srvs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-std_srvs "deps/lib/libstd_srvs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-stereo_msgs "deps/lib/libstereo_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-stereo_msgs "deps/lib/libstereo_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-stereo_msgs "deps/lib/libstereo_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-stereo_msgs "deps/lib/libstereo_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-stereo_msgs "deps/lib/libstereo_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-tracetools "deps/lib/libtracetools.so")
+copy_android_lib(deps-tracetools  "deps/lib/libtracetools_status.so")
+copy_android_lib(deps-trajectory_msgs "deps/lib/libtrajectory_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-trajectory_msgs "deps/lib/libtrajectory_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-trajectory_msgs "deps/lib/libtrajectory_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-trajectory_msgs "deps/lib/libtrajectory_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-trajectory_msgs "deps/lib/libtrajectory_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-visualization_msgs "deps/lib/libvisualization_msgs__rosidl_generator_c.so")
+copy_android_lib(deps-visualization_msgs "deps/lib/libvisualization_msgs__rosidl_typesupport_cpp.so")
+copy_android_lib(deps-visualization_msgs "deps/lib/libvisualization_msgs__rosidl_typesupport_c.so")
+copy_android_lib(deps-visualization_msgs "deps/lib/libvisualization_msgs__rosidl_typesupport_introspection_cpp.so")
+copy_android_lib(deps-visualization_msgs "deps/lib/libvisualization_msgs__rosidl_typesupport_introspection_c.so")
+copy_android_lib(deps-libyaml_vendor "deps/lib/libyaml.so")
 
 # Add all shared libraries to APK
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.apk
-  COMMENT "Adding libs to android_ros-nolibs.apk to make android_ros-unaligned-unsigned.apk"
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
+  COMMENT "Adding libs to android_ros-nolibs.zip to make android_ros-unaligned-unsigned.zip"
   DEPENDS
-  ${deps_libs_zippable}
-  ${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/libnative-activity.so
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.apk
+  ${copied_android_libs}
+  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip
   WORKING_DIRECTORY
   "${CMAKE_CURRENT_BINARY_DIR}"
   COMMAND zip -D0ru 
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.apk
-  --output-file ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.apk
+  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip
+  --output-file ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
   lib/
   )
 
 #############################
 # Align to 4KiB page boundary
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.apk
-  COMMENT "Aligning make android_ros-unaligned-unsigned.apk to produce android_ros-unsigned.apk"
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip
+  COMMENT "Aligning make android_ros-unaligned-unsigned.zip to produce android_ros-unsigned.zip"
   DEPENDS
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.apk
+  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
   COMMAND ${android_zipalign} -p -f -v 4
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.apk
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.apk
+  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
+  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip
   )
 
 # Sign the APK
@@ -452,9 +329,9 @@ endif()
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros.apk
-  COMMENT "Signing android_ros-unsigned.apk to make android_ros.apk"
+  COMMENT "Signing android_ros-unsigned.zip to make android_ros.apk"
   DEPENDS
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.apk
+  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip
   COMMAND "${CMAKE_COMMAND}" -E env
   "ANDROID_KEY_PASS=$ENV{ANDROID_KEY_PASS}"
   "ANDROID_KEYSTORE_PASS=$ENV{ANDROID_KEYSTORE_PASS}"
@@ -463,7 +340,7 @@ add_custom_command(
   --ks-pass env:ANDROID_KEYSTORE_PASS
   --key-pass env:ANDROID_KEY_PASS
   --out "${CMAKE_CURRENT_BINARY_DIR}/android_ros.apk"
-  "${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.apk"
+  "${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip"
   )
 
 add_custom_target(apk ALL
