@@ -10,18 +10,58 @@ GUI::GUI() {}
 
 GUI::~GUI() { Stop(); }
 
-void GUI::DrawingLoop() {
+void GUI::DrawingLoop(ANativeWindow* window,
+                      std::promise<void> promise_first_frame) {
+  LOGI("Entered DrawingLoop()");
+  // Display initialization MUST happen in drawing thread
+  InitializeDisplay(window);
+  DrawFrame();
+  promise_first_frame.set_value();
+
   while (not exit_loop_.load()) {
-    GUI::DrawFrame();
+    CheckInput();
+    DrawFrame();
   }
 }
 
-bool GUI::Start(ANativeWindow* window) {
-  bool display_initialized = InitializeDisplay(window);
-  if (display_initialized) {
-    draw_thread_ = std::thread(&GUI::DrawingLoop, this);
+void GUI::CheckInput() {
+  std::unique_lock<std::mutex> lock(iqueue_mtx_, std::defer_lock);
+  // Try to get input events, but don't worry about if it doesn't happen
+  if (!lock.try_lock()) {
+    return;
   }
-  return display_initialized;
+  if (iqueue_ == nullptr) {
+    return;
+  }
+  AInputEvent* event = nullptr;
+  while (AInputQueue_getEvent(iqueue_, &event) >= 0) {
+    LOGI("New input event: type=%d\n", AInputEvent_getType(event));
+    if (AInputQueue_preDispatchEvent(iqueue_, event)) {
+      continue;
+    }
+    int32_t handled = 0;
+    // TODO pass the event to Dear Imgui
+    AInputQueue_finishEvent(iqueue_, event, handled);
+  }
+}
+
+void GUI::SetInputQueue(AInputQueue* queue) {
+  std::lock_guard<std::mutex> guard(iqueue_mtx_);
+  iqueue_ = queue;
+}
+
+void GUI::RemoveInputQueue() {
+  std::lock_guard<std::mutex> guard(iqueue_mtx_);
+  iqueue_ = nullptr;
+}
+
+void GUI::Start(ANativeWindow* window) {
+  exit_loop_.store(false);
+  std::promise<void> promise_first_frame;
+  std::future<void> first_frame_drawn = promise_first_frame.get_future();
+  draw_thread_ = std::thread(&GUI::DrawingLoop, this, window,
+                             std::move(promise_first_frame));
+  first_frame_drawn.wait();
 }
 
 void GUI::Stop() {
@@ -111,6 +151,8 @@ bool GUI::InitializeDisplay(ANativeWindow* window) {
   width_ = w;
   height_ = h;
 
+  LOGI("Display width %d height %d", width_, height_);
+
   // Check openGL on the system
   auto opengl_info = {GL_VENDOR, GL_RENDERER, GL_VERSION, GL_EXTENSIONS};
   for (auto name : opengl_info) {
@@ -135,7 +177,10 @@ void GUI::DrawFrame() {
   glClearColor(red, green, blue, 1);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  eglSwapBuffers(display_, surface_);
+  if (EGL_TRUE != eglSwapBuffers(display_, surface_)) {
+    EGLint egl_error = eglGetError();
+    LOGW("Failed to swap EGL buffers %d", egl_error);
+  }
 }
 
 void GUI::TerminateDisplay() {

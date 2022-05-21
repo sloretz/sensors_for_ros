@@ -64,12 +64,14 @@ static void onDestroy(ANativeActivity* activity) {
 /// The input queue for this native activity's window has been created.
 static void onInputQueueCreated(ANativeActivity* activity, AInputQueue* queue) {
   LOGI("InputQueueCreated: %p -- %p\n", activity, queue);
+  GetApp(activity)->gui_.SetInputQueue(queue);
 }
 
 /// The input queue for this native activity's window is being destroyed.
 static void onInputQueueDestroyed(ANativeActivity* activity,
                                   AInputQueue* queue) {
   LOGI("InputQueueDestroyed: %p -- %p\n", activity, queue);
+  GetApp(activity)->gui_.RemoveInputQueue();
 }
 
 /// The system is running low on memory.
@@ -150,8 +152,10 @@ void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
   activity->callbacks->onWindowFocusChanged = onWindowFocusChanged;
   activity->callbacks->onNativeWindowCreated = onNativeWindowCreated;
   activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
-  activity->callbacks->onNativeWindowRedrawNeeded = onNativeWindowRedrawNeeded;
-  activity->callbacks->onNativeWindowResized = onNativeWindowResized;
+  // activity->callbacks->onNativeWindowRedrawNeeded = onNativeWindowRedrawNeeded;
+  // Intentionally don't register this callback because of
+  // https://stackoverflow.com/a/32602246
+  // activity->callbacks->onNativeWindowResized = onNativeWindowResized;
   activity->callbacks->onInputQueueCreated = onInputQueueCreated;
   activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
 

@@ -29,6 +29,12 @@ The main activity can be started directly from the CLI
 adb shell am start -n loretz.shane/android.app.NativeActivity
 ```
 
+Getting stack traces
+
+```
+adb logcat | ~/android-sdk/ndk/21.3.6528147/ndk-stack -sym lib/arm64-v8a/
+```
+
 # Lessons
 
 ## Native dependencies
