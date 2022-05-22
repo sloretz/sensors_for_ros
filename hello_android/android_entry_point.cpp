@@ -8,7 +8,7 @@
 #include "ros_interface.h"
 
 // Controller class links all the parts
-class AndroidApp : public android_ros::event::Listener {
+class AndroidApp {
  public:
   AndroidApp() {
     gui_.SetListener(
