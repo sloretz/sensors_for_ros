@@ -12,6 +12,13 @@ add_library(events STATIC
     events.cc)
 target_compile_features(events PUBLIC cxx_std_17)
 
+add_library(ros STATIC
+    ros_interface.cc
+)
+target_link_libraries(ros PUBLIC
+    rclcpp::rclcpp
+    events)
+
 add_library(gui STATIC
     gui.cc
     DearImGui/imgui.cpp
@@ -35,7 +42,8 @@ target_link_libraries(android-ros PRIVATE
     android
     log
     gui
-    events)
+    events
+    ros)
 target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
 
 install(TARGETS android-ros DESTINATION lib)

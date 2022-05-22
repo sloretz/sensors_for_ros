@@ -5,6 +5,7 @@
 #include "events.h"
 #include "gui.h"
 #include "log.h"
+#include "ros_interface.h"
 
 // Controller class links all the parts
 class AndroidApp : public android_ros::event::Listener {
@@ -16,7 +17,7 @@ class AndroidApp : public android_ros::event::Listener {
 
   ~AndroidApp() = default;
 
-  // android_ros::ROSInterface ros_;
+  android_ros::ROSInterface ros_;
   android_ros::GUI gui_;
 
  private:
@@ -24,11 +25,15 @@ class AndroidApp : public android_ros::event::Listener {
     LOGI("Got GUI event");
 
     std::visit(
-        [](auto&& e) {
+        [this](auto&& e) {
           using T = std::decay_t<decltype(e)>;
           if constexpr (std::is_same_v<
                             T, android_ros::event::RosDomainIdChanged>) {
             LOGI("New ROS_DOMAIN_ID %d", e.id);
+            if (ros_.Initialized()) {
+              ros_.Shutdown();
+            }
+            ros_.Initialize(e.id);
           } else {
             LOGW("Unknown GUI event");
           }
