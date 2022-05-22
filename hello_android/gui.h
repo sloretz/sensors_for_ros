@@ -29,6 +29,7 @@ class GUI {
   bool InitializeDisplay(ANativeWindow* window);
   void TerminateDisplay();
   void DrawFrame();
+  int32_t ShowROSDomainIdPicker();
   void DrawingLoop(ANativeWindow* window,
                    std::promise<void> promise_first_frame);
   void CheckInput();
@@ -49,5 +50,7 @@ class GUI {
   AInputQueue* iqueue_ = nullptr;
 
   ANativeActivity* activity_;
+
+  bool show_ros_domain_id_picker_ = true;
 };
 }  // namespace android_ros

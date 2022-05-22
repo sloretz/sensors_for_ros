@@ -160,10 +160,11 @@ void GUI::InitializeDearImGui(ANativeWindow* window) {
   ImGui_ImplAndroid_Init(window);
   ImGui_ImplOpenGL3_Init("#version 300 es");
 
+  // TODO(sloretz reasonable font scaling)
   ImFontConfig font_cfg;
-  font_cfg.SizePixels = 22.0f;
+  font_cfg.SizePixels = 50.0f;
   io.Fonts->AddFontDefault(&font_cfg);
-  ImGui::GetStyle().ScaleAllSizes(3.0f);
+  ImGui::GetStyle().ScaleAllSizes(4.0f);
 }
 
 void GUI::TerminateDearImGui() {
@@ -172,13 +173,84 @@ void GUI::TerminateDearImGui() {
   ImGui::DestroyContext();
 }
 
+int32_t GUI::ShowROSDomainIdPicker() {
+  static int32_t picked_ros_domain_id = -1;
+
+  auto increase_id = [](int num) {
+    if (picked_ros_domain_id < 0) {
+      picked_ros_domain_id = num;
+    } else {
+      picked_ros_domain_id = picked_ros_domain_id * 10 + num;
+    }
+  };
+
+  ImGui::Begin("ROS_DOMAIN_ID", &show_ros_domain_id_picker_, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+  if (ImGui::Button("1")) {
+    increase_id(1);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("2")) {
+    increase_id(2);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("3")) {
+    increase_id(3);
+  }
+  if (ImGui::Button("4")) {
+    increase_id(4);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("5")) {
+    increase_id(5);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("6")) {
+    increase_id(6);
+  }
+  if (ImGui::Button("7")) {
+    increase_id(7);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("8")) {
+    increase_id(8);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("9")) {
+    increase_id(9);
+  }
+  if (ImGui::Button("0")) {
+    increase_id(0);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("Clear")) {
+    picked_ros_domain_id = -1;
+  }
+
+  if (picked_ros_domain_id < 0) {
+    ImGui::Text("---");
+  } else {
+    ImGui::Text("%d", picked_ros_domain_id);
+  }
+
+  int32_t return_value = -1;
+  if (ImGui::Button("Set ROS_DOMAIN_ID")) {
+    if (picked_ros_domain_id < 0) {
+      // Default to 0
+      return_value = 0;
+    } else {
+      return_value = picked_ros_domain_id;
+      show_ros_domain_id_picker_ = false;
+    }
+  }
+  ImGui::End();
+  return return_value;
+}
+
 void GUI::DrawFrame() {
   ImGuiIO& io = ImGui::GetIO();
   if (display_ == EGL_NO_DISPLAY) return;
 
   // Our state
-  static bool show_demo_window = true;
-  static bool show_another_window = false;
   static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   // Poll Unicode characters via JNI
@@ -187,7 +259,9 @@ void GUI::DrawFrame() {
 
   // Open on-screen (soft) input if requested by Dear ImGui
   static bool WantTextInputLast = false;
-  if (io.WantTextInput && !WantTextInputLast) ShowSoftKeyboardInput();
+  if (io.WantTextInput && !WantTextInputLast) {
+    ShowSoftKeyboardInput();
+  }
   WantTextInputLast = io.WantTextInput;
 
   // Start the Dear ImGui frame
@@ -195,55 +269,7 @@ void GUI::DrawFrame() {
   ImGui_ImplAndroid_NewFrame();
   ImGui::NewFrame();
 
-  // 1. Show the big demo window (Most of the sample code is in
-  // ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear
-  // ImGui!).
-  if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
-
-  // 2. Show a simple window that we create ourselves. We use a Begin/End pair
-  // to created a named window.
-  {
-    static float f = 0.0f;
-    static int counter = 0;
-
-    ImGui::Begin("Hello, world!");  // Create a window called "Hello, world!"
-                                    // and append into it.
-
-    ImGui::Text("This is some useful text.");  // Display some text (you can use
-                                               // a format strings too)
-    ImGui::Checkbox(
-        "Demo Window",
-        &show_demo_window);  // Edit bools storing our window open/close state
-    ImGui::Checkbox("Another Window", &show_another_window);
-
-    ImGui::SliderFloat("float", &f, 0.0f,
-                       1.0f);  // Edit 1 float using a slider from 0.0f to 1.0f
-    ImGui::ColorEdit3(
-        "clear color",
-        (float*)&clear_color);  // Edit 3 floats representing a color
-
-    if (ImGui::Button("Button"))  // Buttons return true when clicked (most
-                                  // widgets return true when edited/activated)
-      counter++;
-    ImGui::SameLine();
-    ImGui::Text("counter = %d", counter);
-
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::End();
-  }
-
-  // 3. Show another simple window.
-  if (show_another_window) {
-    ImGui::Begin(
-        "Another Window",
-        &show_another_window);  // Pass a pointer to our bool variable (the
-                                // window will have a closing button that will
-                                // clear the bool when clicked)
-    ImGui::Text("Hello from another window!");
-    if (ImGui::Button("Close Me")) show_another_window = false;
-    ImGui::End();
-  }
+  ShowROSDomainIdPicker();
 
   // Rendering
   ImGui::Render();
@@ -275,32 +301,27 @@ void GUI::TerminateDisplay() {
 
 // Copied from
 // https://github.com/ocornut/imgui/blob/e346059eef140c5a8611581f3e6c8b8816d6998e/examples/example_android_opengl3/main.cpp#L286-L316
-int GUI::ShowSoftKeyboardInput()
-{
-    JavaVM* java_vm = activity_->vm;
-    JNIEnv* java_env = NULL;
+int GUI::ShowSoftKeyboardInput() {
+  JavaVM* java_vm = activity_->vm;
+  JNIEnv* java_env = NULL;
 
-    jint jni_return = java_vm->GetEnv((void**)&java_env, JNI_VERSION_1_6);
-    if (jni_return == JNI_ERR)
-        return -1;
+  jint jni_return = java_vm->GetEnv((void**)&java_env, JNI_VERSION_1_6);
+  if (jni_return == JNI_ERR) return -1;
 
-    jni_return = java_vm->AttachCurrentThread(&java_env, NULL);
-    if (jni_return != JNI_OK)
-        return -2;
+  jni_return = java_vm->AttachCurrentThread(&java_env, NULL);
+  if (jni_return != JNI_OK) return -2;
 
-    jclass native_activity_clazz = java_env->GetObjectClass(activity_->clazz);
-    if (native_activity_clazz == NULL)
-        return -3;
+  jclass native_activity_clazz = java_env->GetObjectClass(activity_->clazz);
+  if (native_activity_clazz == NULL) return -3;
 
-    jmethodID method_id = java_env->GetMethodID(native_activity_clazz, "showSoftInput", "()V");
-    if (method_id == NULL)
-        return -4;
+  jmethodID method_id =
+      java_env->GetMethodID(native_activity_clazz, "showSoftInput", "()V");
+  if (method_id == NULL) return -4;
 
-    java_env->CallVoidMethod(activity_->clazz, method_id);
+  java_env->CallVoidMethod(activity_->clazz, method_id);
 
-    jni_return = java_vm->DetachCurrentThread();
-    if (jni_return != JNI_OK)
-        return -5;
+  jni_return = java_vm->DetachCurrentThread();
+  if (jni_return != JNI_OK) return -5;
 
-    return 0;
+  return 0;
 }
