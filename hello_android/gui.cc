@@ -160,7 +160,7 @@ void GUI::InitializeDearImGui(ANativeWindow* window) {
   ImGui_ImplAndroid_Init(window);
   ImGui_ImplOpenGL3_Init("#version 300 es");
 
-  // TODO(sloretz reasonable font scaling)
+  // TODO(sloretz) DPI aware scaling
   ImFontConfig font_cfg;
   font_cfg.SizePixels = 50.0f;
   io.Fonts->AddFontDefault(&font_cfg);
@@ -173,7 +173,7 @@ void GUI::TerminateDearImGui() {
   ImGui::DestroyContext();
 }
 
-int32_t GUI::ShowROSDomainIdPicker() {
+void GUI::ShowROSDomainIdPicker() {
   static int32_t picked_ros_domain_id = -1;
 
   auto increase_id = [](int num) {
@@ -232,37 +232,22 @@ int32_t GUI::ShowROSDomainIdPicker() {
     ImGui::Text("%d", picked_ros_domain_id);
   }
 
-  int32_t return_value = -1;
   if (ImGui::Button("Set ROS_DOMAIN_ID")) {
     if (picked_ros_domain_id < 0) {
       // Default to 0
-      return_value = 0;
-    } else {
-      return_value = picked_ros_domain_id;
-      show_ros_domain_id_picker_ = false;
+      picked_ros_domain_id = 0;
     }
+    Emit(event::RosDomainIdChanged{picked_ros_domain_id});
+    show_ros_domain_id_picker_ = false;
   }
   ImGui::End();
-  return return_value;
 }
 
 void GUI::DrawFrame() {
   ImGuiIO& io = ImGui::GetIO();
-  if (display_ == EGL_NO_DISPLAY) return;
-
-  // Our state
-  static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-  // Poll Unicode characters via JNI
-  // FIXME: do not call this every frame because of JNI overhead
-  // PollUnicodeChars();
-
-  // Open on-screen (soft) input if requested by Dear ImGui
-  static bool WantTextInputLast = false;
-  if (io.WantTextInput && !WantTextInputLast) {
-    ShowSoftKeyboardInput();
+  if (display_ == EGL_NO_DISPLAY) {
+    return;
   }
-  WantTextInputLast = io.WantTextInput;
 
   // Start the Dear ImGui frame
   ImGui_ImplOpenGL3_NewFrame();
@@ -274,8 +259,7 @@ void GUI::DrawFrame() {
   // Rendering
   ImGui::Render();
   glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-  glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w,
-               clear_color.z * clear_color.w, clear_color.w);
+  glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   eglSwapBuffers(display_, surface_);
@@ -297,31 +281,4 @@ void GUI::TerminateDisplay() {
   display_ = EGL_NO_DISPLAY;
   context_ = EGL_NO_CONTEXT;
   surface_ = EGL_NO_SURFACE;
-}
-
-// Copied from
-// https://github.com/ocornut/imgui/blob/e346059eef140c5a8611581f3e6c8b8816d6998e/examples/example_android_opengl3/main.cpp#L286-L316
-int GUI::ShowSoftKeyboardInput() {
-  JavaVM* java_vm = activity_->vm;
-  JNIEnv* java_env = NULL;
-
-  jint jni_return = java_vm->GetEnv((void**)&java_env, JNI_VERSION_1_6);
-  if (jni_return == JNI_ERR) return -1;
-
-  jni_return = java_vm->AttachCurrentThread(&java_env, NULL);
-  if (jni_return != JNI_OK) return -2;
-
-  jclass native_activity_clazz = java_env->GetObjectClass(activity_->clazz);
-  if (native_activity_clazz == NULL) return -3;
-
-  jmethodID method_id =
-      java_env->GetMethodID(native_activity_clazz, "showSoftInput", "()V");
-  if (method_id == NULL) return -4;
-
-  java_env->CallVoidMethod(activity_->clazz, method_id);
-
-  jni_return = java_vm->DetachCurrentThread();
-  if (jni_return != JNI_OK) return -5;
-
-  return 0;
 }

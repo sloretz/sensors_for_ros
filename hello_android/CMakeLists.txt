@@ -8,6 +8,10 @@ find_package(std_msgs REQUIRED)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+add_library(events STATIC
+    events.cc)
+target_compile_features(events PUBLIC cxx_std_17)
+
 add_library(gui STATIC
     gui.cc
     DearImGui/imgui.cpp
@@ -23,13 +27,15 @@ target_include_directories(gui PRIVATE
 target_link_libraries(gui PUBLIC
     log
     EGL
-    GLESv3)
+    GLESv3
+    events)
 
 add_library(android-ros SHARED android_entry_point.cpp)
 target_link_libraries(android-ros PRIVATE
     android
     log
-    gui)
+    gui
+    events)
 target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
 
 install(TARGETS android-ros DESTINATION lib)

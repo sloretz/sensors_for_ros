@@ -2,45 +2,40 @@
 
 #include <android/native_activity.h>
 
+#include "events.h"
 #include "gui.h"
 #include "log.h"
 
-class AndroidApp {
+// Controller class links all the parts
+class AndroidApp : public android_ros::event::Listener {
  public:
-  AndroidApp(ANativeActivity* activity) {}
+  AndroidApp() {
+    gui_.SetListener(
+        std::bind(&AndroidApp::OnGUIEvent, this, std::placeholders::_1));
+  }
 
   ~AndroidApp() = default;
 
+  // android_ros::ROSInterface ros_;
   android_ros::GUI gui_;
+
+ private:
+  void OnGUIEvent(const android_ros::event::Event& event) {
+    LOGI("Got GUI event");
+
+    std::visit(
+        [](auto&& e) {
+          using T = std::decay_t<decltype(e)>;
+          if constexpr (std::is_same_v<
+                            T, android_ros::event::RosDomainIdChanged>) {
+            LOGI("New ROS_DOMAIN_ID %d", e.id);
+          } else {
+            LOGW("Unknown GUI event");
+          }
+        },
+        event);
+  }
 };
-
-/// Initialize the app and return user data to store on the activity
-void* CreateApp(ANativeActivity* activity) {
-  // TODO(sloretz) start ros node, drawing thread, etc
-  /*
-  Thinking maybe a couple threads for sensor data
-      - One for each camera
-      - One for the rest of the sensors (figure they'll be quick to process)
-  Thinking a dedicated GUI thread maybe with Dear ImGUI
-  Thinking a dedicatd thread for the executor
-
-
-  AndroidSensors to get and read from sensors
-      turning data into ROS messages so timestamp is as close as possible
-      creates the threads it needs to read the sensors
-      needs ROS clock to set the sensor times
-
-  AndroidGUI to display and handle GUI events.
-      Sort of like both the controller and the view from MVC
-
-  Android ROS to create ROS node, publishers, subscribers, callbacks
-      Needs to know sensors that are available for creating publishers
-      Maybe GUI tells it what things to create
-
-  */
-
-  return new AndroidApp(activity);
-}
 
 inline AndroidApp* GetApp(ANativeActivity* activity) {
   return static_cast<AndroidApp*>(activity->instance);
@@ -135,7 +130,8 @@ static void onWindowFocusChanged(ANativeActivity* activity, int focused) {
 /// Entry point called by Android to start this app
 void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
                               size_t savedStateSize) {
-  // TODO(sloretz) support saved state - things like ROS domain id and settings
+  // TODO(sloretz) support saved state - things like ROS domain id and
+  // settings
   (void)savedState;
   (void)savedStateSize;
 
@@ -158,5 +154,5 @@ void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
   activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
 
   // User data
-  activity->instance = CreateApp(activity);
+  activity->instance = new AndroidApp();
 }

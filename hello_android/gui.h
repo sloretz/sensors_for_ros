@@ -11,8 +11,10 @@
 #include <android/input.h>
 #include <android/native_activity.h>
 
+#include "events.h"
+
 namespace android_ros {
-class GUI {
+class GUI : public event::Emitter{
  public:
   GUI();
   ~GUI();
@@ -29,13 +31,10 @@ class GUI {
   bool InitializeDisplay(ANativeWindow* window);
   void TerminateDisplay();
   void DrawFrame();
-  int32_t ShowROSDomainIdPicker();
+  void ShowROSDomainIdPicker();
   void DrawingLoop(ANativeWindow* window,
                    std::promise<void> promise_first_frame);
   void CheckInput();
-
-  int ShowSoftKeyboardInput();
-  int PollUnicodeChars();
 
   EGLDisplay display_;
   EGLSurface surface_;
