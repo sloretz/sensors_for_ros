@@ -2,11 +2,11 @@
 
 #include "log.h"
 
-using android_ros::ROSInterface;
+using android_ros::RosInterface;
 
-ROSInterface::ROSInterface() { context_ = std::make_shared<rclcpp::Context>(); }
+RosInterface::RosInterface() { context_ = std::make_shared<rclcpp::Context>(); }
 
-void ROSInterface::Initialize(size_t ros_domain_id) {
+void RosInterface::Initialize(size_t ros_domain_id) {
   rclcpp::InitOptions init_options;
   init_options.set_domain_id(ros_domain_id);
   init_options.shutdown_on_signal = false;
@@ -25,11 +25,17 @@ void ROSInterface::Initialize(size_t ros_domain_id) {
   executor_thread_ = std::thread(&rclcpp::Executor::spin, executor_.get());
 }
 
-void ROSInterface::Shutdown() {
-  context_->shutdown("ROSInterface asked to Shutdown");
+void RosInterface::Shutdown() {
+  context_->shutdown("RosInterface asked to Shutdown");
   executor_thread_.join();
   node_.reset();
   executor_.reset();
 }
 
-bool ROSInterface::Initialized() { return context_->is_valid(); }
+bool RosInterface::Initialized() const { return context_->is_valid(); }
+
+rclcpp::Context::SharedPtr RosInterface::get_context() const {
+  return context_;
+}
+
+rclcpp::Node::SharedPtr RosInterface::get_node() const { return node_; }

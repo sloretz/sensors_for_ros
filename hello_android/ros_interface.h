@@ -7,15 +7,18 @@
 #include "events.h"
 
 namespace android_ros {
-class ROSInterface : public android_ros::event::Emitter {
+class RosInterface : public android_ros::event::Emitter {
  public:
-  ROSInterface();
-  ~ROSInterface() = default;
+  RosInterface();
+  ~RosInterface() = default;
 
   void Initialize(size_t ros_domain_id);
   void Shutdown();
 
-  bool Initialized();
+  bool Initialized() const;
+
+  rclcpp::Context::SharedPtr get_context() const;
+  rclcpp::Node::SharedPtr get_node() const;
 
  private:
   rclcpp::Context::SharedPtr context_;

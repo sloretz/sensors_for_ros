@@ -12,6 +12,19 @@ add_library(events STATIC
     events.cc)
 target_compile_features(events PUBLIC cxx_std_17)
 
+add_library(jvm STATIC
+    jvm.cc)
+target_link_libraries(jvm PUBLIC
+    android)
+
+add_library(sensors STATIC
+    sensors.cc)
+target_link_libraries(sensors PUBLIC
+    events
+    rclcpp::rclcpp)
+target_link_libraries(sensors PRIVATE
+    jvm)
+
 add_library(ros STATIC
     ros_interface.cc
 )
@@ -43,7 +56,8 @@ target_link_libraries(android-ros PRIVATE
     log
     gui
     events
-    ros)
+    ros
+    sensors)
 target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
 
 install(TARGETS android-ros DESTINATION lib)

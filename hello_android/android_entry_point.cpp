@@ -6,18 +6,22 @@
 #include "gui.h"
 #include "log.h"
 #include "ros_interface.h"
+#include "sensors.h"
 
 // Controller class links all the parts
 class AndroidApp {
  public:
-  AndroidApp() {
+  AndroidApp(ANativeActivity* activity)
+      : activity_(activity), sensors_(activity) {
     gui_.SetListener(
         std::bind(&AndroidApp::OnGUIEvent, this, std::placeholders::_1));
   }
 
   ~AndroidApp() = default;
 
-  android_ros::ROSInterface ros_;
+  ANativeActivity* activity_;
+  android_ros::RosInterface ros_;
+  android_ros::Sensors sensors_;
   android_ros::GUI gui_;
 
  private:
@@ -30,15 +34,21 @@ class AndroidApp {
           if constexpr (std::is_same_v<
                             T, android_ros::event::RosDomainIdChanged>) {
             LOGI("New ROS_DOMAIN_ID %d", e.id);
-            if (ros_.Initialized()) {
-              ros_.Shutdown();
-            }
-            ros_.Initialize(e.id);
+            StartRos(e.id);
           } else {
             LOGW("Unknown GUI event");
           }
         },
         event);
+  }
+
+  void StartRos(int32_t ros_domain_id) {
+    if (ros_.Initialized()) {
+      sensors_.Shutdown();
+      ros_.Shutdown();
+    }
+    ros_.Initialize(ros_domain_id);
+    sensors_.Initialize(ros_.get_context(), ros_.get_node());
   }
 };
 
@@ -59,6 +69,7 @@ static void onContentRectChanged(ANativeActivity* activity, const ARect* rect) {
 /// NativeActivity is being destroyed.
 static void onDestroy(ANativeActivity* activity) {
   LOGI("Destroy: %p\n", activity);
+  GetApp(activity)->sensors_.Shutdown();
 }
 
 /// The input queue for this native activity's window has been created.
@@ -159,5 +170,5 @@ void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
   activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
 
   // User data
-  activity->instance = new AndroidApp();
+  activity->instance = new AndroidApp(activity);
 }
