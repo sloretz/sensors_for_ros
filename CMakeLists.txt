@@ -96,6 +96,7 @@ ExternalProject_Add(hello_android
   deps-rclcpp
   deps-rclcpp_lifecycle
   deps-std_msgs
+  deps-sensor_msgs
   CMAKE_ARGS
   ${android_cmake_args}
   "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"

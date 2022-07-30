@@ -2,8 +2,10 @@
 
 #include <android/native_activity.h>
 
+#include "controller.h"
 #include "events.h"
 #include "gui.h"
+#include "illuminance_sensor_controller.h"
 #include "log.h"
 #include "ros_interface.h"
 #include "sensors.h"
@@ -14,7 +16,7 @@ class AndroidApp {
   AndroidApp(ANativeActivity* activity)
       : activity_(activity), sensors_(activity) {
     gui_.SetListener(
-        std::bind(&AndroidApp::OnGUIEvent, this, std::placeholders::_1));
+        std::bind(&AndroidApp::OnRosDomainIdChanged, this, std::placeholders::_1));
   }
 
   ~AndroidApp() = default;
@@ -24,31 +26,30 @@ class AndroidApp {
   android_ros::Sensors sensors_;
   android_ros::GUI gui_;
 
- private:
-  void OnGUIEvent(const android_ros::event::Event& event) {
-    LOGI("Got GUI event");
+  std::vector<std::unique_ptr<android_ros::Controller>> controllers_;
 
-    std::visit(
-        [this](auto&& e) {
-          using T = std::decay_t<decltype(e)>;
-          if constexpr (std::is_same_v<
-                            T, android_ros::event::RosDomainIdChanged>) {
-            LOGI("New ROS_DOMAIN_ID %d", e.id);
-            StartRos(e.id);
-          } else {
-            LOGW("Unknown GUI event");
-          }
-        },
-        event);
+ private:
+  void OnRosDomainIdChanged(const android_ros::event::RosDomainIdChanged& event) {
+    StartRos(event.id);
   }
 
   void StartRos(int32_t ros_domain_id) {
     if (ros_.Initialized()) {
       sensors_.Shutdown();
       ros_.Shutdown();
+      controllers_.clear();
     }
     ros_.Initialize(ros_domain_id);
-    sensors_.Initialize(ros_.get_context(), ros_.get_node());
+    sensors_.Initialize();
+
+    for (auto & sensor : sensors_.GetSensors()) {
+      if (ASENSOR_TYPE_LIGHT == sensor->Descriptor().type) {
+        controllers_.push_back(
+            std::move(std::make_unique<android_ros::IlluminanceSensorController>(
+              static_cast<android_ros::IlluminanceSensor *>(sensor.get()),
+              android_ros::Publisher<sensor_msgs::msg::Illuminance>(ros_))));
+      }
+    }
   }
 };
 

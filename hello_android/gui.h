@@ -14,7 +14,7 @@
 #include "events.h"
 
 namespace android_ros {
-class GUI : public event::Emitter{
+class GUI : public event::Emitter<event::RosDomainIdChanged>{
  public:
   GUI();
   ~GUI();

@@ -9,17 +9,35 @@ struct RosDomainIdChanged {
   int32_t id;
 };
 
-using Event = std::variant<RosDomainIdChanged>;
+struct SensorEvent {
+  // Sensor handle (ASensorEvent::sensor) uniquely identifying the sensor
+  int handle;
+};
 
-using Listener = std::function<void(const Event&)>;
+// Indicates an illuminance sensor got a new reading
+struct IlluminanceChanged : SensorEvent {
+  // SI unit: lux (lx)
+  float light;
+};
 
+template <typename EventType>
+using Listener = std::function<void(const EventType&)>;
+
+template <typename EventType>
 class Emitter {
  public:
-  void Emit(const Event& event);
-  void SetListener(Listener);
+  void Emit(const EventType& event) {
+    if (event_listener_) {
+      event_listener_(event);
+    }
+  }
+
+  void SetListener(Listener<EventType> listener) {
+    event_listener_ = listener;
+  }
 
  private:
-  Listener event_listener_;
+  Listener<EventType> event_listener_;
 };
 }  // namespace event
 }  // namespace android_ros

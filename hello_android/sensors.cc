@@ -5,6 +5,8 @@
 
 using android_ros::SensorDescriptor;
 using android_ros::Sensors;
+using android_ros::Sensor;
+using android_ros::IlluminanceSensor;
 
 SensorDescriptor::SensorDescriptor(ASensorRef _sensor_ref)
     : sensor_ref(_sensor_ref) {
@@ -23,31 +25,45 @@ Sensors::Sensors(ANativeActivity* activity) {
   std::string package_name = GetPackageName(activity);
   sensor_manager_ = ASensorManager_getInstanceForPackage(package_name.c_str());
 
-  sensors_ = QuerySensors();
+  auto descriptors = QuerySensors();
+  // Create wrapping classes
+  for (const SensorDescriptor & desc : descriptors) {
+    if (ASENSOR_TYPE_LIGHT == desc.type) {
+      sensors_.push_back(
+        std::move(std::make_unique<IlluminanceSensor>(sensor_manager_, desc)));
+    }
+  }
 }
 
-void Sensors::Initialize(rclcpp::Context::SharedPtr context,
-                         rclcpp::Node::SharedPtr node) {
-  context_ = context;
-  node_ = node;
-
+void Sensor::Initialize() {
   shutdown_.store(false);
-  queue_thread_ = std::thread(&Sensors::EventLoop, this);
+  queue_thread_ = std::thread(&Sensor::EventLoop, this);
 }
 
-void Sensors::Shutdown() {
+void Sensors::Initialize() {
+  for (auto & sensor : sensors_) {
+    sensor->Initialize();
+  }
+}
+
+void Sensor::Shutdown() {
   shutdown_.store(true);
   if (queue_thread_.joinable()) {
     // TODO(sloretz) Check looper_ isn't null
     ALooper_wake(looper_);
     queue_thread_.join();
   }
+}
+
+void Sensors::Shutdown() {
+  for (auto & sensor : sensors_) {
+    sensor->Shutdown();
+  }
   sensors_.clear();
-  context_.reset();
-  node_.reset();
 }
 
 std::vector<SensorDescriptor> Sensors::QuerySensors() {
+  std::vector<SensorDescriptor> descriptors;
   ASensorList sensor_list;
   int num_sensors = ASensorManager_getSensorList(sensor_manager_, &sensor_list);
   if (num_sensors < 0) {
@@ -56,8 +72,6 @@ std::vector<SensorDescriptor> Sensors::QuerySensors() {
   }
   LOGI("Got %d sensors", num_sensors);
 
-  std::vector<SensorDescriptor> found_sensors;
-  found_sensors.reserve(num_sensors);
   while (num_sensors > 0) {
     --num_sensors;
     ASensorRef sensor_ref = sensor_list[num_sensors];
@@ -65,51 +79,34 @@ std::vector<SensorDescriptor> Sensors::QuerySensors() {
       LOGW("Got null sensor at position :%d", num_sensors);
       continue;
     }
-    found_sensors.push_back(SensorDescriptor(sensor_ref));
-    LOGI("Sensor %s name %s", found_sensors.back().type_str,
-         found_sensors.back().name);
+    descriptors.emplace_back(sensor_ref);
+    LOGI("Sensor %s name %s", descriptors.back().type_str, descriptors.back().name);
   }
-  return found_sensors;
+  return descriptors;
 }
 
-const std::vector<SensorDescriptor>& Sensors::GetSensors() { return sensors_; }
-
-void Sensors::EventLoop() {
-  LOGI("Entering sensor event loop");
+/// Have event loop reading each sensor
+void Sensor::EventLoop() {
   const int kSensorIdent = 42;
   // Looper is thread specific, so must create it here.
   looper_ = ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS);
   ASensorEventQueue* queue = ASensorManager_createEventQueue(
-      sensor_manager_, looper_, kSensorIdent, nullptr, nullptr);
+      manager_, looper_, kSensorIdent, nullptr, nullptr);
 
-  // Debugging, just enable all sensors
-  for (const SensorDescriptor& sensor : sensors_) {
-    if (ASENSOR_TYPE_LIGHT == sensor.type) {
-      LOGI("Enabling light sensor %s", sensor.name);
-      ASensorEventQueue_enableSensor(queue, sensor.sensor_ref);
-    }
-  }
+  ASensorEventQueue_enableSensor(queue, descriptor_.sensor_ref);
 
   // Read all pending events.
   int ident;
   int events;
   void* data;
-  LOGI("About to go into sensor looper loop");
   while (not shutdown_.load()) {
     ident = ALooper_pollAll(-1, nullptr, &events, &data);
     if (kSensorIdent == ident) {
-      LOGI("Looper awoke, with sensor event");
       ASensorEvent event;
       while (ASensorEventQueue_getEvents(queue, &event, 1) > 0) {
         LOGI("Event from sensor handle %d", event.sensor);
-        if (ASENSOR_TYPE_LIGHT == event.type) {
-          LOGI("Light level %f", event.light);
-        } else {
-          LOGI("Event type was unexpected: %d", event.type);
-        }
-        // LOGI("accelerometer: x=%f y=%f z=%f",
-        //      event.acceleration.x, event.acceleration.y,
-        //      event.acceleration.z);
+        assert(event.sensor == descriptor_.handle);
+        OnEvent(event);
       }
     } else if (ALOOPER_POLL_WAKE == ident) {
       LOGI("Looper was manually woken up");
@@ -123,5 +120,18 @@ void Sensors::EventLoop() {
     }
   }
   ALooper_release(looper_);
-  ASensorManager_destroyEventQueue(sensor_manager_, queue);
+  ASensorManager_destroyEventQueue(manager_, queue);
+}
+
+void IlluminanceSensor::OnEvent(const ASensorEvent& event)
+{
+  if (ASENSOR_TYPE_LIGHT != event.type) {
+    LOGW("Event type was unexpected: %d", event.type);
+    return;
+  }
+  LOGI("Light level %f lx", event.light);
+  event::IlluminanceChanged ice;
+  ice.handle = event.sensor;
+  ice.light = event.light;
+  Emit(ice);
 }

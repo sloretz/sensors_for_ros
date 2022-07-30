@@ -1,6 +1,7 @@
 #pragma once
 
 #include "events.h"
+#include "ros_interface.h"
 
 #include <android/looper.h>
 #include <android/native_activity.h>
@@ -8,13 +9,13 @@
 
 #include <variant>
 
-#include <rclcpp/context.hpp>
-#include <rclcpp/node.hpp>
-
 namespace android_ros {
 
+
+// TODO document who uses this
 struct SensorDescriptor {
-  SensorDescriptor(ASensorRef _sensor_ref);
+  explicit SensorDescriptor(ASensorRef _sensor_ref);
+  SensorDescriptor(const SensorDescriptor& other) = default;
   ~SensorDescriptor() = default;
 
   ASensorRef sensor_ref;
@@ -25,20 +26,53 @@ struct SensorDescriptor {
   int handle;
   int min_delay;
   float resolution;
-
-  bool enabled = false;
 };
+
+
+class Sensor {
+  public:
+    Sensor(ASensorManager* manager, SensorDescriptor desc) : manager_(manager), descriptor_(desc) {}
+    virtual ~Sensor() = default;
+
+  void Initialize();
+  void Shutdown();
+
+  const SensorDescriptor& Descriptor() { return descriptor_; }
+
+  protected:
+    void EventLoop();
+    
+    virtual void OnEvent(const ASensorEvent & event) = 0;
+
+  private:
+    const SensorDescriptor descriptor_;
+
+  ASensorManager* manager_ = nullptr;
+  std::atomic<bool> shutdown_;
+  std::thread queue_thread_;
+  ALooper* looper_ = nullptr;
+};
+
+class IlluminanceSensor : public Sensor, public event::Emitter<event::IlluminanceChanged>
+{
+  public:
+    using Sensor::Sensor;
+    virtual ~IlluminanceSensor() = default;
+  protected:
+    void OnEvent(const ASensorEvent & event) override;
+};
+
 
 class Sensors {
  public:
   Sensors(ANativeActivity* activity);
   ~Sensors() = default;
 
-  void Initialize(rclcpp::Context::SharedPtr context,
-                  rclcpp::Node::SharedPtr node);
+  void Initialize();
   void Shutdown();
 
-  const std::vector<SensorDescriptor>& GetSensors();
+  const std::vector<std::unique_ptr<Sensor>> &
+  GetSensors() {return sensors_;};
 
  private:
   std::vector<SensorDescriptor> QuerySensors();
@@ -46,13 +80,7 @@ class Sensors {
   void EventLoop();
 
   ASensorManager* sensor_manager_ = nullptr;
-  rclcpp::Context::SharedPtr context_;
-  rclcpp::Node::SharedPtr node_;
 
-  std::vector<SensorDescriptor> sensors_;
-
-  std::atomic<bool> shutdown_;
-  std::thread queue_thread_;
-  ALooper* looper_ = nullptr;
+  std::vector<std::unique_ptr<Sensor>> sensors_;
 };
 }  // namespace android_ros
