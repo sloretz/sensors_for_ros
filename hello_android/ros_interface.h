@@ -41,6 +41,13 @@ class Publisher {
  public:
   Publisher(const RosInterface& ros) : ros_(ros) {}
 
+  // Moves ok
+  Publisher(Publisher&& other) = default;
+  Publisher& operator=(Publisher&& other) = default;
+  // No copies please
+  Publisher(const Publisher& other) = delete;
+  Publisher& operator=(const Publisher& other) = delete;
+
   // TODO(sloretz) this class needs to be notified when RosInterface turns ROS on or off
 
   void Enable() {
