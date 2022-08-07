@@ -119,8 +119,9 @@ void Sensor::EventLoop() {
       shutdown_.store(true);
     }
   }
-  ALooper_release(looper_);
+  ASensorEventQueue_disableSensor(queue, descriptor_.sensor_ref);
   ASensorManager_destroyEventQueue(manager_, queue);
+  ALooper_release(looper_);
 }
 
 void IlluminanceSensor::OnEvent(const ASensorEvent& event)

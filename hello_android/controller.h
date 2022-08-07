@@ -1,13 +1,12 @@
 #pragma once
 
-
 namespace android_ros {
-class Controller
-{
+class Controller {
   public:
     Controller() = default;
     virtual ~Controller() = default;
 
-    // TODO what interfaces does this need?
+    // Called by the GUI to draw a frame
+    virtual void DrawFrame() = 0;
 };
 }  // namespace android_ros

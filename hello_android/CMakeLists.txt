@@ -9,27 +9,7 @@ find_package(sensor_msgs REQUIRED)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-add_library(jvm STATIC
-    jvm.cc)
-target_link_libraries(jvm PUBLIC
-    android)
-
-add_library(ros STATIC
-    ros_interface.cc
-)
-target_link_libraries(ros PUBLIC
-    rclcpp::rclcpp
-    ${sensor_msgs_TARGETS})
-
-add_library(sensors STATIC
-    sensors.cc)
-target_link_libraries(sensors PUBLIC
-    ros)
-target_link_libraries(sensors PRIVATE
-    jvm)
-
-add_library(gui STATIC
-    gui.cc
+add_library(imgui STATIC
     DearImGui/imgui.cpp
     DearImGui/imgui_demo.cpp
     DearImGui/imgui_draw.cpp
@@ -37,21 +17,28 @@ add_library(gui STATIC
     DearImGui/imgui_widgets.cpp
     DearImGui/backends/imgui_impl_android.cpp
     DearImGui/backends/imgui_impl_opengl3.cpp)
-target_include_directories(gui PRIVATE
+target_include_directories(imgui PUBLIC
     DearImGui
     DearImGui/backends)
-target_link_libraries(gui PUBLIC
-    log
+target_link_libraries(imgui PUBLIC
     EGL
     GLESv3)
 
-add_library(android-ros SHARED android_entry_point.cpp)
+add_library(android-ros SHARED
+  android_entry_point.cpp
+  gui.cc
+  illuminance_sensor_controller.cc
+  jvm.cc
+  ros_interface.cc
+  ros_domain_id_controller.cpp
+  sensors.cc
+)
 target_link_libraries(android-ros PRIVATE
     android
     log
-    gui
-    ros
-    sensors)
+    imgui
+    rclcpp::rclcpp
+    ${sensor_msgs_TARGETS})
 target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
 
 install(TARGETS android-ros DESTINATION lib)

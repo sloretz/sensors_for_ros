@@ -10,6 +10,7 @@
 #include "events.h"
 #include "log.h"
 
+
 namespace android_ros {
 class RosInterface {
  public:
@@ -24,12 +25,18 @@ class RosInterface {
   rclcpp::Context::SharedPtr get_context() const;
   rclcpp::Node::SharedPtr get_node() const;
 
+  void AddObserver(std::function<void(void)> init_or_shutdown);
+
  private:
   rclcpp::Context::SharedPtr context_;
   rclcpp::Node::SharedPtr node_;
   rclcpp::Executor::SharedPtr executor_;
 
+  std::vector<std::function<void(void)>> observers_;
+
   std::thread executor_thread_;
+
+  void NotifyInitChanged();
 };
 
 /// Interface to A ROS publisher
@@ -39,7 +46,10 @@ class RosInterface {
 template <typename MsgT>
 class Publisher {
  public:
-  Publisher(const RosInterface& ros) : ros_(ros) {}
+  Publisher(RosInterface& ros) : ros_(ros) {
+  }
+
+  virtual ~Publisher() {}
 
   // Moves ok
   Publisher(Publisher&& other) = default;
@@ -48,17 +58,40 @@ class Publisher {
   Publisher(const Publisher& other) = delete;
   Publisher& operator=(const Publisher& other) = delete;
 
-  // TODO(sloretz) this class needs to be notified when RosInterface turns ROS on or off
+
+  void CreatePublisher() {
+    LOGI("Created publisher!");
+    // Check just in case publisher became disabled
+    if (enable_) {
+      auto node = ros_.get_node();
+      publisher_ = node->template create_publisher<MsgT>(topic_, qos_);
+      // Tell ROS interface to destroy publisher when it's shutdown
+      ros_.AddObserver(std::bind(&Publisher::DestroyPublisher, this));
+    }
+  }
+
+  void DestroyPublisher() {
+    LOGI("Destroyed publisher!");
+    publisher_.reset();
+  }
 
   void Enable() {
     LOGI("Asked to enable publisher");
-    auto node = ros_.get_node();
-    publisher_ = node->template create_publisher<MsgT>(topic_, qos_);
+    enable_ = true;
+    if (!publisher_) {
+      if (ros_.Initialized()) {
+        CreatePublisher();
+      } else {
+        // Tell ROS interface to create publisher when it's initialized
+        ros_.AddObserver(std::bind(&Publisher::CreatePublisher, this));
+      }
+    }
   }
 
   void Disable() {
     LOGI("Asked to disable publisher");
-    publisher_.reset();
+    enable_ = false;
+    DestroyPublisher();
   }
 
   // Big messages to avoid copies
@@ -78,7 +111,8 @@ class Publisher {
   }
 
  private:
-  const RosInterface &ros_;
+  bool enable_ = false;
+  RosInterface &ros_;
   std::string topic_ = "default_topic";
   rclcpp::QoS qos_ = rclcpp::QoS(1);
   typename rclcpp::Publisher<MsgT>::SharedPtr publisher_;

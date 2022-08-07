@@ -11,10 +11,11 @@
 #include <android/input.h>
 #include <android/native_activity.h>
 
+#include "controller.h"
 #include "events.h"
 
 namespace android_ros {
-class GUI : public event::Emitter<event::RosDomainIdChanged>{
+class GUI {
  public:
   GUI();
   ~GUI();
@@ -24,6 +25,8 @@ class GUI : public event::Emitter<event::RosDomainIdChanged>{
 
   void SetInputQueue(AInputQueue* queue);
   void RemoveInputQueue();
+
+  void SetController(Controller* controller);
 
  private:
   void InitializeDearImGui(ANativeWindow* window);
@@ -50,6 +53,6 @@ class GUI : public event::Emitter<event::RosDomainIdChanged>{
 
   ANativeActivity* activity_;
 
-  bool show_ros_domain_id_picker_ = true;
+  Controller * active_controller = nullptr;
 };
 }  // namespace android_ros

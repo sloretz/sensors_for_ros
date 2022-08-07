@@ -20,6 +20,10 @@ struct IlluminanceChanged : SensorEvent {
   float light;
 };
 
+// Indicates a controller wants to exit back to the previous page
+struct GuiNavigateBack {
+};
+
 template <typename EventType>
 using Listener = std::function<void(const EventType&)>;
 

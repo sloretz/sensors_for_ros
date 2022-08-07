@@ -7,6 +7,7 @@
 #include "gui.h"
 #include "illuminance_sensor_controller.h"
 #include "log.h"
+#include "ros_domain_id_controller.h"
 #include "ros_interface.h"
 #include "sensors.h"
 
@@ -15,8 +16,24 @@ class AndroidApp {
  public:
   AndroidApp(ANativeActivity* activity)
       : activity_(activity), sensors_(activity) {
-    gui_.SetListener(
+    ros_domain_id_controller_.SetListener(
         std::bind(&AndroidApp::OnRosDomainIdChanged, this, std::placeholders::_1));
+    PushController(&ros_domain_id_controller_);
+
+    LOGI("Initalizing Sensors");
+    sensors_.Initialize();
+
+    // Create sensor-specific controllers
+    for (auto & sensor : sensors_.GetSensors()) {
+      if (ASENSOR_TYPE_LIGHT == sensor->Descriptor().type) {
+        auto controller = std::make_unique<android_ros::IlluminanceSensorController>(
+              static_cast<android_ros::IlluminanceSensor *>(sensor.get()),
+              android_ros::Publisher<sensor_msgs::msg::Illuminance>(ros_));
+        // Listen to go-back-to-the-last-window GUI events from this controller
+        controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
+        sensor_controllers_.push_back(std::move(controller));
+      }
+    }
   }
 
   ~AndroidApp() = default;
@@ -26,30 +43,47 @@ class AndroidApp {
   android_ros::Sensors sensors_;
   android_ros::GUI gui_;
 
-  std::vector<std::unique_ptr<android_ros::Controller>> controllers_;
+  // Special controller: ROS_DOMAIN_ID picker shown at startup
+  android_ros::RosDomainIdController ros_domain_id_controller_;
+  // Sensor Controllers
+  std::vector<std::unique_ptr<android_ros::Controller>> sensor_controllers_;
+
+  // Stack of controllers for navigation windows
+  std::vector<android_ros::Controller*> controller_stack_;
 
  private:
+  void PushController(android_ros::Controller* controller) {
+    if (controller) {
+      controller_stack_.push_back(controller);
+      gui_.SetController(controller);
+    }
+  }
+
+  void PopController() {
+    // Don't allow popping past the first controller
+    if (controller_stack_.size() > 1) {
+      controller_stack_.pop_back();
+      gui_.SetController(controller_stack_.back());
+    }
+  }
+
+  void OnNavigateBack(const android_ros::event::GuiNavigateBack&) {
+    LOGI("Poping controller!");
+    PopController();
+  }
+
   void OnRosDomainIdChanged(const android_ros::event::RosDomainIdChanged& event) {
     StartRos(event.id);
+    PushController(sensor_controllers_.at(0).get());
   }
 
   void StartRos(int32_t ros_domain_id) {
     if (ros_.Initialized()) {
-      sensors_.Shutdown();
+      LOGI("Shutting down ROS");
       ros_.Shutdown();
-      controllers_.clear();
     }
+    LOGI("Initalizing ROS");
     ros_.Initialize(ros_domain_id);
-    sensors_.Initialize();
-
-    for (auto & sensor : sensors_.GetSensors()) {
-      if (ASENSOR_TYPE_LIGHT == sensor->Descriptor().type) {
-        controllers_.push_back(
-            std::move(std::make_unique<android_ros::IlluminanceSensorController>(
-              static_cast<android_ros::IlluminanceSensor *>(sensor.get()),
-              android_ros::Publisher<sensor_msgs::msg::Illuminance>(ros_))));
-      }
-    }
   }
 };
 

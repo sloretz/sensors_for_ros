@@ -10,41 +10,24 @@
 
 namespace android_ros {
 // Handles interface between sensor, ROS, and GUI
-class IlluminanceSensorController : public Controller
-{
+class IlluminanceSensorController : public Controller, public event::Emitter<event::GuiNavigateBack> {
   public:
     // TODO reference to GUI? Or maybe GUI has reference to this!
     IlluminanceSensorController(
       IlluminanceSensor* sensor,
-      Publisher<sensor_msgs::msg::Illuminance> publisher)
-      : sensor_(sensor), publisher_(std::move(publisher))
-    {
-      sensor->SetListener(
-        std::bind(&IlluminanceSensorController::OnIlluminanceChanged, this, std::placeholders::_1));
-
-      // TODO allow publisher to be enabled/disabled from GUI
-      publisher_.Enable();
-
-      // TODO allow GUI to change topic and QoS
-    }
+      Publisher<sensor_msgs::msg::Illuminance> publisher);
 
     virtual ~IlluminanceSensorController() = default;
 
+    void DrawFrame() override;
+
   protected:
     void
-    OnIlluminanceChanged(const event::IlluminanceChanged& event) {
-      auto msg = sensor_msgs::msg::Illuminance();
-      // TODO(sloretz) time and frame id
-      msg.illuminance = event.light;
-      msg.variance = 0.0;
-      publisher_.Publish(msg);
-      LOGI("Publishing ROS message %lf lx", msg.illuminance);
-    }
+    OnIlluminanceChanged(const event::IlluminanceChanged& event);
 
   private:
     // TODO do I even need this pointer?
     Sensor* sensor_;
     Publisher<sensor_msgs::msg::Illuminance> publisher_;
-
 };
 }  // namespace android_ros

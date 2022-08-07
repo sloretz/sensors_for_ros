@@ -16,6 +16,10 @@ GUI::GUI() {}
 
 GUI::~GUI() { Stop(); }
 
+void GUI::SetController(Controller* controller) {
+  active_controller = controller;
+}
+
 void GUI::DrawingLoop(ANativeWindow* window,
                       std::promise<void> promise_first_frame) {
   LOGI("Entered DrawingLoop()");
@@ -173,76 +177,6 @@ void GUI::TerminateDearImGui() {
   ImGui::DestroyContext();
 }
 
-void GUI::ShowROSDomainIdPicker() {
-  static int32_t picked_ros_domain_id = -1;
-
-  auto increase_id = [](int num) {
-    if (picked_ros_domain_id < 0) {
-      picked_ros_domain_id = num;
-    } else {
-      picked_ros_domain_id = picked_ros_domain_id * 10 + num;
-    }
-  };
-
-  ImGui::Begin("ROS_DOMAIN_ID", &show_ros_domain_id_picker_, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-  if (ImGui::Button("1")) {
-    increase_id(1);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("2")) {
-    increase_id(2);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("3")) {
-    increase_id(3);
-  }
-  if (ImGui::Button("4")) {
-    increase_id(4);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("5")) {
-    increase_id(5);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("6")) {
-    increase_id(6);
-  }
-  if (ImGui::Button("7")) {
-    increase_id(7);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("8")) {
-    increase_id(8);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("9")) {
-    increase_id(9);
-  }
-  if (ImGui::Button("0")) {
-    increase_id(0);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Clear")) {
-    picked_ros_domain_id = -1;
-  }
-
-  if (picked_ros_domain_id < 0) {
-    ImGui::Text("---");
-  } else {
-    ImGui::Text("%d", picked_ros_domain_id);
-  }
-
-  if (ImGui::Button("Set ROS_DOMAIN_ID")) {
-    if (picked_ros_domain_id < 0) {
-      // Default to 0
-      picked_ros_domain_id = 0;
-    }
-    Emit(event::RosDomainIdChanged{picked_ros_domain_id});
-    show_ros_domain_id_picker_ = false;
-  }
-  ImGui::End();
-}
-
 void GUI::DrawFrame() {
   ImGuiIO& io = ImGui::GetIO();
   if (display_ == EGL_NO_DISPLAY) {
@@ -254,7 +188,23 @@ void GUI::DrawFrame() {
   ImGui_ImplAndroid_NewFrame();
   ImGui::NewFrame();
 
-  ShowROSDomainIdPicker();
+  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+  if (io.DisplaySize.x <= 0 || io.DisplaySize.y <= 0) {
+    LOGI("huyh, don't know size yet?");
+  } else {
+    // Each controller runs full screen
+    ImGui::SetNextWindowSize(io.DisplaySize);
+    // Add some padding
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
+        ImVec2(io.DisplaySize.x / 10, io.DisplaySize.x / 10));
+
+    if (active_controller) {
+      active_controller->DrawFrame();
+    }
+
+    ImGui::PopStyleVar();
+
+  }
 
   // Rendering
   ImGui::Render();
