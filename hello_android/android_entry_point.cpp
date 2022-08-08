@@ -10,15 +10,19 @@
 #include "ros_domain_id_controller.h"
 #include "ros_interface.h"
 #include "sensors.h"
+#include "sensor_list_controller.h"
 
 // Controller class links all the parts
 class AndroidApp {
  public:
   AndroidApp(ANativeActivity* activity)
-      : activity_(activity), sensors_(activity) {
+      : activity_(activity), sensors_(activity), sensor_list_controller_(sensors_) {
     ros_domain_id_controller_.SetListener(
         std::bind(&AndroidApp::OnRosDomainIdChanged, this, std::placeholders::_1));
     PushController(&ros_domain_id_controller_);
+
+    sensor_list_controller_.SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
+    sensor_list_controller_.SetListener(std::bind(&AndroidApp::OnNavigateToSensor, this, std::placeholders::_1));
 
     LOGI("Initalizing Sensors");
     sensors_.Initialize();
@@ -45,6 +49,8 @@ class AndroidApp {
 
   // Special controller: ROS_DOMAIN_ID picker shown at startup
   android_ros::RosDomainIdController ros_domain_id_controller_;
+  // Special controller: Show list of sensors
+  android_ros::SensorListController  sensor_list_controller_;
   // Sensor Controllers
   std::vector<std::unique_ptr<android_ros::Controller>> sensor_controllers_;
 
@@ -72,9 +78,14 @@ class AndroidApp {
     PopController();
   }
 
+  void OnNavigateToSensor(const android_ros::event::GuiNavigateToSensor&) {
+    // TODO navigate to sensor matching event handle
+    PushController(sensor_controllers_.at(0).get());
+  }
+
   void OnRosDomainIdChanged(const android_ros::event::RosDomainIdChanged& event) {
     StartRos(event.id);
-    PushController(sensor_controllers_.at(0).get());
+    PushController(&sensor_list_controller_);
   }
 
   void StartRos(int32_t ros_domain_id) {

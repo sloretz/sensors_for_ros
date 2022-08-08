@@ -24,6 +24,12 @@ struct IlluminanceChanged : SensorEvent {
 struct GuiNavigateBack {
 };
 
+// Indicates a controller wants to display a specific sensor
+struct GuiNavigateToSensor {
+  // Sensor handle (ASensorEvent::sensor) uniquely identifying the sensor
+  int handle;
+};
+
 template <typename EventType>
 using Listener = std::function<void(const EventType&)>;
 

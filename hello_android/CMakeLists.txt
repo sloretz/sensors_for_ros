@@ -32,6 +32,7 @@ add_library(android-ros SHARED
   ros_interface.cc
   ros_domain_id_controller.cpp
   sensors.cc
+  sensor_list_controller.cc
 )
 target_link_libraries(android-ros PRIVATE
     android
