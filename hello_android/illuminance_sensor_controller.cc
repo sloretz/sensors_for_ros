@@ -19,14 +19,11 @@ IlluminanceSensorController::IlluminanceSensorController(
 
 void
 IlluminanceSensorController::OnIlluminanceChanged(
-    const event::IlluminanceChanged& event)
+    const sensor_msgs::msg::Illuminance& msg)
 {
-  auto msg = sensor_msgs::msg::Illuminance();
-  // TODO(sloretz) time and frame id
-  msg.illuminance = event.light;
-  msg.variance = 0.0;
-  publisher_.Publish(msg);
+  last_msg_ = msg;
   LOGI("Publishing ROS message %lf lx", msg.illuminance);
+  publisher_.Publish(msg);
 }
 
 void IlluminanceSensorController::DrawFrame() {
@@ -37,6 +34,12 @@ void IlluminanceSensorController::DrawFrame() {
     LOGI("Asked to go back");
     Emit(event::GuiNavigateBack{});
   }
+  ImGui::Text("Illuminance Sensor");
+  ImGui::Separator();
+  ImGui::Text("Name: %s", sensor_->Descriptor().name);
+  ImGui::Text("Vendor: %s", sensor_->Descriptor().vendor);
+  ImGui::Separator();
+  ImGui::Text("Last measurement: %.2f lx", last_msg_.illuminance);
   ImGui::End();
 }
 }  // namespace android_ros

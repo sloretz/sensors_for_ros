@@ -23,11 +23,11 @@ class IlluminanceSensorController : public Controller, public event::Emitter<eve
 
   protected:
     void
-    OnIlluminanceChanged(const event::IlluminanceChanged& event);
+    OnIlluminanceChanged(const sensor_msgs::msg::Illuminance& event);
 
   private:
-    // TODO do I even need this pointer?
-    Sensor* sensor_;
+    sensor_msgs::msg::Illuminance last_msg_;
+    IlluminanceSensor* sensor_;
     Publisher<sensor_msgs::msg::Illuminance> publisher_;
 };
 }  // namespace android_ros

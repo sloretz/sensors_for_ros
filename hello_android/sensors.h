@@ -9,6 +9,8 @@
 
 #include <variant>
 
+#include <sensor_msgs/msg/illuminance.hpp>
+
 namespace android_ros {
 
 
@@ -53,7 +55,7 @@ class Sensor {
   ALooper* looper_ = nullptr;
 };
 
-class IlluminanceSensor : public Sensor, public event::Emitter<event::IlluminanceChanged>
+class IlluminanceSensor : public Sensor, public event::Emitter<sensor_msgs::msg::Illuminance>
 {
   public:
     using Sensor::Sensor;

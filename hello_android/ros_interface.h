@@ -103,9 +103,7 @@ class Publisher {
 
   // Little messages to avoid heap allocation
   void Publish(const MsgT& msg) const {
-    LOGI("asked to publish message");
     if (publisher_) {
-      LOGI("did publish message");
       publisher_->publish(msg);
     }
   }

@@ -131,8 +131,7 @@ void IlluminanceSensor::OnEvent(const ASensorEvent& event)
     return;
   }
   LOGI("Light level %f lx", event.light);
-  event::IlluminanceChanged ice;
-  ice.handle = event.sensor;
-  ice.light = event.light;
-  Emit(ice);
+  sensor_msgs::msg::Illuminance msg;
+  msg.illuminance = event.light;
+  Emit(msg);
 }
