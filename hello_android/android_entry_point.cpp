@@ -78,8 +78,9 @@ class AndroidApp {
     PopController();
   }
 
-  void OnNavigateToSensor(const android_ros::event::GuiNavigateToSensor&) {
+  void OnNavigateToSensor(const android_ros::event::GuiNavigateToSensor& event) {
     // TODO navigate to sensor matching event handle
+    // TODO need to know type of controller to ask what type of sensor it has (Make a SensorController class?)
     PushController(sensor_controllers_.at(0).get());
   }
 

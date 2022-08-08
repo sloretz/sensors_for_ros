@@ -20,6 +20,16 @@ struct SensorDescriptor {
   SensorDescriptor(const SensorDescriptor& other) = default;
   ~SensorDescriptor() = default;
 
+  const char * PrettyType() const {
+    switch (type) {
+      case ASENSOR_TYPE_LIGHT:
+        return "Light";
+        break;
+      default:
+        return type_str;
+    }
+  }
+
   ASensorRef sensor_ref;
   const char* name;
   const char* type_str;

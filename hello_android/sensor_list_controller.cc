@@ -20,27 +20,39 @@ void SensorListController::DrawFrame() {
 
   ImGui::Separator();
 
-  const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
+  // const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
 
-  static int item_current_idx = 0; // Here we store our selection data as an index.
+  // Which sensor is selected
+  static int selected_handle = -1;
 
-  if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
-  {
-      for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-      {
-          const bool is_selected = (item_current_idx == n);
-          if (ImGui::Selectable(items[n], is_selected)) {
-              item_current_idx = n;
-              // TODO Handle from descriptor
-              Emit(event::GuiNavigateToSensor{});
-          }
+  if (ImGui::BeginListBox("##sensor_list_box", ImVec2(-FLT_MIN, -FLT_MIN))) {
+    const auto & sensors = sensors_.GetSensors();
+    for (const auto & sensor : sensors) {
+      const SensorDescriptor desc = sensor->Descriptor();
+      const bool is_selected = (desc.handle == selected_handle);
 
-          // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-          if (is_selected) {
-            ImGui::SetItemDefaultFocus();
-          }
+      ImGui::PushID(desc.vendor);
+      ImGui::PushID(desc.name);
+
+      if (ImGui::Selectable("##selectable", is_selected)) {
+          selected_handle = desc.handle;
+          auto event = event::GuiNavigateToSensor();
+          event.handle = selected_handle;
+          Emit(event);
       }
-      ImGui::EndListBox();
+
+      ImGui::SameLine();
+      ImGui::Text("%s: %s", desc.PrettyType(), desc.name);
+
+      ImGui::PopID();
+      ImGui::PopID();
+
+      // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+      if (is_selected) {
+        ImGui::SetItemDefaultFocus();
+      }
+    }
+    ImGui::EndListBox();
   }
 
   ImGui::End();
