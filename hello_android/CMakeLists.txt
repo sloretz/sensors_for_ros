@@ -27,11 +27,14 @@ target_link_libraries(imgui PUBLIC
 add_library(android-ros SHARED
   android_entry_point.cpp
   gui.cc
+  illuminance_sensor.cc
   illuminance_sensor_controller.cc
   jvm.cc
   ros_interface.cc
   ros_domain_id_controller.cpp
+  sensor.cc
   sensors.cc
+  sensor_descriptor.cc
   sensor_list_controller.cc
 )
 target_link_libraries(android-ros PRIVATE

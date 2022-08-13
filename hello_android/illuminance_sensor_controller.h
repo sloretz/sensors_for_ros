@@ -4,7 +4,7 @@
 #include "events.h"
 #include "log.h"
 #include "ros_interface.h"
-#include "sensors.h"
+#include "illuminance_sensor.h"
 
 #include <sensor_msgs/msg/illuminance.hpp>
 
