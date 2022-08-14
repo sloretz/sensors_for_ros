@@ -12,6 +12,11 @@ void Sensor::EventLoop() {
   ASensorEventQueue* queue = ASensorManager_createEventQueue(
       manager_, looper_, kSensorIdent, nullptr, nullptr);
 
+  // Ask for addional info events to have sensor position
+  if (0 != ASensorEventQueue_requestAdditionalInfoEvents(queue, true)) {
+    LOGW("Couldn't enable additional info events");
+  }
+
   ASensorEventQueue_enableSensor(queue, descriptor_.sensor_ref);
 
   // Read all pending events.
@@ -25,7 +30,15 @@ void Sensor::EventLoop() {
       while (ASensorEventQueue_getEvents(queue, &event, 1) > 0) {
         LOGI("Event from sensor handle %d", event.sensor);
         assert(event.sensor == descriptor_.handle);
-        OnEvent(event);
+        if (ASENSOR_TYPE_ADDITIONAL_INFO == event.type) {
+          LOGI("Additional info type: %d", event.additional_info.type);
+          if (ASENSOR_ADDITIONAL_INFO_SENSOR_PLACEMENT == event.additional_info.type) {
+            LOGI("Got position!");
+            // TODO store this position somewhere
+          }
+        } else {
+          OnEvent(event);
+        }
       }
     } else if (ALOOPER_POLL_WAKE == ident) {
       LOGI("Looper was manually woken up");
@@ -36,6 +49,8 @@ void Sensor::EventLoop() {
     } else if (ALOOPER_POLL_ERROR == ident) {
       LOGW("Some error occured, shutting down");
       shutdown_.store(true);
+    } else {
+      LOGI("Uknown ident %d", ident);
     }
   }
   ASensorEventQueue_disableSensor(queue, descriptor_.sensor_ref);

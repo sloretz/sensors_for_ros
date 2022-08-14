@@ -27,6 +27,7 @@ target_link_libraries(imgui PUBLIC
 add_library(android-ros SHARED
   android_entry_point.cpp
   gui.cc
+  gyroscope_sensor.cc
   illuminance_sensor.cc
   illuminance_sensor_controller.cc
   jvm.cc
