@@ -3,10 +3,10 @@
 #include "events.h"
 #include "sensor.h"
 
-// #include <sensor_msgs/msg/illuminance.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 
 namespace android_ros {
-class GyroscopeSensor : public Sensor //, public event::Emitter<sensor_msgs::msg::Illuminance>
+class GyroscopeSensor : public Sensor, public event::Emitter<geometry_msgs::msg::TwistStamped>
 {
   public:
     using Sensor::Sensor;

@@ -14,6 +14,9 @@ struct SensorDescriptor {
       case ASENSOR_TYPE_LIGHT:
         return "Light";
         break;
+      case ASENSOR_TYPE_GYROSCOPE:
+        return "Gyroscope";
+        break;
       default:
         return type_str;
     }

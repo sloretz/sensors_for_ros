@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 project(hello_android)
 
+find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -28,6 +29,7 @@ add_library(android-ros SHARED
   android_entry_point.cpp
   gui.cc
   gyroscope_sensor.cc
+  gyroscope_sensor_controller.cc
   illuminance_sensor.cc
   illuminance_sensor_controller.cc
   jvm.cc
@@ -43,6 +45,7 @@ target_link_libraries(android-ros PRIVATE
     log
     imgui
     rclcpp::rclcpp
+    ${geometry_msgs_TARGETS}
     ${sensor_msgs_TARGETS})
 target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
 

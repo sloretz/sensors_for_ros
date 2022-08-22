@@ -4,8 +4,6 @@
 #include <variant>
 
 #include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/illuminance.hpp>
-#include <sensor_msgs/msg/range.hpp>
 
 #include "events.h"
 #include "log.h"
@@ -58,6 +56,14 @@ class Publisher {
   Publisher(const Publisher& other) = delete;
   Publisher& operator=(const Publisher& other) = delete;
 
+  void SetTopic(const char * topic) {
+    LOGI("Setting topic publisher");
+    topic_ = topic;
+    if (publisher_) {
+      DestroyPublisher();
+      CreatePublisher();
+    }
+  }
 
   void CreatePublisher() {
     LOGI("Created publisher!");

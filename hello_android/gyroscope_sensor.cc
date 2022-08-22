@@ -10,10 +10,13 @@ void GyroscopeSensor::OnEvent(const ASensorEvent& event)
     LOGW("Event type was unexpected: %d", event.type);
     return;
   }
-  LOGI("vector %f, %f, %f", event.vector.x, event.vector.y, event.vector.z);
-  // sensor_msgs::msg::gyroscope msg;
-  // msg.gyroscope = event.light;
-  // Emit(msg);
+  // LOGI("vector %f, %f, %f", event.vector.x, event.vector.y, event.vector.z);
+  geometry_msgs::msg::TwistStamped msg;
+  // TODO(sloretz) header and frame id
+  msg.twist.angular.x = event.vector.x;
+  msg.twist.angular.y = event.vector.y;
+  msg.twist.angular.z = event.vector.z;
+  Emit(msg);
 }
 
 

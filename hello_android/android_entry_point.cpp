@@ -1,3 +1,4 @@
+#include <map>
 #include <memory>
 
 #include <android/native_activity.h>
@@ -5,6 +6,7 @@
 #include "controller.h"
 #include "events.h"
 #include "gui.h"
+#include "gyroscope_sensor_controller.h"
 #include "illuminance_sensor_controller.h"
 #include "log.h"
 #include "ros_domain_id_controller.h"
@@ -35,7 +37,16 @@ class AndroidApp {
               android_ros::Publisher<sensor_msgs::msg::Illuminance>(ros_));
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
-        sensor_controllers_.push_back(std::move(controller));
+        sensor_controllers_[sensor->Descriptor().handle] = std::move(controller);
+        LOGI("Sensor controller with handle %d added", sensor->Descriptor().handle);
+      } else if (ASENSOR_TYPE_GYROSCOPE == sensor->Descriptor().type) {
+        auto controller = std::make_unique<android_ros::GyroscopeSensorController>(
+              static_cast<android_ros::GyroscopeSensor *>(sensor.get()),
+              android_ros::Publisher<geometry_msgs::msg::TwistStamped>(ros_));
+        // Listen to go-back-to-the-last-window GUI events from this controller
+        controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
+        sensor_controllers_[sensor->Descriptor().handle] = std::move(controller);
+        LOGI("Sensor controller with handle %d added", sensor->Descriptor().handle);
       }
     }
   }
@@ -51,8 +62,8 @@ class AndroidApp {
   android_ros::RosDomainIdController ros_domain_id_controller_;
   // Special controller: Show list of sensors
   android_ros::SensorListController  sensor_list_controller_;
-  // Sensor Controllers
-  std::vector<std::unique_ptr<android_ros::Controller>> sensor_controllers_;
+  // Sensor Controllers (handle: controller)
+  std::map<int, std::unique_ptr<android_ros::Controller>> sensor_controllers_;
 
   // Stack of controllers for navigation windows
   std::vector<android_ros::Controller*> controller_stack_;
@@ -79,9 +90,8 @@ class AndroidApp {
   }
 
   void OnNavigateToSensor(const android_ros::event::GuiNavigateToSensor& event) {
-    // TODO navigate to sensor matching event handle
-    // TODO need to know type of controller to ask what type of sensor it has (Make a SensorController class?)
-    PushController(sensor_controllers_.at(0).get());
+    LOGI("Asked to navigate to sensor with handle %d", event.handle);
+    PushController(sensor_controllers_.at(event.handle).get());
   }
 
   void OnRosDomainIdChanged(const android_ros::event::RosDomainIdChanged& event) {
