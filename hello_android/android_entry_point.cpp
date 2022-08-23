@@ -3,6 +3,7 @@
 
 #include <android/native_activity.h>
 
+#include "accelerometer_sensor_controller.h"
 #include "controller.h"
 #include "events.h"
 #include "gui.h"
@@ -43,6 +44,14 @@ class AndroidApp {
         auto controller = std::make_unique<android_ros::GyroscopeSensorController>(
               static_cast<android_ros::GyroscopeSensor *>(sensor.get()),
               android_ros::Publisher<geometry_msgs::msg::TwistStamped>(ros_));
+        // Listen to go-back-to-the-last-window GUI events from this controller
+        controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
+        sensor_controllers_[sensor->Descriptor().handle] = std::move(controller);
+        LOGI("Sensor controller with handle %d added", sensor->Descriptor().handle);
+      } else if (ASENSOR_TYPE_ACCELEROMETER == sensor->Descriptor().type) {
+        auto controller = std::make_unique<android_ros::AccelerometerSensorController>(
+              static_cast<android_ros::AccelerometerSensor *>(sensor.get()),
+              android_ros::Publisher<geometry_msgs::msg::AccelStamped>(ros_));
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
         sensor_controllers_[sensor->Descriptor().handle] = std::move(controller);

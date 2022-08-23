@@ -26,6 +26,8 @@ target_link_libraries(imgui PUBLIC
     GLESv3)
 
 add_library(android-ros SHARED
+  accelerometer_sensor.cc
+  accelerometer_sensor_controller.cc
   android_entry_point.cpp
   gui.cc
   gyroscope_sensor.cc

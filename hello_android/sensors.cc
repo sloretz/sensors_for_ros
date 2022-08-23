@@ -1,10 +1,12 @@
 #include "sensors.h"
 
+#include "accelerometer_sensor.h"
 #include "gyroscope_sensor.h"
 #include "illuminance_sensor.h"
 #include "jvm.h"
 #include "log.h"
 
+using android_ros::AccelerometerSensor;
 using android_ros::SensorDescriptor;
 using android_ros::Sensors;
 using android_ros::GyroscopeSensor;
@@ -24,6 +26,9 @@ Sensors::Sensors(ANativeActivity* activity) {
     } else if (ASENSOR_TYPE_GYROSCOPE == desc.type) {
       sensors_.push_back(
         std::move(std::make_unique<GyroscopeSensor>(sensor_manager_, desc)));
+    } else if (ASENSOR_TYPE_ACCELEROMETER == desc.type) {
+      sensors_.push_back(
+        std::move(std::make_unique<AccelerometerSensor>(sensor_manager_, desc)));
     }
   }
 }
