@@ -1,18 +1,18 @@
 #include "imgui.h"
 
-#include "gyroscope_sensor_controller.h"
+#include "controllers/illuminance_sensor_controller.h"
 
 namespace android_ros {
-GyroscopeSensorController::GyroscopeSensorController(
-  GyroscopeSensor* sensor,
-  Publisher<geometry_msgs::msg::TwistStamped> publisher)
+IlluminanceSensorController::IlluminanceSensorController(
+  IlluminanceSensor* sensor,
+  Publisher<sensor_msgs::msg::Illuminance> publisher)
   : sensor_(sensor), publisher_(std::move(publisher))
 {
   sensor->SetListener(
-    std::bind(&GyroscopeSensorController::OnGyroReading, this, std::placeholders::_1));
+    std::bind(&IlluminanceSensorController::OnIlluminanceChanged, this, std::placeholders::_1));
 
   // TODO allow publisher topic to be set from GUI
-  publisher_.SetTopic("gyroscope");
+  publisher_.SetTopic("illuminance");
   // TODO allow publisher to be enabled/disabled from GUI
   publisher_.Enable();
 
@@ -20,33 +20,28 @@ GyroscopeSensorController::GyroscopeSensorController(
 }
 
 void
-GyroscopeSensorController::OnGyroReading(
-    const geometry_msgs::msg::TwistStamped& msg)
+IlluminanceSensorController::OnIlluminanceChanged(
+    const sensor_msgs::msg::Illuminance& msg)
 {
   last_msg_ = msg;
-  LOGI("Publishing ROS message for gyro");
+  LOGI("Publishing ROS message %lf lx", msg.illuminance);
   publisher_.Publish(msg);
 }
 
-void GyroscopeSensorController::DrawFrame() {
+void IlluminanceSensorController::DrawFrame() {
   bool show_dialog = true;
-  ImGui::Begin("Gyroscope", &show_dialog,
+  ImGui::Begin("Illuminace Senosr", &show_dialog,
     ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
   if (ImGui::Button("< Back")) {
     LOGI("Asked to go back");
     Emit(event::GuiNavigateBack{});
   }
-  ImGui::Text("Gyroscope");
+  ImGui::Text("Illuminance Sensor");
   ImGui::Separator();
   ImGui::Text("Name: %s", sensor_->Descriptor().name);
   ImGui::Text("Vendor: %s", sensor_->Descriptor().vendor);
   ImGui::Separator();
-  ImGui::Text(
-    "Last measurement: %.2f, %.2f, %.2f rad/s",
-    last_msg_.twist.angular.x,
-    last_msg_.twist.angular.y,
-    last_msg_.twist.angular.z);
+  ImGui::Text("Last measurement: %.2f lx", last_msg_.illuminance);
   ImGui::End();
 }
 }  // namespace android_ros
-

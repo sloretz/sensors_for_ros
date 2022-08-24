@@ -1,6 +1,6 @@
 #include "imgui.h"
 
-#include "accelerometer_sensor_controller.h"
+#include "controllers/accelerometer_sensor_controller.h"
 
 namespace android_ros {
 AccelerometerSensorController::AccelerometerSensorController(

@@ -4,7 +4,7 @@
 #include "events.h"
 #include "log.h"
 #include "ros_interface.h"
-#include "gyroscope_sensor.h"
+#include "sensors/gyroscope_sensor.h"
 
 #include <geometry_msgs/msg/twist_stamped.hpp>
 

@@ -1,8 +1,8 @@
 #include "sensors.h"
 
-#include "accelerometer_sensor.h"
-#include "gyroscope_sensor.h"
-#include "illuminance_sensor.h"
+#include "sensors/accelerometer_sensor.h"
+#include "sensors/gyroscope_sensor.h"
+#include "sensors/illuminance_sensor.h"
 #include "jvm.h"
 #include "log.h"
 

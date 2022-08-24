@@ -1,6 +1,6 @@
 #include "imgui.h"
 
-#include "sensor_list_controller.h"
+#include "controllers/sensor_list_controller.h"
 
 namespace android_ros {
 SensorListController::SensorListController(android_ros::Sensors& sensors)

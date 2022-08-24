@@ -26,21 +26,22 @@ target_link_libraries(imgui PUBLIC
     GLESv3)
 
 add_library(android-ros SHARED
-  accelerometer_sensor.cc
-  accelerometer_sensor_controller.cc
-  android_entry_point.cpp
+  
+  android_entry_point.cc
+  controllers/accelerometer_sensor_controller.cc
+  controllers/gyroscope_sensor_controller.cc
+  controllers/illuminance_sensor_controller.cc
+  controllers/ros_domain_id_controller.cc
+  controllers/sensor_list_controller.cc
   gui.cc
-  gyroscope_sensor.cc
-  gyroscope_sensor_controller.cc
-  illuminance_sensor.cc
-  illuminance_sensor_controller.cc
   jvm.cc
   ros_interface.cc
-  ros_domain_id_controller.cpp
   sensor.cc
-  sensors.cc
   sensor_descriptor.cc
-  sensor_list_controller.cc
+  sensors.cc
+  sensors/accelerometer_sensor.cc
+  sensors/gyroscope_sensor.cc
+  sensors/illuminance_sensor.cc
 )
 target_link_libraries(android-ros PRIVATE
     android
@@ -50,5 +51,7 @@ target_link_libraries(android-ros PRIVATE
     ${geometry_msgs_TARGETS}
     ${sensor_msgs_TARGETS})
 target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
+target_include_directories(android-ros PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 install(TARGETS android-ros DESTINATION lib)

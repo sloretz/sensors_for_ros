@@ -3,17 +3,17 @@
 
 #include <android/native_activity.h>
 
-#include "accelerometer_sensor_controller.h"
 #include "controller.h"
+#include "controllers/accelerometer_sensor_controller.h"
+#include "controllers/gyroscope_sensor_controller.h"
+#include "controllers/illuminance_sensor_controller.h"
+#include "controllers/ros_domain_id_controller.h"
+#include "controllers/sensor_list_controller.h"
 #include "events.h"
 #include "gui.h"
-#include "gyroscope_sensor_controller.h"
-#include "illuminance_sensor_controller.h"
 #include "log.h"
-#include "ros_domain_id_controller.h"
 #include "ros_interface.h"
 #include "sensors.h"
-#include "sensor_list_controller.h"
 
 // Controller class links all the parts
 class AndroidApp {

@@ -1,4 +1,4 @@
-#include "illuminance_sensor.h"
+#include "sensors/illuminance_sensor.h"
 
 #include "log.h"
 

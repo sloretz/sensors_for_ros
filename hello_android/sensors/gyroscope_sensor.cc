@@ -1,4 +1,4 @@
-#include "gyroscope_sensor.h"
+#include "sensors/gyroscope_sensor.h"
 
 #include "log.h"
 

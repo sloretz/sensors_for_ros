@@ -4,7 +4,7 @@
 #include "events.h"
 #include "log.h"
 #include "ros_interface.h"
-#include "accelerometer_sensor.h"
+#include "sensors/accelerometer_sensor.h"
 
 #include <geometry_msgs/msg/accel_stamped.hpp>
 
