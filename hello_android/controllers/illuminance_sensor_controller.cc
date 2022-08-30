@@ -5,8 +5,8 @@
 namespace android_ros {
 IlluminanceSensorController::IlluminanceSensorController(
   IlluminanceSensor* sensor,
-  Publisher<sensor_msgs::msg::Illuminance> publisher)
-  : sensor_(sensor), publisher_(std::move(publisher))
+  RosInterface& ros)
+  : sensor_(sensor), publisher_(ros)
 {
   sensor->SetListener(
     std::bind(&IlluminanceSensorController::OnIlluminanceChanged, this, std::placeholders::_1));

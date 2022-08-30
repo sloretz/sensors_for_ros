@@ -49,9 +49,9 @@ class Publisher {
 
   virtual ~Publisher() {}
 
-  // Moves ok
-  Publisher(Publisher&& other) = default;
-  Publisher& operator=(Publisher&& other) = default;
+  // No moves - Observer code has `this` pointer
+  Publisher(Publisher&& other) = delete;
+  Publisher& operator=(Publisher&& other) = delete;
   // No copies please
   Publisher(const Publisher& other) = delete;
   Publisher& operator=(const Publisher& other) = delete;

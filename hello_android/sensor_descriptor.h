@@ -20,6 +20,9 @@ struct SensorDescriptor {
       case ASENSOR_TYPE_ACCELEROMETER:
         return "Accelerometer";
         break;
+      case ASENSOR_TYPE_PRESSURE:
+        return "Barometer";
+        break;
       default:
         return type_str;
     }

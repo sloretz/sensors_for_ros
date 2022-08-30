@@ -15,7 +15,7 @@ class IlluminanceSensorController : public Controller, public event::Emitter<eve
     // TODO reference to GUI? Or maybe GUI has reference to this!
     IlluminanceSensorController(
       IlluminanceSensor* sensor,
-      Publisher<sensor_msgs::msg::Illuminance> publisher);
+      RosInterface& ros);
 
     virtual ~IlluminanceSensorController() = default;
 

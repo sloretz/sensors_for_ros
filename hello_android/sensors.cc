@@ -1,12 +1,14 @@
 #include "sensors.h"
 
 #include "sensors/accelerometer_sensor.h"
+#include "sensors/barometer_sensor.h"
 #include "sensors/gyroscope_sensor.h"
 #include "sensors/illuminance_sensor.h"
 #include "jvm.h"
 #include "log.h"
 
 using android_ros::AccelerometerSensor;
+using android_ros::BarometerSensor;
 using android_ros::SensorDescriptor;
 using android_ros::Sensors;
 using android_ros::GyroscopeSensor;
@@ -29,6 +31,9 @@ Sensors::Sensors(ANativeActivity* activity) {
     } else if (ASENSOR_TYPE_ACCELEROMETER == desc.type) {
       sensors_.push_back(
         std::move(std::make_unique<AccelerometerSensor>(sensor_manager_, desc)));
+    } else if (ASENSOR_TYPE_PRESSURE == desc.type) {
+      sensors_.push_back(
+        std::move(std::make_unique<BarometerSensor>(sensor_manager_, desc)));
     }
   }
 }

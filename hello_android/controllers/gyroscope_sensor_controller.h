@@ -14,7 +14,7 @@ class GyroscopeSensorController : public Controller, public event::Emitter<event
   public:
     GyroscopeSensorController(
       GyroscopeSensor* sensor,
-      Publisher<geometry_msgs::msg::TwistStamped> publisher);
+      RosInterface& ros);
 
     virtual ~GyroscopeSensorController() = default;
 

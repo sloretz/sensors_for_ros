@@ -5,8 +5,8 @@
 namespace android_ros {
 AccelerometerSensorController::AccelerometerSensorController(
   AccelerometerSensor* sensor,
-  Publisher<geometry_msgs::msg::AccelStamped> publisher)
-  : sensor_(sensor), publisher_(std::move(publisher))
+  RosInterface& ros)
+  : sensor_(sensor), publisher_(ros)
 {
   sensor->SetListener(
     std::bind(&AccelerometerSensorController::OnSensorReading, this, std::placeholders::_1));

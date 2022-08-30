@@ -29,6 +29,7 @@ add_library(android-ros SHARED
   
   android_entry_point.cc
   controllers/accelerometer_sensor_controller.cc
+  controllers/barometer_sensor_controller.cc
   controllers/gyroscope_sensor_controller.cc
   controllers/illuminance_sensor_controller.cc
   controllers/ros_domain_id_controller.cc
@@ -40,6 +41,7 @@ add_library(android-ros SHARED
   sensor_descriptor.cc
   sensors.cc
   sensors/accelerometer_sensor.cc
+  sensors/barometer_sensor.cc
   sensors/gyroscope_sensor.cc
   sensors/illuminance_sensor.cc
 )

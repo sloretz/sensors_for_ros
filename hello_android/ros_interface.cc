@@ -51,6 +51,7 @@ void RosInterface::AddObserver(std::function<void(void)> init_or_shutdown) {
 
 void RosInterface::NotifyInitChanged() {
   for (auto & observer : observers_) {
+    LOGI("Notifying observer %p", &observer);
     observer();
   }
   // Still want observations? ask for them again

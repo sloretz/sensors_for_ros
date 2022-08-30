@@ -14,7 +14,7 @@ class AccelerometerSensorController : public Controller, public event::Emitter<e
   public:
     AccelerometerSensorController(
       AccelerometerSensor* sensor,
-      Publisher<geometry_msgs::msg::AccelStamped> publisher);
+      RosInterface& ros);
 
     virtual ~AccelerometerSensorController() = default;
 
