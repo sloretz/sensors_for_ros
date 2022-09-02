@@ -23,6 +23,9 @@ struct SensorDescriptor {
       case ASENSOR_TYPE_PRESSURE:
         return "Barometer";
         break;
+      case ASENSOR_TYPE_MAGNETIC_FIELD:
+        return "Magnetometer";
+        break;
       default:
         return type_str;
     }

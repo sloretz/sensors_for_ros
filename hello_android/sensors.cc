@@ -4,6 +4,7 @@
 #include "sensors/barometer_sensor.h"
 #include "sensors/gyroscope_sensor.h"
 #include "sensors/illuminance_sensor.h"
+#include "sensors/magnetometer_sensor.h"
 #include "jvm.h"
 #include "log.h"
 
@@ -13,6 +14,7 @@ using android_ros::SensorDescriptor;
 using android_ros::Sensors;
 using android_ros::GyroscopeSensor;
 using android_ros::IlluminanceSensor;
+using android_ros::MagnetometerSensor;
 
 Sensors::Sensors(ANativeActivity* activity) {
   // TODO(sloretz) Query sensors
@@ -34,6 +36,9 @@ Sensors::Sensors(ANativeActivity* activity) {
     } else if (ASENSOR_TYPE_PRESSURE == desc.type) {
       sensors_.push_back(
         std::move(std::make_unique<BarometerSensor>(sensor_manager_, desc)));
+    } else if (ASENSOR_TYPE_MAGNETIC_FIELD == desc.type) {
+      sensors_.push_back(
+        std::move(std::make_unique<MagnetometerSensor>(sensor_manager_, desc)));
     }
   }
 }

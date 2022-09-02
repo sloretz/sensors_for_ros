@@ -32,6 +32,7 @@ add_library(android-ros SHARED
   controllers/barometer_sensor_controller.cc
   controllers/gyroscope_sensor_controller.cc
   controllers/illuminance_sensor_controller.cc
+  controllers/magnetometer_sensor_controller.cc
   controllers/ros_domain_id_controller.cc
   controllers/sensor_list_controller.cc
   gui.cc
@@ -44,6 +45,7 @@ add_library(android-ros SHARED
   sensors/barometer_sensor.cc
   sensors/gyroscope_sensor.cc
   sensors/illuminance_sensor.cc
+  sensors/magnetometer_sensor.cc
 )
 target_link_libraries(android-ros PRIVATE
     android

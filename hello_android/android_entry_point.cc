@@ -8,6 +8,7 @@
 #include "controllers/barometer_sensor_controller.h"
 #include "controllers/gyroscope_sensor_controller.h"
 #include "controllers/illuminance_sensor_controller.h"
+#include "controllers/magnetometer_sensor_controller.h"
 #include "controllers/ros_domain_id_controller.h"
 #include "controllers/sensor_list_controller.h"
 #include "events.h"
@@ -60,6 +61,14 @@ class AndroidApp {
       } else if (ASENSOR_TYPE_PRESSURE == sensor->Descriptor().type) {
         auto controller = std::make_unique<android_ros::BarometerSensorController>(
               static_cast<android_ros::BarometerSensor *>(sensor.get()),
+              ros_);
+        // Listen to go-back-to-the-last-window GUI events from this controller
+        controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
+        sensor_controllers_[sensor->Descriptor().handle] = std::move(controller);
+        LOGI("Sensor controller with handle %d added", sensor->Descriptor().handle);
+      } else if (ASENSOR_TYPE_MAGNETIC_FIELD == sensor->Descriptor().type) {
+        auto controller = std::make_unique<android_ros::MagnetometerSensorController>(
+              static_cast<android_ros::MagnetometerSensor *>(sensor.get()),
               ros_);
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
