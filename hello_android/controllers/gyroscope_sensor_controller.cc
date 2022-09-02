@@ -24,7 +24,6 @@ GyroscopeSensorController::OnGyroReading(
     const geometry_msgs::msg::TwistStamped& msg)
 {
   last_msg_ = msg;
-  LOGI("Publishing ROS message for gyro");
   publisher_.Publish(msg);
 }
 

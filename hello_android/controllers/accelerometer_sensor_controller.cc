@@ -24,7 +24,6 @@ AccelerometerSensorController::OnSensorReading(
     const geometry_msgs::msg::AccelStamped& msg)
 {
   last_msg_ = msg;
-  LOGI("Publishing ROS message for accelerometer");
   publisher_.Publish(msg);
 }
 

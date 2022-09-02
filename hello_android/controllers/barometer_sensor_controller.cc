@@ -24,7 +24,6 @@ BarometerSensorController::OnSensorReading(
     const sensor_msgs::msg::FluidPressure& msg)
 {
   last_msg_ = msg;
-  // LOGI("Publishing ROS message for Barometer");
   publisher_.Publish(msg);
 }
 

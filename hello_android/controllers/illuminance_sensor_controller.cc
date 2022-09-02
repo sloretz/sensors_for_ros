@@ -24,7 +24,6 @@ IlluminanceSensorController::OnIlluminanceChanged(
     const sensor_msgs::msg::Illuminance& msg)
 {
   last_msg_ = msg;
-  LOGI("Publishing ROS message %lf lx", msg.illuminance);
   publisher_.Publish(msg);
 }
 

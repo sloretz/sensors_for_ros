@@ -28,7 +28,7 @@ void Sensor::EventLoop() {
     if (kSensorIdent == ident) {
       ASensorEvent event;
       while (ASensorEventQueue_getEvents(queue, &event, 1) > 0) {
-        LOGI("Event from sensor handle %d", event.sensor);
+        // LOGI("Event from sensor handle %d", event.sensor);
         assert(event.sensor == descriptor_.handle);
         if (ASENSOR_TYPE_ADDITIONAL_INFO == event.type) {
           LOGI("Additional info type: %d", event.additional_info.type);

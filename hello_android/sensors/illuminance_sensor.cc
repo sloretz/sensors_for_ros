@@ -10,7 +10,6 @@ void IlluminanceSensor::OnEvent(const ASensorEvent& event)
     LOGW("Event type was unexpected: %d", event.type);
     return;
   }
-  LOGI("Light level %f lx", event.light);
   sensor_msgs::msg::Illuminance msg;
   msg.illuminance = event.light;
   Emit(msg);
