@@ -3,6 +3,8 @@
 
 #include <android/native_activity.h>
 
+#include "camera_descriptor.h"
+#include "camera_manager.h"
 #include "controller.h"
 #include "controllers/accelerometer_sensor_controller.h"
 #include "controllers/barometer_sensor_controller.h"
@@ -76,6 +78,12 @@ class AndroidApp {
         LOGI("Sensor controller with handle %d added", sensor->Descriptor().handle);
       }
     }
+
+    LOGI("Looking at cameras");
+    std::vector<android_ros::CameraDescriptor> cameras = camera_manager_.GetCameras();
+    for (auto cam_desc : cameras) {
+      LOGI("Camera: %s", cam_desc.GetName().c_str());
+    }
   }
 
   ~AndroidApp() = default;
@@ -94,6 +102,9 @@ class AndroidApp {
 
   // Stack of controllers for navigation windows
   std::vector<android_ros::Controller*> controller_stack_;
+
+  // Manager for working for cameras
+  android_ros::CameraManager camera_manager_;
 
  private:
   void PushController(android_ros::Controller* controller) {
