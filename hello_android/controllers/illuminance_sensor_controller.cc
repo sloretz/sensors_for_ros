@@ -6,7 +6,7 @@ namespace android_ros {
 IlluminanceSensorController::IlluminanceSensorController(
   IlluminanceSensor* sensor,
   RosInterface& ros)
-  : sensor_(sensor), publisher_(ros)
+  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
 {
   sensor->SetListener(
     std::bind(&IlluminanceSensorController::OnIlluminanceChanged, this, std::placeholders::_1));
@@ -42,5 +42,10 @@ void IlluminanceSensorController::DrawFrame() {
   ImGui::Separator();
   ImGui::Text("Last measurement: %.2f lx", last_msg_.illuminance);
   ImGui::End();
+}
+
+std::string IlluminanceSensorController::PrettyName() const
+{
+  return "Light Sensor";
 }
 }  // namespace android_ros

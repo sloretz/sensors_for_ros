@@ -29,14 +29,16 @@ add_library(android-ros SHARED
   
   android_entry_point.cc
   camera_descriptor.cc
+  camera_device.cc
   camera_manager.cc
   controllers/accelerometer_sensor_controller.cc
   controllers/barometer_sensor_controller.cc
+  controllers/camera_controller.cc
   controllers/gyroscope_sensor_controller.cc
   controllers/illuminance_sensor_controller.cc
+  controllers/list_controller.cc
   controllers/magnetometer_sensor_controller.cc
   controllers/ros_domain_id_controller.cc
-  controllers/sensor_list_controller.cc
   gui.cc
   jvm.cc
   ros_interface.cc
@@ -52,6 +54,7 @@ add_library(android-ros SHARED
 target_link_libraries(android-ros PRIVATE
     android
     camera2ndk
+    mediandk
     log
     imgui
     rclcpp::rclcpp

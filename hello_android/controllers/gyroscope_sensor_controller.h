@@ -20,6 +20,8 @@ class GyroscopeSensorController : public Controller, public event::Emitter<event
 
     void DrawFrame() override;
 
+    std::string PrettyName() const override;
+
   protected:
     void
     OnGyroReading(const geometry_msgs::msg::TwistStamped& event);

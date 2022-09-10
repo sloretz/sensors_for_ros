@@ -20,6 +20,8 @@ class BarometerSensorController : public Controller, public event::Emitter<event
 
     void DrawFrame() override;
 
+    std::string PrettyName() const override;
+
   protected:
     void
     OnSensorReading(const sensor_msgs::msg::FluidPressure& event);

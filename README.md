@@ -24,6 +24,12 @@ Use logcat to view the logs from the app
 adb logcat
 ```
 
+Grant permissions (for testing purposes).
+The app must not be running already.
+```
+adb shell pm grant loretz.shane android.permission.CAMERA
+```
+
 The main activity can be started directly from the CLI
 ```
 adb shell am start -n loretz.shane/android.app.NativeActivity

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <variant>
 
 namespace android_ros {
@@ -25,9 +26,9 @@ struct GuiNavigateBack {
 };
 
 // Indicates a controller wants to display a specific sensor
-struct GuiNavigateToSensor {
-  // Sensor handle (ASensorEvent::sensor) uniquely identifying the sensor
-  int handle;
+struct GuiNavigateTo{
+  // The unique ID of a controller to navigate to
+  std::string unique_id;
 };
 
 template <typename EventType>

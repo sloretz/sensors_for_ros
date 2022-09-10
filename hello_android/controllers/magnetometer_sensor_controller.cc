@@ -6,7 +6,7 @@ namespace android_ros {
 MagnetometerSensorController::MagnetometerSensorController(
   MagnetometerSensor* sensor,
   RosInterface& ros)
-  : sensor_(sensor), publisher_(ros)
+  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
 {
   sensor->SetListener(
     std::bind(&MagnetometerSensorController::OnSensorReading, this, std::placeholders::_1));
@@ -47,5 +47,9 @@ void MagnetometerSensorController::DrawFrame() {
     last_msg_.magnetic_field.z * kMicroTeslaPerTesla);
   ImGui::End();
 }
-}  // namespace android_ros
 
+std::string MagnetometerSensorController::PrettyName() const
+{
+  return "Magnetometer Sensor";
+}
+}  // namespace android_ros

@@ -6,7 +6,7 @@ namespace android_ros {
 AccelerometerSensorController::AccelerometerSensorController(
   AccelerometerSensor* sensor,
   RosInterface& ros)
-  : sensor_(sensor), publisher_(ros)
+  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
 {
   sensor->SetListener(
     std::bind(&AccelerometerSensorController::OnSensorReading, this, std::placeholders::_1));
@@ -46,5 +46,10 @@ void AccelerometerSensorController::DrawFrame() {
     last_msg_.accel.linear.y,
     last_msg_.accel.linear.z);
   ImGui::End();
+}
+
+std::string AccelerometerSensorController::PrettyName() const
+{
+  return "Accelerometer Sensor";
 }
 }  // namespace android_ros

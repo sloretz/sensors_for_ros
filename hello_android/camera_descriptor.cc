@@ -5,24 +5,23 @@
 using android_ros::CameraDescriptor;
 
 std::string
-CameraDescriptor::GetName() {
+CameraDescriptor::GetName() const
+{
   std::stringstream name;
   switch (lens_facing) {
   case ACAMERA_LENS_FACING_BACK:
-    name << "back ";
+    name << "Back ";
     break;
   case ACAMERA_LENS_FACING_EXTERNAL:
-    name << "external ";
+    name << "External ";
     break;
   case ACAMERA_LENS_FACING_FRONT:
-    name << "front ";
+    name << "Front ";
     break;
   default:
     break;
   }
 
-  name << "camera (";
-  name << static_cast<int>(id);
-  name << ")";
+  name << "camera (" << id << ")";
   return name.str();
 }

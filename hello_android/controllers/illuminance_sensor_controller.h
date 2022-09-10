@@ -21,6 +21,8 @@ class IlluminanceSensorController : public Controller, public event::Emitter<eve
 
     void DrawFrame() override;
 
+    std::string PrettyName() const override;
+
   protected:
     void
     OnIlluminanceChanged(const sensor_msgs::msg::Illuminance& event);

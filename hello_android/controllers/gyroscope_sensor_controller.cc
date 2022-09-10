@@ -6,7 +6,7 @@ namespace android_ros {
 GyroscopeSensorController::GyroscopeSensorController(
   GyroscopeSensor* sensor,
   RosInterface& ros)
-  : sensor_(sensor), publisher_(ros)
+  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
 {
   sensor->SetListener(
     std::bind(&GyroscopeSensorController::OnGyroReading, this, std::placeholders::_1));
@@ -47,5 +47,9 @@ void GyroscopeSensorController::DrawFrame() {
     last_msg_.twist.angular.z);
   ImGui::End();
 }
-}  // namespace android_ros
 
+std::string GyroscopeSensorController::PrettyName() const
+{
+  return "Gyroscope Sensor";
+}
+}  // namespace android_ros

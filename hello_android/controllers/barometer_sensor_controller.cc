@@ -6,7 +6,7 @@ namespace android_ros {
 BarometerSensorController::BarometerSensorController(
   BarometerSensor* sensor,
   RosInterface& ros)
-  : sensor_(sensor), publisher_(ros)
+  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
 {
   sensor->SetListener(
     std::bind(&BarometerSensorController::OnSensorReading, this, std::placeholders::_1));
@@ -42,5 +42,10 @@ void BarometerSensorController::DrawFrame() {
   ImGui::Separator();
   ImGui::Text("Last measurement: %.2f Pa", last_msg_.fluid_pressure);
   ImGui::End();
+}
+
+std::string BarometerSensorController::PrettyName() const
+{
+  return "Barometer Sensor";
 }
 }  // namespace android_ros

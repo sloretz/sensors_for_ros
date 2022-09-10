@@ -20,6 +20,8 @@ class AccelerometerSensorController : public Controller, public event::Emitter<e
 
     void DrawFrame() override;
 
+    std::string PrettyName() const override;
+
   protected:
     void
     OnSensorReading(const geometry_msgs::msg::AccelStamped& event);

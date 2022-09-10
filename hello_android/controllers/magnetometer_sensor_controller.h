@@ -20,6 +20,8 @@ class MagnetometerSensorController : public Controller, public event::Emitter<ev
 
     void DrawFrame() override;
 
+    std::string PrettyName() const override;
+
   protected:
     void
     OnSensorReading(const sensor_msgs::msg::MagneticField& event);
