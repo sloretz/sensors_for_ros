@@ -57,8 +57,17 @@ class Publisher {
   Publisher& operator=(const Publisher& other) = delete;
 
   void SetTopic(const char * topic) {
-    LOGI("Setting topic publisher");
+    LOGI("Setting topic for publisher");
     topic_ = topic;
+    if (publisher_) {
+      DestroyPublisher();
+      CreatePublisher();
+    }
+  }
+
+  void SetQos(const rclcpp::QoS& qos) {
+    LOGI("Setting qos for publisher");
+    qos_ = qos;
     if (publisher_) {
       DestroyPublisher();
       CreatePublisher();

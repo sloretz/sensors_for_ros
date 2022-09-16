@@ -89,7 +89,7 @@ set(cmake_with_env "${CMAKE_COMMAND}" -E
 ExternalProject_Add(hello_android
   BUILD_ALWAYS ON
   DOWNLOAD_COMMAND ""
-  CMAKE_COMMAND ${cmake_with_env}
+  CMAKE_COMMAND ${cmake_with_env} -DCMAKE_BUILD_TYPE=RELEASE  # TODO(sloretz) better release/debug switching
   BUILD_COMMAND ${cmake_with_env} --build .
   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hello_android"
   DEPENDS

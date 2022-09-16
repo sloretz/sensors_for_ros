@@ -30,6 +30,7 @@ CameraController::CameraController(
 
   // TODO allow publisher topic to be set from GUI
   image_pub_.SetTopic(image_topic.c_str());
+  image_pub_.SetQos(rclcpp::QoS(1).best_effort());
   // TODO allow publisher to be enabled/disabled from GUI
   image_pub_.Enable();
 }
