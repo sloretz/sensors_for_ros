@@ -225,7 +225,7 @@ void CameraDevice::ProcessImages()
       image_msg->height = height_;
       image_msg->encoding = "rgb8";
       image_msg->step = width_ * 3;
-      image_msg->data.reserve(image_msg->step * image_msg->height);
+      image_msg->data.resize(image_msg->step * image_msg->height);
 
       // YUV420 to RGB888
       // https://blog.minhazav.dev/how-to-convert-yuv-420-sp-android.media.Image-to-Bitmap-or-jpeg
