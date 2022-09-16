@@ -20,7 +20,13 @@ class CameraController : public Controller, public event::Emitter<event::GuiNavi
 
     std::string PrettyName() const override;
 
+  protected:
+    void
+    OnImage(const std::pair<CameraInfo::UniquePtr, Image::UniquePtr> & info_image);
+
   private:
     std::unique_ptr<CameraDevice> device_;
+    Publisher<sensor_msgs::msg::CameraInfo> info_pub_;
+    Publisher<sensor_msgs::msg::Image> image_pub_;
 };
 }  // namespace android_ros

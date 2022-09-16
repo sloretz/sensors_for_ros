@@ -179,7 +179,7 @@ void CameraDevice::ProcessImages()
       });
     }
     if (nullptr != image.get()) {
-      auto msg = std::make_shared<sensor_msgs::msg::Image>();
+      auto image_msg = std::make_unique<sensor_msgs::msg::Image>();
       // Plane 0: Y
       // Plane 1: U (Cb)
       // Plane 2: V (Cr)
@@ -221,11 +221,11 @@ void CameraDevice::ProcessImages()
         continue;
       }
 
-      msg->width = width_;
-      msg->height = height_;
-      msg->encoding = "rgb8";
-      msg->step = width_ * 3;
-      msg->data.reserve(msg->step * msg->height);
+      image_msg->width = width_;
+      image_msg->height = height_;
+      image_msg->encoding = "rgb8";
+      image_msg->step = width_ * 3;
+      image_msg->data.reserve(image_msg->step * image_msg->height);
 
       // YUV420 to RGB888
       // https://blog.minhazav.dev/how-to-convert-yuv-420-sp-android.media.Image-to-Bitmap-or-jpeg
@@ -264,14 +264,15 @@ void CameraDevice::ProcessImages()
           } else if (b > 255) {
             b = 255;
           }
-          msg->data[byte++] = r;
-          msg->data[byte++] = g;
-          msg->data[byte++] = b;
+          image_msg->data[byte++] = r;
+          image_msg->data[byte++] = g;
+          image_msg->data[byte++] = b;
         }
       }
 
       // TODO Emit data for publisher
       LOGI("Processed image?");
+      Emit({std::make_unique<CameraInfo>(), std::move(image_msg)});
     }
   }
   LOGI("Camera device ProcessImages shutting down");

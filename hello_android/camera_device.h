@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera_descriptor.h"
+#include "events.h"
 #include "log.h"
 
 #include <camera/NdkCameraManager.h>
@@ -12,7 +13,9 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <utility>
 
+#include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
 
 namespace android_ros {
@@ -23,8 +26,10 @@ struct AImageDeleter {
   }
 };
 
+using sensor_msgs::msg::CameraInfo;
+using sensor_msgs::msg::Image;
 
-class CameraDevice {
+class CameraDevice : public event::Emitter<std::pair<CameraInfo::UniquePtr, Image::UniquePtr>> {
 public:
   static
   std::unique_ptr<CameraDevice>

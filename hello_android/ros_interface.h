@@ -101,9 +101,9 @@ class Publisher {
   }
 
   // Big messages to avoid copies
-  void Publish(const typename MsgT::SharedPtr& msg) const {
+  void Publish(std::unique_ptr<MsgT> msg) const {
     if (publisher_) {
-      publisher_->publish(msg);
+      publisher_->template publish(std::move(msg));
     }
   }
 
