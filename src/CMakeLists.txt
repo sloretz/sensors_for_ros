@@ -62,5 +62,7 @@ target_link_libraries(android-ros PRIVATE
 target_link_options(android-ros PRIVATE -u ANativeActivity_onCreate)
 target_include_directories(android-ros PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+# LTO to reduce APK size
+set_property(TARGET android-ros PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 install(TARGETS android-ros DESTINATION lib)
