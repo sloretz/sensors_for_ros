@@ -86,12 +86,12 @@ set(cmake_with_env "${CMAKE_COMMAND}" -E
   "AMENT_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
   "${CMAKE_COMMAND}")
 
-ExternalProject_Add(hello_android
+ExternalProject_Add(ros_for_android
   BUILD_ALWAYS ON
   DOWNLOAD_COMMAND ""
   CMAKE_COMMAND ${cmake_with_env} -DCMAKE_BUILD_TYPE=RELEASE  # TODO(sloretz) better release/debug switching
   BUILD_COMMAND ${cmake_with_env} --build .
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hello_android"
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ros_for_android"
   DEPENDS
   deps-rclcpp
   deps-rclcpp_lifecycle
@@ -100,7 +100,7 @@ ExternalProject_Add(hello_android
   CMAKE_ARGS
   ${android_cmake_args}
   "-DCMAKE_FIND_ROOT_PATH=${CMAKE_CURRENT_BINARY_DIR}/deps"
-  -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/hello_android
+  -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/ros_for_android
   # -DCMAKE_VERBOSE_MAKEFILE=ON
   )
 
@@ -178,7 +178,7 @@ macro(copy_android_lib from_target lib_path)
   list(APPEND copied_android_libs "${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/${libname}")
 endmacro()
 
-copy_android_lib(hello_android "hello_android/lib/libandroid-ros.so")
+copy_android_lib(ros_for_android "ros_for_android/lib/libandroid-ros.so")
 copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_generator_c.so")
 copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_typesupport_cpp.so")
 copy_android_lib(deps-actionlib_msgs "deps/lib/libactionlib_msgs__rosidl_typesupport_c.so")

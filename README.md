@@ -1,4 +1,4 @@
-# ROS on Android
+# ROS for Android
 
 Build ROS on android using a CMake superbuild and native activities - no Java or Kotlin.
 

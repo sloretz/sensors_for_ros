@@ -1,5 +1,7 @@
 #include "camera_device.h"
 
+#include <chrono>  // Debugging processing time
+
 
 using android_ros::CameraDevice;
 
@@ -168,6 +170,7 @@ CameraDevice::CameraDevice() :
 void CameraDevice::ProcessImages()
 {
   while(!shutdown_.load()) {
+    auto dbg_start = std::chrono::high_resolution_clock::now();
     std::unique_ptr<AImage, AImageDeleter> image;
     {
       // Wait for next image, or shutdown
@@ -271,8 +274,12 @@ void CameraDevice::ProcessImages()
       }
 
       // TODO Emit data for publisher
-      LOGI("Processed image?");
+      auto dbg_process_end = std::chrono::high_resolution_clock::now();
       Emit({std::make_unique<CameraInfo>(), std::move(image_msg)});
+      auto dbg_emit_end = std::chrono::high_resolution_clock::now();
+      auto dbg_process = std::chrono::duration_cast<std::chrono::milliseconds>(dbg_process_end - dbg_start);
+      auto dbg_emit = std::chrono::duration_cast<std::chrono::milliseconds>(dbg_emit_end - dbg_process_end);
+      LOGI("Image processing time: %lld emit time: %lld", dbg_process.count(), dbg_emit.count());
     }
   }
   LOGI("Camera device ProcessImages shutting down");
