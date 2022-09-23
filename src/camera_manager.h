@@ -14,6 +14,8 @@ public:
   CameraManager();
   ~CameraManager();
 
+  bool HasCameras() const {return !cameras_.empty();}
+
   const std::vector<CameraDescriptor> & GetCameras() { return cameras_; }
 
   std::unique_ptr<CameraDevice> OpenCamera(const CameraDescriptor & desc);

@@ -26,7 +26,6 @@ target_link_libraries(imgui PUBLIC
     GLESv3)
 
 add_library(android-ros SHARED
-  
   android_entry_point.cc
   camera_descriptor.cc
   camera_device.cc

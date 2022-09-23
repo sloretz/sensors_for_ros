@@ -81,35 +81,46 @@ class AndroidApp {
       }
     }
 
-    // Create camera specific controllers
-    LOGI("Looking at cameras");
-    std::vector<android_ros::CameraDescriptor> cameras = camera_manager_.GetCameras();
-    for (auto cam_desc : cameras) {
-      LOGI("Camera: %s", cam_desc.GetName().c_str());
-    }
-
-    if (!cameras.empty()) {
-      if (android_ros::HasPermission(activity_, "CAMERA")) {
-        LOGI("ALready have camera permission");
-        for (auto cam_desc : cameras) {
-          std::unique_ptr<android_ros::CameraDevice> camera_device = camera_manager_.OpenCamera(cam_desc);
-          std::unique_ptr<android_ros::CameraController> camera_controller(new android_ros::CameraController(std::move(camera_device), ros_));
-          camera_controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
-          controllers_.emplace_back(std::move(camera_controller));
-        }
-      } else {
-        // TODO(sloretz) wait and check for permissions
-        LOGI("Don't have Camera Permission - will request later");
-        // android_ros::RequestPermission(activity_, "CAMERA");
-      }
-    }
-
     for (const auto & controller : controllers_) {
       list_controller_.AddController(controller.get());
+    }
+
+    // Create camera specific controllers
+    if (camera_manager_.HasCameras()) {
+      if (!android_ros::HasPermission(activity_, "CAMERA")) {
+        LOGI("Requesting Camera Permission");
+        android_ros::RequestPermission(activity_, "CAMERA");
+      } else {
+        StartCameras();
+      }
     }
   }
 
   ~AndroidApp() = default;
+
+  // Camera permission has to be requested at runtime, and we're not sure when
+  // we'll get it.
+  // Try to start the cameras.
+  void StartCameras() {
+    if (started_cameras_) {
+      return;
+    }
+    if (camera_manager_.HasCameras() && android_ros::HasPermission(activity_, "CAMERA")) {
+      started_cameras_ = true;
+      // Create camera specific controllers
+      LOGI("Starting cameras");
+      std::vector<android_ros::CameraDescriptor> cameras = camera_manager_.GetCameras();
+      for (auto cam_desc : cameras) {
+        LOGI("Camera: %s", cam_desc.GetName().c_str());
+        std::unique_ptr<android_ros::CameraDevice> camera_device = camera_manager_.OpenCamera(cam_desc);
+        std::unique_ptr<android_ros::CameraController> camera_controller(new android_ros::CameraController(std::move(camera_device), ros_));
+        camera_controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
+        controllers_.emplace_back(std::move(camera_controller));
+        list_controller_.AddController(controllers_.back().get());
+      }
+    }
+  }
+
 
   ANativeActivity* activity_;
   android_ros::RosInterface ros_;
@@ -128,6 +139,7 @@ class AndroidApp {
 
   // Manager for working for cameras
   android_ros::CameraManager camera_manager_;
+  bool started_cameras_ = false;
 
  private:
   void PushController(android_ros::Controller* controller) {
@@ -246,6 +258,7 @@ static void onPause(ANativeActivity* activity) {
 /// NativeActivity has resumed.
 static void onResume(ANativeActivity* activity) {
   LOGI("Resume: %p\n", activity);
+  GetApp(activity)->StartCameras();
 }
 
 /// Framework is asking NativeActivity to save its current instance state.
