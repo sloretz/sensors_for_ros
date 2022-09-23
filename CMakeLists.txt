@@ -91,7 +91,7 @@ ExternalProject_Add(ros_for_android
   DOWNLOAD_COMMAND ""
   CMAKE_COMMAND ${cmake_with_env} -DCMAKE_BUILD_TYPE=RELEASE  # TODO(sloretz) better release/debug switching
   BUILD_COMMAND ${cmake_with_env} --build .
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ros_for_android"
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
   DEPENDS
   deps-rclcpp
   deps-rclcpp_lifecycle
