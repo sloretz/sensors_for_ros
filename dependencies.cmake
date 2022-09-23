@@ -12,6 +12,7 @@ endmacro()
 
 macro(build_crosscompile_dependencies)
   set(extra_cmake_args ${android_cmake_args})
+  list(APPEND extra_cmake_args -DBUILD_SHARED_LIBS=OFF)
 
   dep_build(ament_index_python PIP
     SOURCE_DIR "deps/ament_index/ament_index_python"
@@ -170,7 +171,8 @@ macro(build_crosscompile_dependencies)
     DEPENDENCIES acl iceoryx_utils libssl-dev iceoryx_hoofs iceoryx_posh bison cmake libatomic iceoryx_binding_c
     native-cyclonedds
     CMAKE_ARGS
-      ${extra_cmake_args}
+      # ${extra_cmake_args}  # Can't build this one statically
+      ${android_cmake_args}
       # allow finding native ddsconf tool
       "-DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_BINARY_DIR}/native-deps/native-cyclonedds"
       # TODO(sloretz) is SSL required for sros2? if so, figure out how to enable
