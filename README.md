@@ -11,24 +11,48 @@ Currently it supports ROS Humble.
 * Illuminance
 * Magnetometer
 
-This app is built using only CMake and C++ - no Java or Kotlin.
+This app is built using only CMake and C++.
+It does not use Java or Kotlin.
 ROS 2 packages up to `rclcpp` are cross-compiled.
 A successful build produces an `.apk` file called `android_ros.apk` in the build directory.
 
 ## How to install it
 
-Currently you have to build it from source.
+Currently the only way to get **ROS for Android** is to build it from source.
 It is not yet available on Google's app store.
 
 ## How to build it from source
 
 You do not need ROS installed on your machine to build the **ROS for Android** app.
-However, you're will want it installed to use the sensor data being published by your Android device.
+However, it's needed to use the sensor data being published by your Android device.
 Follow [these instructions to install ROS Humble](https://docs.ros.org/en/humble/Installation.html).
 
 ### Computer setup
 
-TODO downloading the NDK, adding your user to a group that can use adb, putting the phone into developer mode
+Download the [Android SDK "Command-line tools only" version](https://developer.android.com/studio#command-tools).
+Other versions may work, but this is the minimum needed.
+
+Make a folder for the SDK and extract the archive.
+
+```bash
+mkdir ~/android-sdk
+cd ~/android-sdk
+unzip ~/Downloads/commandlinetools-linux-8512546_latest.zip
+```
+
+Install some Android SDK components
+
+```
+./cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "build-tools;33.0.0" "platforms;android-30" "ndk;25.1.8937393"
+```
+
+Install `adb`
+
+```bash
+sudo apt install adb android-sdk-platform-tools-common
+```
+
+TODO adding your user to a group that can use adb, putting the phone into developer mode, making debug keys
 
 ### Clone the repo
 
