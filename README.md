@@ -16,6 +16,14 @@ It does not use Java or Kotlin.
 ROS 2 packages up to `rclcpp` are cross-compiled.
 A successful build produces an `.apk` file called `android_ros.apk` in the build directory.
 
+## Inspiration
+
+These projects were extremely helpful, and used as a reference for this one:
+
+* https://github.com/cnlohr/rawdrawandroid
+* https://github.com/ocornut/imgui/tree/master/examples/example_android_opengl3
+* https://www.sisik.eu/blog/android/ndk/camera
+
 ## How to install it
 
 Currently the only way to get **ROS for Android** is to build it from source.
