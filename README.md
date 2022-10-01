@@ -132,4 +132,4 @@ adb logcat | $HOME/android-sdk/ndk/*/ndk-stack -sym lib/arm64-v8a/
 
 # Random lessons
 
-During development I documented problems I encountered and fixes for them in the [Problems Encountered](doc/problems_encountered.md) document.
+During development I documented problems I encountered and fixes for them in the [Problems Encountered](docs/problems_encountered.md) document.
