@@ -52,7 +52,24 @@ Install `adb`
 sudo apt install adb android-sdk-platform-tools-common
 ```
 
-TODO adding your user to a group that can use adb, putting the phone into developer mode, making debug keys
+You may need to add yourself to the `plugdev` group.
+Follow the [Set up a device for development](https://developer.android.com/studio/run/device#setting-up) instructions.
+
+
+### Create debug keys
+
+You'll need to install openjdk to get access to `keytool`.
+
+```bash
+sudo apt install openjdk-11-jre-headless
+```
+
+Create a debug keystore
+
+```bash
+mkdir ~/.android
+keytool -genkey -v -keystore ~/.android/debug.keystore -alias adb_debug_key -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android
+```
 
 ### Clone the repo
 
@@ -73,7 +90,7 @@ Build the software
 ```
 mkdir build
 cd build
-cmake ../ -DANDROID_HOME=/home/sloretz/android-sdk/
+cmake ../ -DANDROID_HOME=$HOME/android-sdk/
 make -j`nproc`
 ```
 
@@ -92,8 +109,8 @@ Use logcat to view the logs from the app
 adb logcat
 ```
 
-Grant permissions (for testing purposes).
-The app must not be running already.
+Sometimes you may want to try out a permission without writing the code to request it.
+The app must be installed, but not running already for this command to work.
 ```
 adb shell pm grant loretz.shane android.permission.CAMERA
 ```
@@ -106,9 +123,9 @@ adb shell am start -n loretz.shane/android.app.NativeActivity
 Getting stack traces
 
 ```
-adb logcat | ~/android-sdk/ndk/21.3.6528147/ndk-stack -sym lib/arm64-v8a/
+adb logcat | $HOME/android-sdk/ndk/*/ndk-stack -sym lib/arm64-v8a/
 ```
 
 # Random lessons
 
-During development I copy/pasted some errors I encountered and the fixes for them in the [Problems Encountered](doc/problems_encountered.md) document.
+During development I documented problems I encountered and fixes for them in the [Problems Encountered](doc/problems_encountered.md) document.
