@@ -151,21 +151,6 @@ macro(build_crosscompile_dependencies)
     DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
     CMAKE_ARGS ${extra_cmake_args})
   
-  #dep_build(iceoryx_hoofs CMAKE
-  #  SOURCE_DIR "deps/iceoryx/iceoryx_hoofs"
-  #  DEPENDENCIES acl cmake libatomic
-  #  CMAKE_ARGS ${extra_cmake_args})
-  #
-  #dep_build(iceoryx_posh CMAKE
-  #  SOURCE_DIR "deps/iceoryx/iceoryx_posh"
-  #  DEPENDENCIES acl git iceoryx_hoofs cmake libatomic
-  #  CMAKE_ARGS ${extra_cmake_args})
-  #
-  #dep_build(iceoryx_binding_c CMAKE
-  #  SOURCE_DIR "deps/iceoryx/iceoryx_binding_c"
-  #  DEPENDENCIES acl iceoryx_hoofs iceoryx_posh cmake libatomic
-  #  CMAKE_ARGS ${extra_cmake_args})
-  
   dep_build(cyclonedds CMAKE
     SOURCE_DIR "deps/cyclonedds"
     DEPENDENCIES acl iceoryx_utils libssl-dev iceoryx_hoofs iceoryx_posh bison cmake libatomic iceoryx_binding_c
@@ -192,9 +177,6 @@ macro(build_crosscompile_dependencies)
     SOURCE_DIR "deps/libyaml_vendor"
     DEPENDENCIES git python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
     CMAKE_ARGS ${extra_cmake_args})
-
-  # HACK yaml location
-  # list(APPEND extra_cmake_args "-Dyaml_DIR=${CMAKE_CURRENT_BINARY_DIR}/deps/libyaml_vendor/cmake")
 
   dep_build(rcl_logging_interface CMAKE
     SOURCE_DIR "deps/rcl_logging/rcl_logging_interface"
@@ -322,11 +304,6 @@ macro(build_crosscompile_dependencies)
     DEPENDENCIES python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h ament_cmake ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
     CMAKE_ARGS ${extra_cmake_args})
 
-  # dep_build(action_msgs CMAKE
-  #   SOURCE_DIR "deps/rcl_interfaces/action_msgs"
-  #   DEPENDENCIES rosidl_runtime_cpp rosidl_typesupport_interface rosidl_generator_py rosidl_typesupport_fastrtps_cpp python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core rosidl_typesupport_introspection_cpp ament_cmake_version ament_cmake_python python3-importlib-metadata ament_cmake_test rcutils rosidl_runtime_c cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h builtin_interfaces ament_cmake rosidl_typesupport_fastrtps_c python3 python3-empy ament_cmake_export_definitions rosidl_typesupport_c unique_identifier_msgs rosidl_cmake python3-setuptools rosidl_typesupport_introspection_c rosidl_generator_cpp ament_cmake_export_targets rosidl_typesupport_cpp rcpputils rosidl_generator_c rosidl_default_generators ament_package
-  #   CMAKE_ARGS ${extra_cmake_args})
-
   dep_build(rcl_interfaces CMAKE
     SOURCE_DIR "deps/rcl_interfaces/rcl_interfaces"
     DEPENDENCIES rosidl_runtime_cpp rosidl_typesupport_interface rosidl_generator_py rosidl_typesupport_fastrtps_cpp python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core rosidl_typesupport_introspection_cpp ament_cmake_version ament_cmake_python python3-importlib-metadata ament_cmake_test rcutils rosidl_runtime_c cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h builtin_interfaces ament_cmake rosidl_typesupport_fastrtps_c python3 python3-empy ament_cmake_export_definitions rosidl_typesupport_c rosidl_cmake python3-setuptools rosidl_typesupport_introspection_c rosidl_generator_cpp ament_cmake_export_targets rosidl_typesupport_cpp rcpputils rosidl_generator_c rosidl_default_generators ament_package
@@ -341,10 +318,6 @@ macro(build_crosscompile_dependencies)
     SOURCE_DIR "deps/rcl_interfaces/rosgraph_msgs"
     DEPENDENCIES rosidl_runtime_cpp rosidl_typesupport_interface rosidl_generator_py rosidl_typesupport_fastrtps_cpp python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core rosidl_typesupport_introspection_cpp ament_cmake_version ament_cmake_python python3-importlib-metadata ament_cmake_test rcutils rosidl_runtime_c cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h builtin_interfaces ament_cmake rosidl_typesupport_fastrtps_c python3 python3-empy ament_cmake_export_definitions rosidl_typesupport_c rosidl_cmake python3-setuptools rosidl_typesupport_introspection_c rosidl_generator_cpp ament_cmake_export_targets rosidl_typesupport_cpp rcpputils rosidl_generator_c rosidl_default_generators ament_package
     CMAKE_ARGS ${extra_cmake_args})
-
-  #dep_build(sensor_msgs_py PIP
-  #  SOURCE_DIR "deps/common_interfaces/sensor_msgs_py"
-  #  DEPENDENCIES )
 
   dep_build(spdlog_vendor CMAKE
     SOURCE_DIR "deps/spdlog_vendor"
@@ -406,11 +379,6 @@ macro(build_crosscompile_dependencies)
     DEPENDENCIES rosidl_runtime_cpp rosidl_typesupport_interface geometry_msgs rosidl_generator_py rosidl_typesupport_fastrtps_cpp python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces std_msgs ament_cmake_export_libraries sensor_msgs python3-catkin-pkg-modules ament_cmake_core rosidl_typesupport_introspection_cpp ament_cmake_version ament_cmake_python python3-importlib-metadata ament_cmake_test rcutils rosidl_runtime_c cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h builtin_interfaces ament_cmake rosidl_typesupport_fastrtps_c python3 python3-empy ament_cmake_export_definitions rosidl_typesupport_c rosidl_cmake python3-setuptools rosidl_typesupport_introspection_c rosidl_generator_cpp ament_cmake_export_targets rosidl_typesupport_cpp rcpputils rosidl_generator_c rosidl_default_generators ament_package
     CMAKE_ARGS ${extra_cmake_args})
   
-  # dep_build(test_msgs CMAKE
-  #   SOURCE_DIR "deps/rcl_interfaces/test_msgs"
-  #   DEPENDENCIES rosidl_runtime_cpp rosidl_typesupport_interface rosidl_generator_py rosidl_typesupport_fastrtps_cpp python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces ament_cmake_export_libraries action_msgs python3-catkin-pkg-modules ament_cmake_core rosidl_typesupport_introspection_cpp ament_cmake_version ament_cmake_python python3-importlib-metadata ament_cmake_test rcutils rosidl_runtime_c cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h builtin_interfaces ament_cmake rosidl_typesupport_fastrtps_c python3 python3-empy ament_cmake_export_definitions rosidl_typesupport_c unique_identifier_msgs rosidl_cmake python3-setuptools rosidl_typesupport_introspection_c rosidl_generator_cpp test_interface_files ament_cmake_export_targets rosidl_typesupport_cpp rcpputils rosidl_generator_c rosidl_default_generators ament_package
-  #   CMAKE_ARGS ${extra_cmake_args})
-
   dep_build(tracetools CMAKE
     SOURCE_DIR "deps/ros2_tracing/tracetools"
     DEPENDENCIES python3-pytest ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories gtest_vendor ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories ament_cmake_export_interfaces gtest ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gtest ament_cmake_gen_version_h domain_coordinator gmock_vendor ament_cmake ament_cmake_gmock google-mock pkg-config ament_cmake_export_definitions python3-setuptools ament_cmake_export_targets ament_package
@@ -439,11 +407,6 @@ macro(build_crosscompile_dependencies)
     DEPENDENCIES python3-pytest rosidl_typesupport_interface rcl_yaml_param_parser yaml rosidl_generator_py ament_cmake_pytest rosidl_typesupport_fastrtps_cpp python3-importlib-resources rosidl_runtime_cpp ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor tracetools ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces statistics_msgs std_msgs gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules ament_index_cpp ament_cmake_core ament_cmake_version rosidl_typesupport_introspection_cpp ament_cmake_python python3-importlib-metadata ament_cmake_test rcutils rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces rcl ament_cmake_gtest gmock_vendor ament_cmake rosidl_typesupport_fastrtps_c python3 python3-empy ament_cmake_gmock google-mock ament_cmake_export_definitions rosidl_typesupport_c rosidl_cmake python3-setuptools rosidl_typesupport_introspection_c rmw rosidl_generator_cpp ament_cmake_export_targets rosidl_typesupport_cpp rcpputils rosidl_generator_c rosidl_default_generators rcl_logging_interface ament_package
     CMAKE_ARGS ${extra_cmake_args})
   
-  #dep_build(rcl_action CMAKE
-  #  SOURCE_DIR "deps/rcl/rcl_action"
-  #  DEPENDENCIES python3-pytest rosidl_typesupport_interface rcl_yaml_param_parser yaml ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor ament_cmake_libraries tracetools ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules ament_index_cpp action_msgs ament_cmake_version ament_cmake_test ament_cmake_core python3-importlib-metadata rcutils ament_cmake_python rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces rcl ament_cmake_gtest gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions unique_identifier_msgs python3-setuptools rmw ament_cmake_export_targets rcpputils rcl_logging_interface ament_package
-  #  CMAKE_ARGS ${extra_cmake_args})
-  #
   dep_build(rcl_lifecycle CMAKE
     SOURCE_DIR "deps/rcl/rcl_lifecycle"
     DEPENDENCIES python3-pytest rosidl_typesupport_interface rcl_yaml_param_parser yaml ament_cmake_pytest python3-importlib-resources lifecycle_msgs ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor tracetools ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules ament_index_cpp ament_cmake_core ament_cmake_version ament_cmake_test rcutils python3-importlib-metadata ament_cmake_python rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces rcl ament_cmake_gtest gmock_vendor ament_cmake ament_cmake_gmock google-mock ament_cmake_export_definitions python3-setuptools rmw ament_cmake_export_targets rcpputils rcl_logging_interface ament_package
@@ -454,45 +417,11 @@ macro(build_crosscompile_dependencies)
     DEPENDENCIES python3-pytest rosidl_typesupport_interface rcl_yaml_param_parser yaml rosidl_runtime_cpp ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor tracetools ament_cmake_libraries rosgraph_msgs ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces statistics_msgs gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules ament_index_cpp ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces rcl ament_cmake_gtest gmock_vendor ament_cmake python3 ament_cmake_gmock google-mock ament_cmake_export_definitions rosidl_typesupport_c python3-setuptools rmw ament_cmake_export_targets rosidl_typesupport_cpp libstatistics_collector rcpputils rcl_logging_interface ament_package
     CMAKE_ARGS ${extra_cmake_args})
   
-  #dep_build(rclcpp_action CMAKE
-  #  SOURCE_DIR "deps/rclcpp/rclcpp_action"
-  #  DEPENDENCIES python3-pytest rclcpp rosidl_typesupport_interface rcl_yaml_param_parser yaml rosidl_runtime_cpp ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor ament_cmake_libraries tracetools rosgraph_msgs ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces statistics_msgs gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules rcl_action ament_index_cpp action_msgs ament_cmake_version ament_cmake_test python3-importlib-metadata ament_cmake_core rcutils ament_cmake_python rcl_interfaces libyaml_vendor cmake rosidl_runtime_c ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces rcl ament_cmake_gtest gmock_vendor ament_cmake python3 ament_cmake_gmock google-mock ament_cmake_export_definitions rosidl_typesupport_c unique_identifier_msgs python3-setuptools rmw ament_cmake_export_targets rosidl_typesupport_cpp libstatistics_collector rcpputils rcl_logging_interface ament_package
-  #  CMAKE_ARGS ${extra_cmake_args})
-  #
-  # dep_build(rclcpp_components CMAKE
-  #   SOURCE_DIR "deps/rclcpp/rclcpp_components"
-  #   DEPENDENCIES python3-pytest rclcpp rosidl_typesupport_interface rcl_yaml_param_parser yaml rosidl_runtime_cpp ament_cmake_pytest python3-importlib-resources ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor tracetools ament_cmake_libraries rosgraph_msgs ament_cmake_export_link_flags ament_cmake_include_directories libatomic class_loader ament_cmake_export_interfaces statistics_msgs gtest ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation python3-catkin-pkg-modules ament_index_cpp ament_cmake_core ament_cmake_version ament_cmake_test ament_cmake_python python3-importlib-metadata rcutils rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces rcl ament_cmake_gtest gmock_vendor ament_cmake python3 ament_cmake_gmock google-mock ament_cmake_export_definitions rosidl_typesupport_c python3-setuptools rmw ament_cmake_export_targets rosidl_typesupport_cpp libstatistics_collector composition_interfaces rcpputils rcl_logging_interface ament_package
-  #   CMAKE_ARGS ${extra_cmake_args})
-  
   dep_build(rclcpp_lifecycle CMAKE
     SOURCE_DIR "deps/rclcpp/rclcpp_lifecycle"
     DEPENDENCIES python3-pytest rclcpp rosidl_typesupport_interface rcl_yaml_param_parser yaml rosidl_runtime_cpp ament_cmake_pytest python3-importlib-resources lifecycle_msgs ament_cmake_export_include_directories rcl_logging_spdlog gtest_vendor ament_cmake_libraries tracetools rosgraph_msgs ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces statistics_msgs rcl_lifecycle ament_cmake_export_libraries rmw_implementation_cmake rmw_implementation gtest python3-catkin-pkg-modules ament_index_cpp ament_cmake_core ament_cmake_version ament_cmake_test rcutils python3-importlib-metadata ament_cmake_python rcl_interfaces libyaml_vendor rosidl_runtime_c cmake ament_cmake_ros ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h domain_coordinator builtin_interfaces rcl ament_cmake_gtest gmock_vendor ament_cmake python3 ament_cmake_gmock google-mock ament_cmake_export_definitions rosidl_typesupport_c python3-setuptools rmw ament_cmake_export_targets rosidl_typesupport_cpp libstatistics_collector rcpputils rcl_logging_interface ament_package
     CMAKE_ARGS ${extra_cmake_args})
   
-  #dep_build(tracetools_read PIP
-  #  SOURCE_DIR "deps/ros2_tracing/tracetools_read"
-  #  DEPENDENCIES )
-  #
-  #dep_build(tracetools_trace PIP
-  #  SOURCE_DIR "deps/ros2_tracing/tracetools_trace"
-  #  DEPENDENCIES )
-  #
-  #dep_build(ros2trace PIP
-  #  SOURCE_DIR "deps/ros2_tracing/ros2trace"
-  #  DEPENDENCIES ros2cli tracetools_trace)
-  #
-  #dep_build(tracetools_launch PIP
-  #  SOURCE_DIR "deps/ros2_tracing/tracetools_launch"
-  #  DEPENDENCIES launch launch_ros tracetools_trace)
-  #
-  #dep_build(tracetools_test PIP
-  #  SOURCE_DIR "deps/ros2_tracing/tracetools_test"
-  #  DEPENDENCIES launch_ros tracetools_read launch tracetools_trace tracetools_launch)
-  #
-  #dep_build(test_tracetools_launch PIP
-  #  SOURCE_DIR "deps/ros2_tracing/test_tracetools_launch"
-  #  DEPENDENCIES )
-
   dep_build(trajectory_msgs CMAKE
     SOURCE_DIR "deps/common_interfaces/trajectory_msgs"
     DEPENDENCIES rosidl_runtime_cpp rosidl_typesupport_interface geometry_msgs rosidl_generator_py rosidl_typesupport_fastrtps_cpp python3-importlib-resources ament_cmake_export_include_directories ament_cmake_libraries ament_cmake_export_link_flags ament_cmake_include_directories libatomic ament_cmake_export_interfaces std_msgs ament_cmake_export_libraries python3-catkin-pkg-modules ament_cmake_core rosidl_typesupport_introspection_cpp ament_cmake_version ament_cmake_python python3-importlib-metadata ament_cmake_test rcutils rosidl_runtime_c cmake ament_cmake_export_dependencies ament_cmake_target_dependencies ament_cmake_gen_version_h builtin_interfaces ament_cmake rosidl_typesupport_fastrtps_c python3 python3-empy ament_cmake_export_definitions rosidl_typesupport_c rosidl_cmake python3-setuptools rosidl_typesupport_introspection_c rosidl_generator_cpp ament_cmake_export_targets rosidl_typesupport_cpp rcpputils rosidl_generator_c rosidl_default_generators ament_package
