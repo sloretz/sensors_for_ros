@@ -56,9 +56,9 @@ static void onSessionClosed(void* context, ACameraCaptureSession *session)
 
 static ACameraCaptureSession_stateCallbacks sessionStateCallbacks {
         .context = nullptr,
-        .onActive = onSessionActive,
+        .onClosed = onSessionClosed,
         .onReady = onSessionReady,
-        .onClosed = onSessionClosed
+        .onActive = onSessionActive,
 };
 
 /// ***************** Android capture callbacks ********************

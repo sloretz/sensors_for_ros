@@ -79,9 +79,13 @@ The official repo is [`sloretz/android_ros`](https://github.com/sloretz/android_
 git clone https://github.com/sloretz/android_ros.git
 ```
 
-### Download dependencies
+### Download ROS dependencies
 
-TODO vcstool to download the repos files for native and cross-compiled dependencies
+Use [vcstool](https://github.com/dirk-thomas/vcstool) to download the ROS packages we need to cross compile into the `deps` folder.
+
+```
+vcs import --input ros.repos deps/
+```
 
 ### Building the App
 

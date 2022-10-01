@@ -1,6 +1,0 @@
-# Made by hand
-repositories:
-  openssl:
-    type: git
-    url: https://github.com/openssl/openssl.git
-    version: OpenSSL_1_1_1n

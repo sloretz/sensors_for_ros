@@ -178,6 +178,7 @@ macro(copy_android_lib from_target lib_path)
   list(APPEND copied_android_libs "${CMAKE_CURRENT_BINARY_DIR}/lib/${ANDROID_ABI}/${libname}")
 endmacro()
 
+copy_android_lib(ros_for_android "ros_for_android/lib/libandroid-ros.so")
 copy_android_lib(deps-cyclonedds "deps/lib/libddsc.so")
 copy_android_lib(deps-rmw_dds_common "deps/lib/librmw_dds_common.so")
 copy_android_lib(deps-libyaml_vendor "deps/lib/libyaml.so")

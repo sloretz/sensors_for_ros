@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "sensor.h"
 
 #include "log.h"
