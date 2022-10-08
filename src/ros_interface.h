@@ -113,6 +113,17 @@ class Publisher {
     return nullptr != publisher_.get();
   }
 
+  const char* Topic() const {
+    if (publisher_) {
+      return publisher_->get_topic_name();
+    }
+    return topic_.c_str();
+  }
+
+  const char* Type() const {
+    return rosidl_generator_traits::name<MsgT>();
+  }
+
   // Big messages to avoid copies
   void Publish(std::unique_ptr<MsgT> msg) const {
     if (publisher_) {

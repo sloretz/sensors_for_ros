@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "camera_controller.h"
+#include "display_topic.h"
 
 using android_ros::CameraController;
 using android_ros::CameraDevice;
@@ -57,13 +58,30 @@ void CameraController::DrawFrame()
   if (ImGui::Button("< Back")) {
     Emit(event::GuiNavigateBack{});
   }
-  ImGui::Text("Camera TODO");
+  ImGui::Text("%s", camera_descriptor_.GetName().c_str());
+
+  ImGui::Separator();
 
   if (image_pub_.Enabled() && ImGui::Button("Disable")) {
     DisableCamera();
   } else if (!image_pub_.Enabled() && ImGui::Button("Enable")) {
     EnableCamera();
   }
+
+  ImGui::Separator();
+
+  DisplayTopic("Image", image_pub_);
+
+  ImGui::Spacing();
+
+  DisplayTopic("Camera Info", info_pub_);
+
+  if (device_) {
+    ImGui::Separator();
+    auto [width, height] = device_->Resolution();
+    ImGui::Text("Resolution: %dx%d", width, height);
+  }
+
   ImGui::End();
 }
 

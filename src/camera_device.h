@@ -13,6 +13,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <tuple>
 #include <utility>
 
 #include <sensor_msgs/msg/camera_info.hpp>
@@ -41,6 +42,8 @@ public:
 
   // Internal
   void OnImage(std::unique_ptr<AImage, AImageDeleter> image);
+
+  std::tuple<int, int> Resolution() const { return {width_, height_}; }
 
 private:
   CameraDevice();
