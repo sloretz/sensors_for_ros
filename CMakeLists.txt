@@ -105,7 +105,7 @@ ExternalProject_Add(ros_for_android
   )
 
 # Configure the manifest
-set(NAMESPACE "loretz.shane")
+set(NAMESPACE "com.github.sloretz.android_ros")
 set(MIN_SDK_VERSION 30)
 set(TARGET_SDK_VERSION 30)
 set(LIB_NAME "android-ros")

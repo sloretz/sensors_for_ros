@@ -124,12 +124,12 @@ adb logcat
 Sometimes you may want to try out a permission without writing the code to request it.
 The app must be installed, but not running already for this command to work.
 ```
-adb shell pm grant loretz.shane android.permission.CAMERA
+adb shell pm grant com.github.sloretz.android_ros android.permission.CAMERA
 ```
 
 The main activity can be started directly from the CLI
 ```
-adb shell am start -n loretz.shane/android.app.NativeActivity
+adb shell am start -n com.github.sloretz.android_ros/android.app.NativeActivity
 ```
 
 Getting stack traces
