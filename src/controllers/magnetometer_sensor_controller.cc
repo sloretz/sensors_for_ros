@@ -1,6 +1,7 @@
 #include "imgui.h"
 
 #include "controllers/magnetometer_sensor_controller.h"
+#include "display_topic.h"
 
 namespace android_ros {
 MagnetometerSensorController::MagnetometerSensorController(
@@ -39,6 +40,8 @@ void MagnetometerSensorController::DrawFrame() {
   ImGui::Separator();
   ImGui::Text("Name: %s", sensor_->Descriptor().name);
   ImGui::Text("Vendor: %s", sensor_->Descriptor().vendor);
+  ImGui::Separator();
+  DisplayTopic("", publisher_);
   ImGui::Separator();
   ImGui::Text(
     "Last measurement: %.2f, %.2f, %.2f microtesla",

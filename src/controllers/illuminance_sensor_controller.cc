@@ -1,6 +1,7 @@
 #include "imgui.h"
 
 #include "controllers/illuminance_sensor_controller.h"
+#include "display_topic.h"
 
 namespace android_ros {
 IlluminanceSensorController::IlluminanceSensorController(
@@ -39,6 +40,8 @@ void IlluminanceSensorController::DrawFrame() {
   ImGui::Separator();
   ImGui::Text("Name: %s", sensor_->Descriptor().name);
   ImGui::Text("Vendor: %s", sensor_->Descriptor().vendor);
+  ImGui::Separator();
+  DisplayTopic("", publisher_);
   ImGui::Separator();
   ImGui::Text("Last measurement: %.2f lx", last_msg_.illuminance);
   ImGui::End();
