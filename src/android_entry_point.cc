@@ -112,8 +112,8 @@ class AndroidApp {
       std::vector<android_ros::CameraDescriptor> cameras = camera_manager_.GetCameras();
       for (auto cam_desc : cameras) {
         LOGI("Camera: %s", cam_desc.GetName().c_str());
-        std::unique_ptr<android_ros::CameraDevice> camera_device = camera_manager_.OpenCamera(cam_desc);
-        std::unique_ptr<android_ros::CameraController> camera_controller(new android_ros::CameraController(std::move(camera_device), ros_));
+        std::unique_ptr<android_ros::CameraController> camera_controller(new android_ros::CameraController(
+        &camera_manager_, cam_desc, ros_));
         camera_controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this, std::placeholders::_1));
         controllers_.emplace_back(std::move(camera_controller));
         list_controller_.AddController(controllers_.back().get());

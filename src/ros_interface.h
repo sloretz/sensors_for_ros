@@ -109,6 +109,10 @@ class Publisher {
     DestroyPublisher();
   }
 
+  bool Enabled() const {
+    return nullptr != publisher_.get();
+  }
+
   // Big messages to avoid copies
   void Publish(std::unique_ptr<MsgT> msg) const {
     if (publisher_) {

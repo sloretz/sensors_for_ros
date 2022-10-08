@@ -18,7 +18,7 @@ public:
 
   const std::vector<CameraDescriptor> & GetCameras() { return cameras_; }
 
-  std::unique_ptr<CameraDevice> OpenCamera(const CameraDescriptor & desc);
+  std::unique_ptr<CameraDevice> OpenCamera(const CameraDescriptor & desc) const;
 
 private:
   void DiscoverCameras();
