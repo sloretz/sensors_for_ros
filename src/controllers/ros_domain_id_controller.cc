@@ -18,6 +18,24 @@ void RosDomainIdController::DrawFrame() {
   ImGui::Begin("ROS_DOMAIN_ID", &show_ros_domain_id_picker,
                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                    ImGuiWindowFlags_NoTitleBar);
+
+  // Disable buttons so that only domain ids between 0 and 232 are pickable
+
+  bool disabled = false;
+#define DISABLE_IF(expr)       \
+  {                            \
+    if (!disabled && (expr)) { \
+      ImGui::BeginDisabled();  \
+      disabled = true;         \
+    }                          \
+  }                            \
+  while (false)
+
+  DISABLE_IF(picked_ros_domain_id >= 30);
+  if (ImGui::Button("0")) {
+    increase_id(0);
+  }
+  ImGui::SameLine();
   if (ImGui::Button("1")) {
     increase_id(1);
   }
@@ -25,10 +43,11 @@ void RosDomainIdController::DrawFrame() {
   if (ImGui::Button("2")) {
     increase_id(2);
   }
-  ImGui::SameLine();
+  DISABLE_IF(picked_ros_domain_id == 23);
   if (ImGui::Button("3")) {
     increase_id(3);
   }
+  ImGui::SameLine();
   if (ImGui::Button("4")) {
     increase_id(4);
   }
@@ -36,10 +55,10 @@ void RosDomainIdController::DrawFrame() {
   if (ImGui::Button("5")) {
     increase_id(5);
   }
-  ImGui::SameLine();
   if (ImGui::Button("6")) {
     increase_id(6);
   }
+  ImGui::SameLine();
   if (ImGui::Button("7")) {
     increase_id(7);
   }
@@ -47,13 +66,14 @@ void RosDomainIdController::DrawFrame() {
   if (ImGui::Button("8")) {
     increase_id(8);
   }
-  ImGui::SameLine();
   if (ImGui::Button("9")) {
     increase_id(9);
   }
-  if (ImGui::Button("0")) {
-    increase_id(0);
+
+  if (disabled) {
+    ImGui::EndDisabled();
   }
+
   ImGui::SameLine();
   if (ImGui::Button("Clear")) {
     picked_ros_domain_id = -1;
