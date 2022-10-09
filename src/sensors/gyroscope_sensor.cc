@@ -4,8 +4,7 @@
 
 using android_ros::GyroscopeSensor;
 
-void GyroscopeSensor::OnEvent(const ASensorEvent& event)
-{
+void GyroscopeSensor::OnEvent(const ASensorEvent& event) {
   if (ASENSOR_TYPE_GYROSCOPE != event.type) {
     LOGW("Event type was unexpected: %d", event.type);
     return;
@@ -18,5 +17,3 @@ void GyroscopeSensor::OnEvent(const ASensorEvent& event)
   msg.twist.angular.z = event.vector.z;
   Emit(msg);
 }
-
-

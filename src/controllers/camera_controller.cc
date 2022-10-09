@@ -1,19 +1,21 @@
-#include "imgui.h"
+#include "camera_controller.h"
 
 #include <sstream>
 
-#include "camera_controller.h"
 #include "display_topic.h"
+#include "imgui.h"
 
 using android_ros::CameraController;
 using android_ros::CameraDevice;
 
-CameraController::CameraController(
-      CameraManager* camera_manager,
-      const CameraDescriptor& camera_descriptor,
-      RosInterface& ros
-) : camera_manager_(camera_manager), camera_descriptor_(camera_descriptor), Controller(camera_descriptor.GetName()), info_pub_(ros), image_pub_(ros)
-{
+CameraController::CameraController(CameraManager* camera_manager,
+                                   const CameraDescriptor& camera_descriptor,
+                                   RosInterface& ros)
+    : camera_manager_(camera_manager),
+      camera_descriptor_(camera_descriptor),
+      Controller(camera_descriptor.GetName()),
+      info_pub_(ros),
+      image_pub_(ros) {
   std::stringstream base_topic;
   // TODO(sloretz) what if id has invalid characters?
   base_topic << "camera/id_" << camera_descriptor_.id << "/";
@@ -29,32 +31,28 @@ CameraController::CameraController(
   image_pub_.SetQos(rclcpp::QoS(1).best_effort());
 }
 
-CameraController::~CameraController()
-{
-}
+CameraController::~CameraController() {}
 
-void CameraController::EnableCamera()
-{
+void CameraController::EnableCamera() {
   image_pub_.Enable();
   info_pub_.Enable();
   device_ = camera_manager_->OpenCamera(camera_descriptor_);
   device_->SetListener(
-    std::bind(&CameraController::OnImage, this, std::placeholders::_1));
+      std::bind(&CameraController::OnImage, this, std::placeholders::_1));
 }
 
-void CameraController::DisableCamera()
-{
+void CameraController::DisableCamera() {
   image_pub_.Disable();
   info_pub_.Disable();
   device_.reset();
 }
 
 // Called by the GUI to draw a frame
-void CameraController::DrawFrame()
-{
+void CameraController::DrawFrame() {
   bool show_dialog = true;
   ImGui::Begin("Camera", &show_dialog,
-    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                   ImGuiWindowFlags_NoTitleBar);
   if (ImGui::Button("< Back")) {
     Emit(event::GuiNavigateBack{});
   }
@@ -85,8 +83,7 @@ void CameraController::DrawFrame()
   ImGui::End();
 }
 
-std::string CameraController::PrettyName() const
-{
+std::string CameraController::PrettyName() const {
   std::string name{camera_descriptor_.GetName()};
   if (!device_) {
     name += " [disabled]";
@@ -94,11 +91,11 @@ std::string CameraController::PrettyName() const
   return name;
 }
 
-void
-CameraController::OnImage(const std::pair<CameraInfo::UniquePtr, Image::UniquePtr> & info_image)
-{
+void CameraController::OnImage(
+    const std::pair<CameraInfo::UniquePtr, Image::UniquePtr>& info_image) {
   LOGI("Controller has image?");
-  // TODO move images if I ever need intraprocesses stuff - requires changes to Emitter class
+  // TODO move images if I ever need intraprocesses stuff - requires changes to
+  // Emitter class
   info_pub_.Publish(*info_image.first.get());
   image_pub_.Publish(*info_image.second.get());
 }

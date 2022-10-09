@@ -1,15 +1,14 @@
 #pragma once
 
+#include <EGL/egl.h>
+#include <GLES/gl.h>
+#include <android/input.h>
+#include <android/native_activity.h>
+
 #include <atomic>
 #include <future>
 #include <mutex>
 #include <thread>
-
-#include <EGL/egl.h>
-#include <GLES/gl.h>
-
-#include <android/input.h>
-#include <android/native_activity.h>
 
 #include "controller.h"
 #include "events.h"
@@ -53,6 +52,6 @@ class GUI {
 
   ANativeActivity* activity_;
 
-  Controller * active_controller = nullptr;
+  Controller* active_controller = nullptr;
 };
 }  // namespace android_ros

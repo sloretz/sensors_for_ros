@@ -1,6 +1,6 @@
-#include "imgui.h"
-
 #include "controllers/ros_domain_id_controller.h"
+
+#include "imgui.h"
 
 namespace android_ros {
 void RosDomainIdController::DrawFrame() {
@@ -16,7 +16,8 @@ void RosDomainIdController::DrawFrame() {
 
   bool show_ros_domain_id_picker = true;
   ImGui::Begin("ROS_DOMAIN_ID", &show_ros_domain_id_picker,
-    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                   ImGuiWindowFlags_NoTitleBar);
   if (ImGui::Button("1")) {
     increase_id(1);
   }

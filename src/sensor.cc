@@ -1,6 +1,6 @@
-#include <cassert>
-
 #include "sensor.h"
+
+#include <cassert>
 
 #include "log.h"
 
@@ -34,7 +34,8 @@ void Sensor::EventLoop() {
         assert(event.sensor == descriptor_.handle);
         if (ASENSOR_TYPE_ADDITIONAL_INFO == event.type) {
           LOGI("Additional info type: %d", event.additional_info.type);
-          if (ASENSOR_ADDITIONAL_INFO_SENSOR_PLACEMENT == event.additional_info.type) {
+          if (ASENSOR_ADDITIONAL_INFO_SENSOR_PLACEMENT ==
+              event.additional_info.type) {
             LOGI("Got position!");
             // TODO store this position somewhere
           }

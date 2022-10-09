@@ -1,16 +1,17 @@
-#include "imgui.h"
-
 #include "controllers/accelerometer_sensor_controller.h"
+
 #include "display_topic.h"
+#include "imgui.h"
 
 namespace android_ros {
 AccelerometerSensorController::AccelerometerSensorController(
-  AccelerometerSensor* sensor,
-  RosInterface& ros)
-  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
-{
-  sensor->SetListener(
-    std::bind(&AccelerometerSensorController::OnSensorReading, this, std::placeholders::_1));
+    AccelerometerSensor* sensor, RosInterface& ros)
+    : sensor_(sensor),
+      publisher_(ros),
+      Controller(std::string(sensor->Descriptor().name) +
+                 sensor->Descriptor().vendor) {
+  sensor->SetListener(std::bind(&AccelerometerSensorController::OnSensorReading,
+                                this, std::placeholders::_1));
 
   // TODO allow publisher topic to be set from GUI
   publisher_.SetTopic("accelerometer");
@@ -20,10 +21,8 @@ AccelerometerSensorController::AccelerometerSensorController(
   // TODO allow GUI to change topic and QoS
 }
 
-void
-AccelerometerSensorController::OnSensorReading(
-    const geometry_msgs::msg::AccelStamped& msg)
-{
+void AccelerometerSensorController::OnSensorReading(
+    const geometry_msgs::msg::AccelStamped& msg) {
   last_msg_ = msg;
   publisher_.Publish(msg);
 }
@@ -31,7 +30,8 @@ AccelerometerSensorController::OnSensorReading(
 void AccelerometerSensorController::DrawFrame() {
   bool show_dialog = true;
   ImGui::Begin("Accelerometer", &show_dialog,
-    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                   ImGuiWindowFlags_NoTitleBar);
   if (ImGui::Button("< Back")) {
     LOGI("Asked to go back");
     Emit(event::GuiNavigateBack{});
@@ -43,16 +43,13 @@ void AccelerometerSensorController::DrawFrame() {
   ImGui::Separator();
   DisplayTopic("", publisher_);
   ImGui::Separator();
-  ImGui::Text(
-    "Last measurement: %.2f, %.2f, %.2f m/s^2",
-    last_msg_.accel.linear.x,
-    last_msg_.accel.linear.y,
-    last_msg_.accel.linear.z);
+  ImGui::Text("Last measurement: %.2f, %.2f, %.2f m/s^2",
+              last_msg_.accel.linear.x, last_msg_.accel.linear.y,
+              last_msg_.accel.linear.z);
   ImGui::End();
 }
 
-std::string AccelerometerSensorController::PrettyName() const
-{
+std::string AccelerometerSensorController::PrettyName() const {
   return "Accelerometer Sensor";
 }
 }  // namespace android_ros

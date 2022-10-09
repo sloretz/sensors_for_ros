@@ -4,8 +4,7 @@
 
 using android_ros::IlluminanceSensor;
 
-void IlluminanceSensor::OnEvent(const ASensorEvent& event)
-{
+void IlluminanceSensor::OnEvent(const ASensorEvent& event) {
   if (ASENSOR_TYPE_LIGHT != event.type) {
     LOGW("Event type was unexpected: %d", event.type);
     return;
@@ -14,4 +13,3 @@ void IlluminanceSensor::OnEvent(const ASensorEvent& event)
   msg.illuminance = event.light;
   Emit(msg);
 }
-

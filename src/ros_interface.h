@@ -1,13 +1,11 @@
 #pragma once
 
+#include <rclcpp/rclcpp.hpp>
 #include <thread>
 #include <variant>
 
-#include <rclcpp/rclcpp.hpp>
-
 #include "events.h"
 #include "log.h"
-
 
 namespace android_ros {
 class RosInterface {
@@ -44,8 +42,7 @@ class RosInterface {
 template <typename MsgT>
 class Publisher {
  public:
-  Publisher(RosInterface& ros) : ros_(ros) {
-  }
+  Publisher(RosInterface& ros) : ros_(ros) {}
 
   virtual ~Publisher() {}
 
@@ -56,7 +53,7 @@ class Publisher {
   Publisher(const Publisher& other) = delete;
   Publisher& operator=(const Publisher& other) = delete;
 
-  void SetTopic(const char * topic) {
+  void SetTopic(const char* topic) {
     LOGI("Setting topic for publisher");
     topic_ = topic;
     if (publisher_) {
@@ -109,9 +106,7 @@ class Publisher {
     DestroyPublisher();
   }
 
-  bool Enabled() const {
-    return nullptr != publisher_.get();
-  }
+  bool Enabled() const { return nullptr != publisher_.get(); }
 
   const char* Topic() const {
     if (publisher_) {
@@ -120,9 +115,7 @@ class Publisher {
     return topic_.c_str();
   }
 
-  const char* Type() const {
-    return rosidl_generator_traits::name<MsgT>();
-  }
+  const char* Type() const { return rosidl_generator_traits::name<MsgT>(); }
 
   // Big messages to avoid copies
   void Publish(std::unique_ptr<MsgT> msg) const {
@@ -140,7 +133,7 @@ class Publisher {
 
  private:
   bool enable_ = false;
-  RosInterface &ros_;
+  RosInterface& ros_;
   std::string topic_ = "default_topic";
   rclcpp::QoS qos_ = rclcpp::QoS(1);
   typename rclcpp::Publisher<MsgT>::SharedPtr publisher_;

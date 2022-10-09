@@ -1,16 +1,17 @@
+#include "controllers/barometer_sensor_controller.h"
+
+#include "display_topic.h"
 #include "imgui.h"
 
-#include "controllers/barometer_sensor_controller.h"
-#include "display_topic.h"
-
 namespace android_ros {
-BarometerSensorController::BarometerSensorController(
-  BarometerSensor* sensor,
-  RosInterface& ros)
-  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
-{
-  sensor->SetListener(
-    std::bind(&BarometerSensorController::OnSensorReading, this, std::placeholders::_1));
+BarometerSensorController::BarometerSensorController(BarometerSensor* sensor,
+                                                     RosInterface& ros)
+    : sensor_(sensor),
+      publisher_(ros),
+      Controller(std::string(sensor->Descriptor().name) +
+                 sensor->Descriptor().vendor) {
+  sensor->SetListener(std::bind(&BarometerSensorController::OnSensorReading,
+                                this, std::placeholders::_1));
 
   // TODO allow publisher topic to be set from GUI
   publisher_.SetTopic("barometer");
@@ -20,10 +21,8 @@ BarometerSensorController::BarometerSensorController(
   // TODO allow GUI to change topic and QoS
 }
 
-void
-BarometerSensorController::OnSensorReading(
-    const sensor_msgs::msg::FluidPressure& msg)
-{
+void BarometerSensorController::OnSensorReading(
+    const sensor_msgs::msg::FluidPressure& msg) {
   last_msg_ = msg;
   publisher_.Publish(msg);
 }
@@ -31,7 +30,8 @@ BarometerSensorController::OnSensorReading(
 void BarometerSensorController::DrawFrame() {
   bool show_dialog = true;
   ImGui::Begin("Barometer", &show_dialog,
-    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                   ImGuiWindowFlags_NoTitleBar);
   if (ImGui::Button("< Back")) {
     LOGI("Asked to go back");
     Emit(event::GuiNavigateBack{});
@@ -47,8 +47,7 @@ void BarometerSensorController::DrawFrame() {
   ImGui::End();
 }
 
-std::string BarometerSensorController::PrettyName() const
-{
+std::string BarometerSensorController::PrettyName() const {
   return "Barometer Sensor";
 }
 }  // namespace android_ros

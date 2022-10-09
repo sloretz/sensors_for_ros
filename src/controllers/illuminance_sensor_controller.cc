@@ -1,16 +1,18 @@
-#include "imgui.h"
-
 #include "controllers/illuminance_sensor_controller.h"
+
 #include "display_topic.h"
+#include "imgui.h"
 
 namespace android_ros {
 IlluminanceSensorController::IlluminanceSensorController(
-  IlluminanceSensor* sensor,
-  RosInterface& ros)
-  : sensor_(sensor), publisher_(ros), Controller(std::string(sensor->Descriptor().name) + sensor->Descriptor().vendor)
-{
+    IlluminanceSensor* sensor, RosInterface& ros)
+    : sensor_(sensor),
+      publisher_(ros),
+      Controller(std::string(sensor->Descriptor().name) +
+                 sensor->Descriptor().vendor) {
   sensor->SetListener(
-    std::bind(&IlluminanceSensorController::OnIlluminanceChanged, this, std::placeholders::_1));
+      std::bind(&IlluminanceSensorController::OnIlluminanceChanged, this,
+                std::placeholders::_1));
 
   // TODO allow publisher topic to be set from GUI
   publisher_.SetTopic("illuminance");
@@ -20,10 +22,8 @@ IlluminanceSensorController::IlluminanceSensorController(
   // TODO allow GUI to change topic and QoS
 }
 
-void
-IlluminanceSensorController::OnIlluminanceChanged(
-    const sensor_msgs::msg::Illuminance& msg)
-{
+void IlluminanceSensorController::OnIlluminanceChanged(
+    const sensor_msgs::msg::Illuminance& msg) {
   last_msg_ = msg;
   publisher_.Publish(msg);
 }
@@ -31,7 +31,8 @@ IlluminanceSensorController::OnIlluminanceChanged(
 void IlluminanceSensorController::DrawFrame() {
   bool show_dialog = true;
   ImGui::Begin("Illuminace Senosr", &show_dialog,
-    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                   ImGuiWindowFlags_NoTitleBar);
   if (ImGui::Button("< Back")) {
     LOGI("Asked to go back");
     Emit(event::GuiNavigateBack{});
@@ -47,8 +48,7 @@ void IlluminanceSensorController::DrawFrame() {
   ImGui::End();
 }
 
-std::string IlluminanceSensorController::PrettyName() const
-{
+std::string IlluminanceSensorController::PrettyName() const {
   return "Light Sensor";
 }
 }  // namespace android_ros

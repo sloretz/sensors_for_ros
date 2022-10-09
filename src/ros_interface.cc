@@ -10,7 +10,7 @@ void RosInterface::Initialize(size_t ros_domain_id) {
   rclcpp::InitOptions init_options;
   init_options.set_domain_id(ros_domain_id);
   init_options.shutdown_on_signal = false;
-  context_ = std::make_shared<rclcpp::Context>(); 
+  context_ = std::make_shared<rclcpp::Context>();
   context_->init(0, nullptr, init_options);
 
   rclcpp::NodeOptions node_options;
@@ -37,7 +37,9 @@ void RosInterface::Shutdown() {
   context_.reset();
 }
 
-bool RosInterface::Initialized() const { return context_ && context_->is_valid(); }
+bool RosInterface::Initialized() const {
+  return context_ && context_->is_valid();
+}
 
 rclcpp::Context::SharedPtr RosInterface::get_context() const {
   return context_;
@@ -50,7 +52,7 @@ void RosInterface::AddObserver(std::function<void(void)> init_or_shutdown) {
 }
 
 void RosInterface::NotifyInitChanged() {
-  for (auto & observer : observers_) {
+  for (auto& observer : observers_) {
     LOGI("Notifying observer %p", &observer);
     observer();
   }

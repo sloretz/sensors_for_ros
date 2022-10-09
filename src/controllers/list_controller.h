@@ -9,31 +9,28 @@
 namespace android_ros {
 
 // There's only supposed to be one of these in the process
-constexpr const char * kListControllerId = "list_controller";
+constexpr const char *kListControllerId = "list_controller";
 
-class ListController
-  : public Controller,
-    public event::Emitter<event::GuiNavigateBack>,
-    public event::Emitter<event::GuiNavigateTo>
-{
-  public:
-    using event::Emitter<event::GuiNavigateBack>::SetListener;
-    using event::Emitter<event::GuiNavigateTo>::SetListener;
-    using event::Emitter<event::GuiNavigateBack>::Emit;
-    using event::Emitter<event::GuiNavigateTo>::Emit;
+class ListController : public Controller,
+                       public event::Emitter<event::GuiNavigateBack>,
+                       public event::Emitter<event::GuiNavigateTo> {
+ public:
+  using event::Emitter<event::GuiNavigateBack>::SetListener;
+  using event::Emitter<event::GuiNavigateTo>::SetListener;
+  using event::Emitter<event::GuiNavigateBack>::Emit;
+  using event::Emitter<event::GuiNavigateTo>::Emit;
 
-    ListController();
+  ListController();
 
-    void AddController(const Controller * controller);
+  void AddController(const Controller *controller);
 
-    virtual ~ListController() = default;
+  virtual ~ListController() = default;
 
-    void DrawFrame() override;
+  void DrawFrame() override;
 
-    std::string PrettyName() const override { return "List Controller"; }
+  std::string PrettyName() const override { return "List Controller"; }
 
-  private:
-    std::vector<const Controller *> controllers_;
+ private:
+  std::vector<const Controller *> controllers_;
 };
 }  // namespace android_ros
-

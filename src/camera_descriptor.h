@@ -5,8 +5,7 @@
 #include <string>
 
 namespace android_ros {
-struct CameraDescriptor
-{
+struct CameraDescriptor {
   std::string GetName() const;
 
   // An id identifying the camera

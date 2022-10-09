@@ -9,7 +9,7 @@ struct SensorDescriptor {
   SensorDescriptor(const SensorDescriptor& other) = default;
   ~SensorDescriptor() = default;
 
-  const char * PrettyType() const {
+  const char* PrettyType() const {
     switch (type) {
       case ASENSOR_TYPE_LIGHT:
         return "Light";

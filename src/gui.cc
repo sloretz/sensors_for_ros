@@ -1,14 +1,13 @@
 #include "gui.h"
 
-#include "log.h"
+#include <android/native_window.h>
 
 #include <memory>
-
-#include <android/native_window.h>
 
 #include "imgui.h"
 #include "imgui_impl_android.h"
 #include "imgui_impl_opengl3.h"
+#include "log.h"
 
 using android_ros::GUI;
 
@@ -196,14 +195,13 @@ void GUI::DrawFrame() {
     ImGui::SetNextWindowSize(io.DisplaySize);
     // Add some padding
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
-        ImVec2(io.DisplaySize.x / 10, io.DisplaySize.x / 10));
+                        ImVec2(io.DisplaySize.x / 10, io.DisplaySize.x / 10));
 
     if (active_controller) {
       active_controller->DrawFrame();
     }
 
     ImGui::PopStyleVar();
-
   }
 
   // Rendering

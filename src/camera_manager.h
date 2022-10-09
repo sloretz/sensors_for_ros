@@ -1,26 +1,25 @@
 #pragma once
 
-#include <vector>
-
 #include <camera/NdkCameraManager.h>
+
+#include <vector>
 
 #include "camera_descriptor.h"
 #include "camera_device.h"
 
 namespace android_ros {
-class CameraManager
-{
-public:
+class CameraManager {
+ public:
   CameraManager();
   ~CameraManager();
 
-  bool HasCameras() const {return !cameras_.empty();}
+  bool HasCameras() const { return !cameras_.empty(); }
 
-  const std::vector<CameraDescriptor> & GetCameras() { return cameras_; }
+  const std::vector<CameraDescriptor>& GetCameras() { return cameras_; }
 
-  std::unique_ptr<CameraDevice> OpenCamera(const CameraDescriptor & desc) const;
+  std::unique_ptr<CameraDevice> OpenCamera(const CameraDescriptor& desc) const;
 
-private:
+ private:
   void DiscoverCameras();
 
   ACameraManager* native_manager_ = nullptr;

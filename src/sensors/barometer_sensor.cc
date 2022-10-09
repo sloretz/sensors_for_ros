@@ -4,8 +4,7 @@
 
 using android_ros::BarometerSensor;
 
-void BarometerSensor::OnEvent(const ASensorEvent& event)
-{
+void BarometerSensor::OnEvent(const ASensorEvent& event) {
   if (ASENSOR_TYPE_PRESSURE != event.type) {
     LOGW("Event type was unexpected: %d", event.type);
     return;

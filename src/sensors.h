@@ -1,14 +1,14 @@
 #pragma once
 
-#include "events.h"
-#include "ros_interface.h"
-#include "sensor.h"
-#include "sensor_descriptor.h"
-
 #include <android/native_activity.h>
 #include <android/sensor.h>
 
 #include <vector>
+
+#include "events.h"
+#include "ros_interface.h"
+#include "sensor.h"
+#include "sensor_descriptor.h"
 
 namespace android_ros {
 class Sensors {
@@ -19,8 +19,7 @@ class Sensors {
   void Initialize();
   void Shutdown();
 
-  const std::vector<std::unique_ptr<Sensor>> &
-  GetSensors() {return sensors_;};
+  const std::vector<std::unique_ptr<Sensor>>& GetSensors() { return sensors_; };
 
  private:
   std::vector<SensorDescriptor> QuerySensors();

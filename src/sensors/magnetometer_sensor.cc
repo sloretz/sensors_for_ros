@@ -4,8 +4,7 @@
 
 using android_ros::MagnetometerSensor;
 
-void MagnetometerSensor::OnEvent(const ASensorEvent& event)
-{
+void MagnetometerSensor::OnEvent(const ASensorEvent& event) {
   if (ASENSOR_TYPE_MAGNETIC_FIELD != event.type) {
     LOGW("Event type was unexpected: %d", event.type);
     return;
@@ -18,5 +17,3 @@ void MagnetometerSensor::OnEvent(const ASensorEvent& event)
   msg.magnetic_field.z = event.magnetic.z / kMicroTeslaPerTesla;
   Emit(msg);
 }
-
-

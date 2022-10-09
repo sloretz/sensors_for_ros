@@ -4,8 +4,7 @@
 
 using android_ros::AccelerometerSensor;
 
-void AccelerometerSensor::OnEvent(const ASensorEvent& event)
-{
+void AccelerometerSensor::OnEvent(const ASensorEvent& event) {
   if (ASENSOR_TYPE_ACCELEROMETER != event.type) {
     LOGW("Event type was unexpected: %d", event.type);
     return;
@@ -18,6 +17,3 @@ void AccelerometerSensor::OnEvent(const ASensorEvent& event)
   msg.accel.linear.z = event.vector.z;
   Emit(msg);
 }
-
-
-

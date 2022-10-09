@@ -22,11 +22,10 @@ struct IlluminanceChanged : SensorEvent {
 };
 
 // Indicates a controller wants to exit back to the previous page
-struct GuiNavigateBack {
-};
+struct GuiNavigateBack {};
 
 // Indicates a controller wants to display a specific sensor
-struct GuiNavigateTo{
+struct GuiNavigateTo {
   // The unique ID of a controller to navigate to
   std::string unique_id;
 };
@@ -43,9 +42,7 @@ class Emitter {
     }
   }
 
-  void SetListener(Listener<EventType> listener) {
-    event_listener_ = listener;
-  }
+  void SetListener(Listener<EventType> listener) { event_listener_ = listener; }
 
  private:
   Listener<EventType> event_listener_;
