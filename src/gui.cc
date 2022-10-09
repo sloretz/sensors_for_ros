@@ -32,6 +32,8 @@ void GUI::DrawingLoop(ANativeWindow* window,
     CheckInput();
     DrawFrame();
   }
+  TerminateDearImGui();
+  TerminateDisplay();
 }
 
 void GUI::CheckInput() {
@@ -81,7 +83,6 @@ void GUI::Stop() {
     exit_loop_.store(true);
     draw_thread_.join();
   }
-  TerminateDisplay();
   activity_ = nullptr;
 }
 

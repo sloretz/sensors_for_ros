@@ -11,12 +11,16 @@
 
     <application
         android:allowBackup="true"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:debuggable="true"
         android:hasCode="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true">
-        <activity android:name="android.app.NativeActivity" label="@string/app_title@">
+        <activity
+          android:name="android.app.NativeActivity"
+          android:screenOrientation="locked"
+          label="@string/app_title@">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="@LIB_NAME@" />
