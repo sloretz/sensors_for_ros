@@ -131,10 +131,9 @@ endmacro()
 
 # Compile resources
 aapt2_compile(res/values/strings.xml values_strings.arsc.flat)
-aapt2_compile(res/mipmap-hdpi/ic_launcher.png mipmap-hdpi_ic_launcher.png.flat)
-aapt2_compile(res/mipmap-mdpi/ic_launcher.png mipmap-mdpi_ic_launcher.png.flat)
-aapt2_compile(res/mipmap-xhdpi/ic_launcher.png mipmap-xhdpi_ic_launcher.png.flat)
-aapt2_compile(res/mipmap-xxhdpi/ic_launcher.png mipmap-xxhdpi_ic_launcher.png.flat)
+aapt2_compile(res/values/colors.xml values_colors.arsc.flat)
+aapt2_compile(res/drawable/ic_launcher_foreground.xml drawable_ic_launcher_foreground.xml.flat)
+aapt2_compile(res/drawable/ic_launcher.xml drawable_ic_launcher.xml.flat)
 
 # Link resources into an APK that doesn't have the libs yet
 add_custom_command(
