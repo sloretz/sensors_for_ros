@@ -3,7 +3,7 @@
 #include "display_topic.h"
 #include "imgui.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 AccelerometerSensorController::AccelerometerSensorController(
     AccelerometerSensor* sensor, RosInterface& ros)
     : sensor_(sensor),
@@ -52,4 +52,4 @@ void AccelerometerSensorController::DrawFrame() {
 std::string AccelerometerSensorController::PrettyName() const {
   return "Accelerometer Sensor";
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

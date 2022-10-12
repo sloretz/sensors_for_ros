@@ -2,7 +2,7 @@
 
 #include "log.h"
 
-std::string android_ros::GetPackageName(ANativeActivity* activity) {
+std::string sensors_for_ros::GetPackageName(ANativeActivity* activity) {
   JNIEnv* env = nullptr;
   activity->vm->AttachCurrentThread(&env, nullptr);
 
@@ -46,8 +46,8 @@ jstring android_permission_name(JNIEnv* lJNIEnv, const char* perm_name) {
  * \retval false otherwise.
  * \note Requires Android API level 23 (Marshmallow, May 2015)
  */
-bool android_ros::HasPermission(struct ANativeActivity* activity,
-                                const char* perm_name) {
+bool sensors_for_ros::HasPermission(struct ANativeActivity* activity,
+                                    const char* perm_name) {
   JavaVM* lJavaVM = activity->vm;
   JNIEnv* lJNIEnv = nullptr;
   bool lThreadAttached = false;
@@ -106,8 +106,8 @@ bool android_ros::HasPermission(struct ANativeActivity* activity,
  * \param[in] app a pointer to the android app.
  * \note Requires Android API level 23 (Marshmallow, May 2015)
  */
-void android_ros::RequestPermission(ANativeActivity* activity,
-                                    const char* permission) {
+void sensors_for_ros::RequestPermission(ANativeActivity* activity,
+                                        const char* permission) {
   LOGI("Requesting permission %s", permission);
   JavaVM* lJavaVM = activity->vm;
   JNIEnv* lJNIEnv = nullptr;

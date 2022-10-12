@@ -1,6 +1,6 @@
 #include "sensor_descriptor.h"
 
-using android_ros::SensorDescriptor;
+using sensors_for_ros::SensorDescriptor;
 
 SensorDescriptor::SensorDescriptor(ASensorRef _sensor_ref)
     : sensor_ref(_sensor_ref) {

@@ -2,7 +2,7 @@
 
 #include "log.h"
 
-using android_ros::RosInterface;
+using sensors_for_ros::RosInterface;
 
 RosInterface::RosInterface() {}
 
@@ -15,7 +15,7 @@ void RosInterface::Initialize(size_t ros_domain_id) {
 
   rclcpp::NodeOptions node_options;
   node_options.context(context_);
-  node_ = std::make_shared<rclcpp::Node>("android_ros", node_options);
+  node_ = std::make_shared<rclcpp::Node>("sensors_for_ros", node_options);
 
   rclcpp::ExecutorOptions executor_options;
   executor_options.context = context_;

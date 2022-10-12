@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 void RosDomainIdController::DrawFrame() {
   static int32_t picked_ros_domain_id = -1;
 
@@ -94,4 +94,4 @@ void RosDomainIdController::DrawFrame() {
   }
   ImGui::End();
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

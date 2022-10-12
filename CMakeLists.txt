@@ -105,7 +105,7 @@ ExternalProject_Add(ros_for_android
   )
 
 # Configure the manifest
-set(NAMESPACE "com.github.sloretz.android_ros")
+set(NAMESPACE "com.github.sloretz.sensors_for_ros")
 set(MIN_SDK_VERSION 30)
 set(TARGET_SDK_VERSION 30)
 set(LIB_NAME "android-ros")
@@ -138,12 +138,12 @@ aapt2_compile(res/mipmap-xxhdpi/ic_launcher.png mipmap-xxhdpi_ic_launcher.png.fl
 
 # Link resources into an APK that doesn't have the libs yet
 add_custom_command(
-  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip"
-  COMMENT "linking android_ros-nolibs.zip"
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-nolibs.zip"
+  COMMENT "linking sensors_for_ros-nolibs.zip"
   DEPENDS
   ${aapt2_compiled_resources}
   COMMAND ${android_aapt2} link
-  -o "${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip"
+  -o "${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-nolibs.zip"
   -I "${android_jar}"
   --manifest "${CMAKE_CURRENT_BINARY_DIR}/AndroidManifest.xml"
   -R
@@ -185,29 +185,29 @@ copy_android_lib(deps-libyaml_vendor "deps/lib/libyaml.so")
 
 # Add all shared libraries to APK
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
-  COMMENT "Adding libs to android_ros-nolibs.zip to make android_ros-unaligned-unsigned.zip"
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unaligned-unsigned.zip
+  COMMENT "Adding libs to sensors_for_ros-nolibs.zip to make sensors_for_ros-unaligned-unsigned.zip"
   DEPENDS
   ${copied_android_libs}
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip
+  ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-nolibs.zip
   WORKING_DIRECTORY
   "${CMAKE_CURRENT_BINARY_DIR}"
   COMMAND zip -D0ru 
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-nolibs.zip
-  --output-file ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
+  ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-nolibs.zip
+  --output-file ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unaligned-unsigned.zip
   lib/
   )
 
 #############################
 # Align to 4KiB page boundary
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip
-  COMMENT "Aligning make android_ros-unaligned-unsigned.zip to produce android_ros-unsigned.zip"
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unsigned.zip
+  COMMENT "Aligning make sensors_for_ros-unaligned-unsigned.zip to produce sensors_for_ros-unsigned.zip"
   DEPENDS
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
+  ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unaligned-unsigned.zip
   COMMAND ${android_zipalign} -p -f -v 4
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unaligned-unsigned.zip
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip
+  ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unaligned-unsigned.zip
+  ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unsigned.zip
   )
 
 # Sign the APK
@@ -219,10 +219,10 @@ if(NOT DEFINED $ENV{ANDROID_KEYSTORE_PASS})
 endif()
 
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/android_ros.apk
-  COMMENT "Signing android_ros-unsigned.zip to make android_ros.apk"
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros.apk
+  COMMENT "Signing sensors_for_ros-unsigned.zip to make sensors_for_ros.apk"
   DEPENDS
-  ${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip
+  ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unsigned.zip
   COMMAND "${CMAKE_COMMAND}" -E env
   "ANDROID_KEY_PASS=$ENV{ANDROID_KEY_PASS}"
   "ANDROID_KEYSTORE_PASS=$ENV{ANDROID_KEYSTORE_PASS}"
@@ -230,9 +230,9 @@ add_custom_command(
   --ks "${PATH_TO_KEYSTORE}"
   --ks-pass env:ANDROID_KEYSTORE_PASS
   --key-pass env:ANDROID_KEY_PASS
-  --out "${CMAKE_CURRENT_BINARY_DIR}/android_ros.apk"
-  "${CMAKE_CURRENT_BINARY_DIR}/android_ros-unsigned.zip"
+  --out "${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros.apk"
+  "${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros-unsigned.zip"
   )
 
 add_custom_target(apk ALL
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/android_ros.apk)
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/sensors_for_ros.apk)

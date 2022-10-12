@@ -8,7 +8,7 @@
 #include "ros_interface.h"
 #include "sensors/gyroscope_sensor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 // Handles interface between sensor, ROS, and GUI
 class GyroscopeSensorController
     : public Controller,
@@ -30,4 +30,4 @@ class GyroscopeSensorController
   GyroscopeSensor* sensor_;
   Publisher<geometry_msgs::msg::TwistStamped> publisher_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

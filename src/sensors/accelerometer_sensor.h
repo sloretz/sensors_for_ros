@@ -5,7 +5,7 @@
 #include "events.h"
 #include "sensor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 class AccelerometerSensor
     : public Sensor,
       public event::Emitter<geometry_msgs::msg::AccelStamped> {
@@ -16,4 +16,4 @@ class AccelerometerSensor
  protected:
   void OnEvent(const ASensorEvent& event) override;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

@@ -42,8 +42,8 @@ class AndroidApp {
     for (auto& sensor : sensors_.GetSensors()) {
       if (ASENSOR_TYPE_LIGHT == sensor->Descriptor().type) {
         auto controller =
-            std::make_unique<android_ros::IlluminanceSensorController>(
-                static_cast<android_ros::IlluminanceSensor*>(sensor.get()),
+            std::make_unique<sensors_for_ros::IlluminanceSensorController>(
+                static_cast<sensors_for_ros::IlluminanceSensor*>(sensor.get()),
                 ros_);
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this,
@@ -53,8 +53,9 @@ class AndroidApp {
              sensor->Descriptor().handle);
       } else if (ASENSOR_TYPE_GYROSCOPE == sensor->Descriptor().type) {
         auto controller =
-            std::make_unique<android_ros::GyroscopeSensorController>(
-                static_cast<android_ros::GyroscopeSensor*>(sensor.get()), ros_);
+            std::make_unique<sensors_for_ros::GyroscopeSensorController>(
+                static_cast<sensors_for_ros::GyroscopeSensor*>(sensor.get()),
+                ros_);
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this,
                                           std::placeholders::_1));
@@ -63,8 +64,9 @@ class AndroidApp {
              sensor->Descriptor().handle);
       } else if (ASENSOR_TYPE_ACCELEROMETER == sensor->Descriptor().type) {
         auto controller =
-            std::make_unique<android_ros::AccelerometerSensorController>(
-                static_cast<android_ros::AccelerometerSensor*>(sensor.get()),
+            std::make_unique<sensors_for_ros::AccelerometerSensorController>(
+                static_cast<sensors_for_ros::AccelerometerSensor*>(
+                    sensor.get()),
                 ros_);
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this,
@@ -74,8 +76,9 @@ class AndroidApp {
              sensor->Descriptor().handle);
       } else if (ASENSOR_TYPE_PRESSURE == sensor->Descriptor().type) {
         auto controller =
-            std::make_unique<android_ros::BarometerSensorController>(
-                static_cast<android_ros::BarometerSensor*>(sensor.get()), ros_);
+            std::make_unique<sensors_for_ros::BarometerSensorController>(
+                static_cast<sensors_for_ros::BarometerSensor*>(sensor.get()),
+                ros_);
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this,
                                           std::placeholders::_1));
@@ -84,8 +87,8 @@ class AndroidApp {
              sensor->Descriptor().handle);
       } else if (ASENSOR_TYPE_MAGNETIC_FIELD == sensor->Descriptor().type) {
         auto controller =
-            std::make_unique<android_ros::MagnetometerSensorController>(
-                static_cast<android_ros::MagnetometerSensor*>(sensor.get()),
+            std::make_unique<sensors_for_ros::MagnetometerSensorController>(
+                static_cast<sensors_for_ros::MagnetometerSensor*>(sensor.get()),
                 ros_);
         // Listen to go-back-to-the-last-window GUI events from this controller
         controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this,
@@ -102,9 +105,9 @@ class AndroidApp {
 
     // Create camera specific controllers
     if (camera_manager_.HasCameras()) {
-      if (!android_ros::HasPermission(activity_, "CAMERA")) {
+      if (!sensors_for_ros::HasPermission(activity_, "CAMERA")) {
         LOGI("Requesting Camera Permission");
-        android_ros::RequestPermission(activity_, "CAMERA");
+        sensors_for_ros::RequestPermission(activity_, "CAMERA");
       } else {
         StartCameras();
       }
@@ -121,17 +124,17 @@ class AndroidApp {
       return;
     }
     if (camera_manager_.HasCameras() &&
-        android_ros::HasPermission(activity_, "CAMERA")) {
+        sensors_for_ros::HasPermission(activity_, "CAMERA")) {
       started_cameras_ = true;
       // Create camera specific controllers
       LOGI("Starting cameras");
-      std::vector<android_ros::CameraDescriptor> cameras =
+      std::vector<sensors_for_ros::CameraDescriptor> cameras =
           camera_manager_.GetCameras();
       for (auto cam_desc : cameras) {
         LOGI("Camera: %s", cam_desc.GetName().c_str());
-        std::unique_ptr<android_ros::CameraController> camera_controller(
-            new android_ros::CameraController(&camera_manager_, cam_desc,
-                                              ros_));
+        std::unique_ptr<sensors_for_ros::CameraController> camera_controller(
+            new sensors_for_ros::CameraController(&camera_manager_, cam_desc,
+                                                  ros_));
         camera_controller->SetListener(std::bind(&AndroidApp::OnNavigateBack,
                                                  this, std::placeholders::_1));
         controllers_.emplace_back(std::move(camera_controller));
@@ -141,26 +144,26 @@ class AndroidApp {
   }
 
   ANativeActivity* activity_;
-  android_ros::RosInterface ros_;
-  android_ros::Sensors sensors_;
-  android_ros::GUI gui_;
+  sensors_for_ros::RosInterface ros_;
+  sensors_for_ros::Sensors sensors_;
+  sensors_for_ros::GUI gui_;
 
   // Special controller: ROS_DOMAIN_ID picker shown at startup
-  android_ros::RosDomainIdController ros_domain_id_controller_;
+  sensors_for_ros::RosDomainIdController ros_domain_id_controller_;
   // Special controller: Show list of sensors and cameras
-  android_ros::ListController list_controller_;
+  sensors_for_ros::ListController list_controller_;
   // Controllers that can be nativated to by unique id
-  std::vector<std::unique_ptr<android_ros::Controller>> controllers_;
+  std::vector<std::unique_ptr<sensors_for_ros::Controller>> controllers_;
 
   // Stack of controllers for navigation windows
-  std::vector<android_ros::Controller*> controller_stack_;
+  std::vector<sensors_for_ros::Controller*> controller_stack_;
 
   // Manager for working for cameras
-  android_ros::CameraManager camera_manager_;
+  sensors_for_ros::CameraManager camera_manager_;
   bool started_cameras_ = false;
 
  private:
-  void PushController(android_ros::Controller* controller) {
+  void PushController(sensors_for_ros::Controller* controller) {
     if (controller) {
       controller_stack_.push_back(controller);
       gui_.SetController(controller);
@@ -175,12 +178,12 @@ class AndroidApp {
     }
   }
 
-  void OnNavigateBack(const android_ros::event::GuiNavigateBack&) {
+  void OnNavigateBack(const sensors_for_ros::event::GuiNavigateBack&) {
     LOGI("Poping controller!");
     PopController();
   }
 
-  void OnNavigateTo(const android_ros::event::GuiNavigateTo& event) {
+  void OnNavigateTo(const sensors_for_ros::event::GuiNavigateTo& event) {
     auto cit = std::find_if(controllers_.begin(), controllers_.end(),
                             [&event](const auto& other) {
                               return event.unique_id == other->UniqueId();
@@ -191,7 +194,7 @@ class AndroidApp {
   }
 
   void OnRosDomainIdChanged(
-      const android_ros::event::RosDomainIdChanged& event) {
+      const sensors_for_ros::event::RosDomainIdChanged& event) {
     StartRos(event.id);
     PushController(&list_controller_);
   }

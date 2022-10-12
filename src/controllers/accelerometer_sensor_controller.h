@@ -8,7 +8,7 @@
 #include "ros_interface.h"
 #include "sensors/accelerometer_sensor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 // Handles interface between sensor, ROS, and GUI
 class AccelerometerSensorController
     : public Controller,
@@ -30,4 +30,4 @@ class AccelerometerSensorController
   AccelerometerSensor* sensor_;
   Publisher<geometry_msgs::msg::AccelStamped> publisher_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

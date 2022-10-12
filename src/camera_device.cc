@@ -2,7 +2,7 @@
 
 #include <chrono>  // Debugging processing time
 
-using android_ros::CameraDevice;
+using sensors_for_ros::CameraDevice;
 
 /// ***************** Android OpenCamera callbacks ********************
 
@@ -33,9 +33,9 @@ void OnImage(void* context, AImageReader* reader) {
 
   // TODO Check status here ...
 
-  std::unique_ptr<AImage, android_ros::AImageDeleter> image(cimage);
+  std::unique_ptr<AImage, sensors_for_ros::AImageDeleter> image(cimage);
 
-  auto* camera_device = static_cast<android_ros::CameraDevice*>(context);
+  auto* camera_device = static_cast<sensors_for_ros::CameraDevice*>(context);
   camera_device->OnImage(std::move(image));
 }
 

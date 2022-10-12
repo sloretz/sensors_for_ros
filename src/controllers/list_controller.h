@@ -6,7 +6,7 @@
 #include "events.h"
 #include "log.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 
 // There's only supposed to be one of these in the process
 constexpr const char *kListControllerId = "list_controller";
@@ -33,4 +33,4 @@ class ListController : public Controller,
  private:
   std::vector<const Controller *> controllers_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

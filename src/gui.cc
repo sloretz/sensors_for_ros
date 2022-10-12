@@ -9,7 +9,7 @@
 #include "imgui_impl_opengl3.h"
 #include "log.h"
 
-using android_ros::GUI;
+using sensors_for_ros::GUI;
 
 GUI::GUI() {}
 

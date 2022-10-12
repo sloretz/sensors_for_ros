@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-using android_ros::CameraDescriptor;
+using sensors_for_ros::CameraDescriptor;
 
 std::string CameraDescriptor::GetName() const {
   std::stringstream name;

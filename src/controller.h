@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace android_ros {
+namespace sensors_for_ros {
 class Controller {
  public:
   Controller(const std::string& unique_id) : unique_id_(unique_id) {}
@@ -20,4 +20,4 @@ class Controller {
  private:
   const std::string unique_id_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

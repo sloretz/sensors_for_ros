@@ -3,7 +3,7 @@
 #include "display_topic.h"
 #include "imgui.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 GyroscopeSensorController::GyroscopeSensorController(GyroscopeSensor* sensor,
                                                      RosInterface& ros)
     : sensor_(sensor),
@@ -52,4 +52,4 @@ void GyroscopeSensorController::DrawFrame() {
 std::string GyroscopeSensorController::PrettyName() const {
   return "Gyroscope Sensor";
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

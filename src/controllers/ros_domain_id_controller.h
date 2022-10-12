@@ -3,7 +3,7 @@
 #include "controller.h"
 #include "events.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 
 // There should only be one of these in existance.
 constexpr const char* kRosDomainIdControllerId = "ros_domain_id_controller";
@@ -19,4 +19,4 @@ class RosDomainIdController : public Controller,
 
   std::string PrettyName() const override { return "ROS Domain ID"; }
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

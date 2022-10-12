@@ -2,7 +2,7 @@
 
 #include "log.h"
 
-using android_ros::AccelerometerSensor;
+using sensors_for_ros::AccelerometerSensor;
 
 void AccelerometerSensor::OnEvent(const ASensorEvent& event) {
   if (ASENSOR_TYPE_ACCELEROMETER != event.type) {

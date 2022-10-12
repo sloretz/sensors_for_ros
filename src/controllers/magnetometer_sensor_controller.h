@@ -8,7 +8,7 @@
 #include "ros_interface.h"
 #include "sensors/magnetometer_sensor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 // Handles interface between sensor, ROS, and GUI
 class MagnetometerSensorController
     : public Controller,
@@ -30,4 +30,4 @@ class MagnetometerSensorController
   MagnetometerSensor* sensor_;
   Publisher<sensor_msgs::msg::MagneticField> publisher_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

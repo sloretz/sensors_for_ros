@@ -7,7 +7,7 @@
 
 #include "sensor_descriptor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 class Sensor {
  public:
   Sensor(ASensorManager* manager, SensorDescriptor desc)
@@ -32,4 +32,4 @@ class Sensor {
   std::thread queue_thread_;
   ALooper* looper_ = nullptr;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

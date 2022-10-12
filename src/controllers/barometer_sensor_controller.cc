@@ -3,7 +3,7 @@
 #include "display_topic.h"
 #include "imgui.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 BarometerSensorController::BarometerSensorController(BarometerSensor* sensor,
                                                      RosInterface& ros)
     : sensor_(sensor),
@@ -50,4 +50,4 @@ void BarometerSensorController::DrawFrame() {
 std::string BarometerSensorController::PrettyName() const {
   return "Barometer Sensor";
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

@@ -10,7 +10,7 @@
 #include "sensor.h"
 #include "sensor_descriptor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 class Sensors {
  public:
   Sensors(ANativeActivity* activity);
@@ -30,4 +30,4 @@ class Sensors {
 
   std::vector<std::unique_ptr<Sensor>> sensors_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

@@ -8,7 +8,7 @@
 #include "ros_interface.h"
 #include "sensors/illuminance_sensor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 // Handles interface between sensor, ROS, and GUI
 class IlluminanceSensorController
     : public Controller,
@@ -31,4 +31,4 @@ class IlluminanceSensorController
   IlluminanceSensor* sensor_;
   Publisher<sensor_msgs::msg::Illuminance> publisher_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

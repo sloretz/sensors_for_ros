@@ -3,7 +3,7 @@
 #include "imgui.h"
 #include "ros_interface.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 template <typename MsgT>
 void DisplayTopic(const char* title, const Publisher<MsgT>& pub) {
   std::string title_str{title};
@@ -13,4 +13,4 @@ void DisplayTopic(const char* title, const Publisher<MsgT>& pub) {
     ImGui::TextWrapped("%s", pub.Type());
   }
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

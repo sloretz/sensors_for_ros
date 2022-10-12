@@ -8,13 +8,13 @@
 #include "sensors/illuminance_sensor.h"
 #include "sensors/magnetometer_sensor.h"
 
-using android_ros::AccelerometerSensor;
-using android_ros::BarometerSensor;
-using android_ros::GyroscopeSensor;
-using android_ros::IlluminanceSensor;
-using android_ros::MagnetometerSensor;
-using android_ros::SensorDescriptor;
-using android_ros::Sensors;
+using sensors_for_ros::AccelerometerSensor;
+using sensors_for_ros::BarometerSensor;
+using sensors_for_ros::GyroscopeSensor;
+using sensors_for_ros::IlluminanceSensor;
+using sensors_for_ros::MagnetometerSensor;
+using sensors_for_ros::SensorDescriptor;
+using sensors_for_ros::Sensors;
 
 Sensors::Sensors(ANativeActivity* activity) {
   // TODO(sloretz) Query sensors

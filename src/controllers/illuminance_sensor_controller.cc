@@ -3,7 +3,7 @@
 #include "display_topic.h"
 #include "imgui.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 IlluminanceSensorController::IlluminanceSensorController(
     IlluminanceSensor* sensor, RosInterface& ros)
     : sensor_(sensor),
@@ -51,4 +51,4 @@ void IlluminanceSensorController::DrawFrame() {
 std::string IlluminanceSensorController::PrettyName() const {
   return "Light Sensor";
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

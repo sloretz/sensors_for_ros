@@ -13,7 +13,7 @@
 #include "controller.h"
 #include "events.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 class GUI {
  public:
   GUI();
@@ -54,4 +54,4 @@ class GUI {
 
   Controller* active_controller = nullptr;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

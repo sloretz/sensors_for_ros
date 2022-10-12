@@ -7,7 +7,7 @@
 #include "camera_descriptor.h"
 #include "camera_device.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 class CameraManager {
  public:
   CameraManager();
@@ -25,4 +25,4 @@ class CameraManager {
   ACameraManager* native_manager_ = nullptr;
   std::vector<CameraDescriptor> cameras_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

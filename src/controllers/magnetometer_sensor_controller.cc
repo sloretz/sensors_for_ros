@@ -3,7 +3,7 @@
 #include "display_topic.h"
 #include "imgui.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 MagnetometerSensorController::MagnetometerSensorController(
     MagnetometerSensor* sensor, RosInterface& ros)
     : sensor_(sensor),
@@ -53,4 +53,4 @@ void MagnetometerSensorController::DrawFrame() {
 std::string MagnetometerSensorController::PrettyName() const {
   return "Magnetometer Sensor";
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

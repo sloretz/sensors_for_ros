@@ -5,8 +5,8 @@
 #include "display_topic.h"
 #include "imgui.h"
 
-using android_ros::CameraController;
-using android_ros::CameraDevice;
+using sensors_for_ros::CameraController;
+using sensors_for_ros::CameraDevice;
 
 CameraController::CameraController(CameraManager* camera_manager,
                                    const CameraDescriptor& camera_descriptor,

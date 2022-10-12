@@ -3,7 +3,7 @@
 #include <string>
 #include <variant>
 
-namespace android_ros {
+namespace sensors_for_ros {
 namespace event {
 // Event fired to indicate the ROS_DOMAIN_ID was set
 struct RosDomainIdChanged {
@@ -48,4 +48,4 @@ class Emitter {
   Listener<EventType> event_listener_;
 };
 }  // namespace event
-}  // namespace android_ros
+}  // namespace sensors_for_ros

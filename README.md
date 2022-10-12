@@ -1,6 +1,6 @@
-# ROS for Android
+# Sensors for ROS
 
-ROS for Android is an app that publishes sensor data from an Android device onto ROS 2 topics.
+Sensors for ROS is an app that publishes sensor data from an Android device onto ROS 2 topics.
 Currently it supports ROS Humble.
 
 **Supported sensors**
@@ -14,7 +14,7 @@ Currently it supports ROS Humble.
 This app is built using only CMake and C++.
 It does not use Java or Kotlin.
 ROS 2 packages up to `rclcpp` are cross-compiled.
-A successful build produces an `.apk` file called `android_ros.apk` in the build directory.
+A successful build produces an `.apk` file called `sensors_for_ros.apk` in the build directory.
 
 ## Inspiration
 
@@ -26,12 +26,12 @@ These projects were extremely helpful, and used as a reference for this one:
 
 ## How to install it
 
-Currently the only way to get **ROS for Android** is to build it from source.
+Currently the only way to get **Sensors for ROS** is to build it from source.
 It is not yet available on Google's app store.
 
 ## How to build it from source
 
-You do not need ROS installed on your machine to build the **ROS for Android** app.
+You do not need ROS installed on your machine to build the **Sensors for ROS** app.
 However, it's needed to use the sensor data being published by your Android device.
 Follow [these instructions to install ROS Humble](https://docs.ros.org/en/humble/Installation.html).
 
@@ -81,10 +81,10 @@ keytool -genkey -v -keystore ~/.android/debug.keystore -alias adb_debug_key -key
 
 ### Clone the repo
 
-The official repo is [`sloretz/android_ros`](https://github.com/sloretz/android_ros.git).
+The official repo is [`sloretz/sensors_for_ros`](https://github.com/sloretz/sensors_for_ros).
 
 ```
-git clone https://github.com/sloretz/android_ros.git
+git clone https://github.com/sloretz/sensors_for_ros.git
 ```
 
 ### Download ROS dependencies
@@ -111,7 +111,7 @@ make -j`nproc`
 Install the APK in the build directory onto a device.
 
 ```
-adb install -r android_ros.apk
+adb install -r sensors_for_ros.apk
 ```
 
 ## Development tips
@@ -124,12 +124,12 @@ adb logcat
 Sometimes you may want to try out a permission without writing the code to request it.
 The app must be installed, but not running already for this command to work.
 ```
-adb shell pm grant com.github.sloretz.android_ros android.permission.CAMERA
+adb shell pm grant com.github.sloretz.sensors_for_ros android.permission.CAMERA
 ```
 
 The main activity can be started directly from the CLI
 ```
-adb shell am start -n com.github.sloretz.android_ros/android.app.NativeActivity
+adb shell am start -n com.github.sloretz.sensors_for_ros/android.app.NativeActivity
 ```
 
 Getting stack traces

@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 ListController::ListController() : Controller(kListControllerId) {}
 
 void ListController::AddController(const Controller* controller) {
@@ -59,4 +59,4 @@ void ListController::DrawFrame() {
 
   ImGui::End();
 }
-}  // namespace android_ros
+}  // namespace sensors_for_ros

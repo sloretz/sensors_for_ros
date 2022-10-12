@@ -8,7 +8,7 @@
 #include "ros_interface.h"
 #include "sensors/barometer_sensor.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 // Handles interface between sensor, ROS, and GUI
 class BarometerSensorController
     : public Controller,
@@ -30,4 +30,4 @@ class BarometerSensorController
   BarometerSensor* sensor_;
   Publisher<sensor_msgs::msg::FluidPressure> publisher_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros

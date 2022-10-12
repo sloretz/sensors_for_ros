@@ -8,7 +8,7 @@
 #include "events.h"
 #include "ros_interface.h"
 
-namespace android_ros {
+namespace sensors_for_ros {
 class CameraController : public Controller,
                          public event::Emitter<event::GuiNavigateBack> {
  public:
@@ -36,4 +36,4 @@ class CameraController : public Controller,
   Publisher<sensor_msgs::msg::CameraInfo> info_pub_;
   Publisher<sensor_msgs::msg::Image> image_pub_;
 };
-}  // namespace android_ros
+}  // namespace sensors_for_ros
