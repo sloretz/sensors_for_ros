@@ -57,11 +57,23 @@ Install some Android SDK components
 Install `adb`
 
 ```bash
+# If you're using Ubuntu
 sudo apt install adb android-sdk-platform-tools-common
+# If you're using Fedora
+sudo dnf install android-tools
 ```
 
-You may need to add yourself to the `plugdev` group.
-Follow the [Set up a device for development](https://developer.android.com/studio/run/device#setting-up) instructions.
+Install catkin-pkg, empy, and lark
+
+```bash
+# If you're using ubuntu
+sudo apt install python3-catkin-pkg-modules python3-empy python3-lark-parser
+# If you're using Fedora
+sudo dnf install python3-catkin_pkg python3-empy python3-lark-parser
+```
+
+You may need to do additional setup to use adb.
+Follow the [Set up a device for development](https://developer.android.com/studio/run/device#setting-up) instructions if you're using Ubuntu, or follow [the instructions in this thread](https://forums.fedoraforum.org/showthread.php?298965-HowTo-set-up-adb-(Android-Debug-Bridge)-on-Fedora-20) if you're using Fedora.
 
 
 ### Create debug keys
@@ -85,6 +97,13 @@ The official repo is [`sloretz/sensors_for_ros`](https://github.com/sloretz/sens
 
 ```
 git clone https://github.com/sloretz/sensors_for_ros.git
+```
+
+Next initialize the git submodules.
+
+```bash
+git submodule init
+git submodule update
 ```
 
 ### Download ROS dependencies
