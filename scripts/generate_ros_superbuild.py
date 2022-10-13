@@ -73,6 +73,8 @@ def generate_ros_superbuild(source_dir, output_to=sys.stdout):
     for pkg in packages.values():
         export_lookup[pkg.name] = _export_depends(pkg)
 
+    print(packages)
+
     for pkg_path, pkg in packages.items():
         # Add exported dependencies transitively
         dependencies = set()
