@@ -12,12 +12,14 @@
     <application
         android:allowBackup="true"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-        android:debuggable="true"
+        android:debuggable="@DEBUGGABLE@"
+        android:exported="true"
         android:hasCode="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true">
         <activity
+          android:exported="true"
           android:name="android.app.NativeActivity"
           android:screenOrientation="locked"
           label="@string/app_title@">
@@ -37,6 +39,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.READ_BASIC_PHONE_STATE"/>
+
 
     <!-- TODO use this - it allows increasing sensor rate beyond 200Hz-->
     <!-- <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" /> -->
