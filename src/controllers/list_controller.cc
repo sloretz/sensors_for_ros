@@ -18,10 +18,11 @@ void ListController::DrawFrame() {
                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                    ImGuiWindowFlags_NoTitleBar);
 
-  if (ImGui::Button("< Back")) {
-    LOGI("Asked to go back");
-    Emit(event::GuiNavigateBack{});
-  }
+  // TODO(sloretz) re-enable when changing the network works at runtime.
+  // if (ImGui::Button("< Back")) {
+  //   LOGI("Asked to go back");
+  //   Emit(event::GuiNavigateBack{});
+  // }
 
   ImGui::Separator();
 

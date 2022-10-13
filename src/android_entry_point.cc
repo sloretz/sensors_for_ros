@@ -1,5 +1,7 @@
 #include <android/native_activity.h>
 
+#include <cstdlib>
+#include <fstream>
 #include <memory>
 #include <vector>
 
@@ -25,7 +27,7 @@
 class AndroidApp {
  public:
   AndroidApp(ANativeActivity* activity)
-      : activity_(activity), sensors_(activity) {
+      : activity_(activity), sensors_(activity), ros_domain_id_controller_(activity) {
     ros_domain_id_controller_.SetListener(std::bind(
         &AndroidApp::OnRosDomainIdChanged, this, std::placeholders::_1));
     PushController(&ros_domain_id_controller_);
@@ -195,11 +197,29 @@ class AndroidApp {
 
   void OnRosDomainIdChanged(
       const sensors_for_ros::event::RosDomainIdChanged& event) {
-    StartRos(event.id);
+    StartRos(event.id, event.interface);
     PushController(&list_controller_);
   }
 
-  void StartRos(int32_t ros_domain_id) {
+  void StartRos(int32_t ros_domain_id, std::string network_interface) {
+    // Write a config file to pass to cyclonedds
+    std::string cyclone_uri;
+    cyclone_uri += sensors_for_ros::GetCacheDir(activity_);
+    if (cyclone_uri.back() != '/') {
+      cyclone_uri += '/';
+    }
+    cyclone_uri += "cyclonedds.xml";
+    LOGI("Cyclonedds URI: %s", cyclone_uri.c_str());
+    setenv("CYCLONEDDS_URI", cyclone_uri.c_str(), 1);
+
+    std::ofstream config_file(cyclone_uri.c_str(), std::ofstream::trunc);
+    config_file << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+    config_file << "<CycloneDDS xmlns=\"https://cdds.io/config\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd\">";
+    config_file << "<Domain id=\"any\"><General><Interfaces>";
+    config_file << "<NetworkInterface name=\"" << network_interface << "\"/>";
+    config_file << "</Interfaces></General></Domain></CycloneDDS>";
+    config_file.close();
+
     if (ros_.Initialized()) {
       LOGI("Shutting down ROS");
       ros_.Shutdown();

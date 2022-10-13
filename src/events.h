@@ -8,6 +8,7 @@ namespace event {
 // Event fired to indicate the ROS_DOMAIN_ID was set
 struct RosDomainIdChanged {
   int32_t id;
+  std::string interface;
 };
 
 struct SensorEvent {

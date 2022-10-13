@@ -1,8 +1,25 @@
 #include "controllers/ros_domain_id_controller.h"
 
 #include "imgui.h"
+#include "jvm.h"
 
 namespace sensors_for_ros {
+
+RosDomainIdController::RosDomainIdController(ANativeActivity* activity) : Controller(kRosDomainIdControllerId)
+{
+  network_interfaces_ = sensors_for_ros::GetNetworkInterfaces(activity);
+
+  if (network_interfaces_.size()) {
+    preferred_interface_ = *network_interfaces_.begin();
+    for (const auto& interface: network_interfaces_) {
+      if (interface.rfind("wlan", 0) == 0) {
+        preferred_interface_ = interface;
+        break;
+      }
+    }
+  }
+}
+
 void RosDomainIdController::DrawFrame() {
   static int32_t picked_ros_domain_id = -1;
 
@@ -18,6 +35,9 @@ void RosDomainIdController::DrawFrame() {
   ImGui::Begin("ROS_DOMAIN_ID", &show_ros_domain_id_picker,
                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                    ImGuiWindowFlags_NoTitleBar);
+
+  ImGui::Spacing();
+  ImGui::Text("ROS_DOMAIN_ID");
 
   // Disable buttons so that only domain ids between 0 and 232 are pickable
 
@@ -85,13 +105,34 @@ void RosDomainIdController::DrawFrame() {
     ImGui::Text("%d", picked_ros_domain_id);
   }
 
-  if (ImGui::Button("Set ROS_DOMAIN_ID")) {
+  ImGui::Separator();
+
+  static std::string selected_interface = preferred_interface_;
+  if (ImGui::BeginCombo("Network Interface", selected_interface.c_str(), 0))
+  {
+      for (const std::string& interface: network_interfaces_)
+      {
+          bool is_selected = (selected_interface == interface);
+          if (ImGui::Selectable(interface.c_str(), is_selected)) {
+              selected_interface = interface;
+          }
+          if (is_selected) {
+              ImGui::SetItemDefaultFocus();
+          }
+      }
+      ImGui::EndCombo();
+  }
+
+  ImGui::Separator();
+
+  if (ImGui::Button("Start ROS")) {
     if (picked_ros_domain_id < 0) {
       // Default to 0
       picked_ros_domain_id = 0;
     }
-    Emit(event::RosDomainIdChanged{picked_ros_domain_id});
+    Emit(event::RosDomainIdChanged{picked_ros_domain_id, selected_interface});
   }
+
   ImGui::End();
 }
 }  // namespace sensors_for_ros

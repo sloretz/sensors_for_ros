@@ -169,3 +169,60 @@ void sensors_for_ros::RequestPermission(ANativeActivity* activity,
   }
   LOGI("All done requesting permissions");
 }
+
+std::vector<std::string> sensors_for_ros::GetNetworkInterfaces(ANativeActivity* activity) {
+  JNIEnv* env = nullptr;
+  activity->vm->AttachCurrentThread(&env, nullptr);
+
+  jclass classNetworkInterface = env->FindClass("java/net/NetworkInterface");
+  jmethodID midGetByIndex = env->GetStaticMethodID(
+      classNetworkInterface, "getByIndex", "(I)Ljava/net/NetworkInterface;");
+  jmethodID midGetName = env->GetMethodID(
+      classNetworkInterface, "getName", "()Ljava/lang/String;");
+
+
+  std::vector<std::string> interfaces;
+
+  // Couldn't figure out how to iterate generic in JNI, so assume all indexes
+  // are between 0 and 256
+  LOGI("Looking at network interfaces");
+  for (int i = 0; i < 256; ++i) {
+    jint jindex = jint(i);
+    jobject networkInterface =
+      env->CallStaticObjectMethod(
+          classNetworkInterface, midGetByIndex, jindex);
+
+    if (env->IsSameObject(networkInterface, NULL)) {
+      continue;
+    }
+
+    jmethodID midGetInterfaceName = env->GetMethodID(
+        classNetworkInterface, "getName", "()Ljava/lang/String;");
+    auto interfaceName =
+      (jstring)env->CallObjectMethod(networkInterface, midGetInterfaceName);
+    interfaces.emplace_back(env->GetStringUTFChars(interfaceName, nullptr));
+    LOGI("Found an interface %s %d", interfaces.back().c_str(), i);
+  }
+  return interfaces;
+}
+
+// https://stackoverflow.com/a/28120447
+std::string sensors_for_ros::GetCacheDir(ANativeActivity* activity) {
+    JNIEnv* env;
+    activity->vm->AttachCurrentThread( &env, NULL );
+
+    jclass activityClass = env->FindClass("android/app/Activity");
+    jmethodID getCacheDir = env->GetMethodID(activityClass, "getCacheDir", "()Ljava/io/File;");
+    jobject cache_dir = env->CallObjectMethod(activity->clazz, getCacheDir);
+
+    jclass fileClass = env->FindClass( "java/io/File" );
+    jmethodID getPath = env->GetMethodID(fileClass, "getPath", "()Ljava/lang/String;");
+    jstring path_string = (jstring)env->CallObjectMethod(cache_dir, getPath);
+
+    const char *path_chars = env->GetStringUTFChars(path_string, NULL);
+    std::string temp_folder(path_chars);
+
+    env->ReleaseStringUTFChars(path_string, path_chars);
+    // activity->vm->DetachCurrentThread();
+    return temp_folder;
+}
