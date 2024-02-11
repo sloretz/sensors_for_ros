@@ -7,7 +7,7 @@
 namespace sensors_for_ros {
 PubSub::PubSub(RosInterface& ros)
     : publisher_(ros), sub_(ros), ros_(ros),
-      Controller("String Subscriber") {
+      Controller("Simple PubSub") {
   sub_.SetListener(std::bind(&PubSub::OnMsgReceived,
                                 this, std::placeholders::_1));
   publisher_.SetTopic("from_android");
@@ -25,20 +25,21 @@ void PubSub::OnMsgReceived(
   else 
   {
     auto duration = now_ - last_time_;
-    topic_hz_ = 1.0 / duration.seconds();
+    last_time_ = now_;
+    topic_hz_ = 1/duration.seconds();
   }
 }
 
 void PubSub::DrawFrame() {
   bool show_dialog = true;
-  ImGui::Begin("Subscriber", &show_dialog,
+  ImGui::Begin("Simple PubSub", &show_dialog,
                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                    ImGuiWindowFlags_NoTitleBar);
   if (ImGui::Button("< Back")) {
     LOGI("Asked to go back");
     Emit(event::GuiNavigateBack{});
   }
-  ImGui::Text("Subscriber");
+  ImGui::Text("Simple PubSub");
   ImGui::Separator();
   
   ImGui::Text("Node name: %s", ros_.get_node()->get_name());
@@ -53,6 +54,6 @@ void PubSub::DrawFrame() {
 }
 
 std::string PubSub::PrettyName() const {
-  return "String Subscriber";
+  return "Simple PubSub";
 }
 }  // namespace sensors_for_ros

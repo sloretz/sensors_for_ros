@@ -108,10 +108,6 @@ class AndroidApp {
     }
     
 
-    // for (const auto& controller : controllers_) {
-    //   list_controller_.AddController(controller.get());
-    // }
-
     // Create camera specific controllers
     if (camera_manager_.HasCameras()) {
       if (!sensors_for_ros::HasPermission(activity_, "CAMERA")) {
