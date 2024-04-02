@@ -16,12 +16,14 @@
 #include "controllers/list_controller.h"
 #include "controllers/magnetometer_sensor_controller.h"
 #include "controllers/ros_domain_id_controller.h"
+#include "controllers/pub_sub.h"
 #include "events.h"
 #include "gui.h"
 #include "jvm.h"
 #include "log.h"
 #include "ros_interface.h"
 #include "sensors.h"
+
 
 // Controller class links all the parts
 class AndroidApp {
@@ -37,8 +39,12 @@ class AndroidApp {
     list_controller_.SetListener(
         std::bind(&AndroidApp::OnNavigateTo, this, std::placeholders::_1));
 
+
+    
     LOGI("Initalizing Sensors");
     sensors_.Initialize();
+
+    
 
     // Create sensor-specific controllers
     for (auto& sensor : sensors_.GetSensors()) {
@@ -100,10 +106,7 @@ class AndroidApp {
              sensor->Descriptor().handle);
       }
     }
-
-    for (const auto& controller : controllers_) {
-      list_controller_.AddController(controller.get());
-    }
+    
 
     // Create camera specific controllers
     if (camera_manager_.HasCameras()) {
@@ -198,6 +201,15 @@ class AndroidApp {
   void OnRosDomainIdChanged(
       const sensors_for_ros::event::RosDomainIdChanged& event) {
     StartRos(event.id, event.interface);
+    auto controller =
+            std::make_unique<sensors_for_ros::PubSub>(ros_);
+        // Listen to go-back-to-the-last-window GUI events from this controller
+    controller->SetListener(std::bind(&AndroidApp::OnNavigateBack, this,
+                                        std::placeholders::_1));
+    controllers_.emplace_back(std::move(controller));
+    for (const auto& controller : controllers_) {
+      list_controller_.AddController(controller.get());
+    }
     PushController(&list_controller_);
   }
 

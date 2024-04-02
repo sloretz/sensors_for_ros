@@ -2,6 +2,7 @@
 
 #include <string>
 #include <variant>
+#include "std_msgs/msg/string.hpp"
 
 namespace sensors_for_ros {
 namespace event {
@@ -30,6 +31,13 @@ struct GuiNavigateTo {
   // The unique ID of a controller to navigate to
   std::string unique_id;
 };
+
+// Decleare a subscriber event
+struct RosStringMessageReceived  {
+    // std::string data;
+    std_msgs::msg::String msg;
+};
+
 
 template <typename EventType>
 using Listener = std::function<void(const EventType&)>;
