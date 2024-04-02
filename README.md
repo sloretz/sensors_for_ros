@@ -49,7 +49,7 @@ unzip ~/Downloads/commandlinetools-linux-8512546_latest.zip
 ```
 
 Install some Android SDK components
-
+(If it gives linkage error try installing `sudo apt install openjdk-17-jre-headless`)
 ```
 ./cmdline-tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "build-tools;33.0.0" "platforms;android-30" "ndk;25.1.8937393"
 ```
