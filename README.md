@@ -157,6 +157,40 @@ Getting stack traces
 adb logcat | $HOME/android-sdk/ndk/*/ndk-stack -sym lib/arm64-v8a/
 ```
 
+Creeating a release build for the play store is currently a manuall process as google requires App bundles instead of apks.
+See [Notes about using bundletool](https://developer.android.com/studio/build/building-cmdline)
+
+```
+ANDROID_KEY_PASS=??? ANDROID_KEYSTORE_PASS=??? cmake .. -DDEBUGGABLE=OFF -DPATH_TO_KEYSTORE=~/.android/release.keystore -DANDROID_HOME=$HOME/projects/android-sdk
+```
+
 # Random lessons
 
 During development I documented problems I encountered and fixes for them in the [Problems Encountered](docs/problems_encountered.md) document.
+
+
+# Creating a release for the play store
+
+This is currently a manual process.
+Creating a bundle for the Play Store is different from creating an installable APK, and is not yet automated.
+
+```
+cmake .. -DDEBUGGABLE=OFF -DANDROID_HOME=$HOME/projects/android-sdk
+# Manually change ABI in CMakeLists.txt for all 4 android ABIs and make each one
+make -j`nproc`
+```
+
+```
+aapt2 link --proto-format -o base.zip -I ~/projects/android-sdk/platforms/android-30/android.jar --manifest AndroidManifest.xml -R compiled_resources/*.flat --auto-add-overlay
+```
+
+Extract `base.zip` and make a file directory matching the bundle file directory.
+Copy libs from each ABI into it.
+
+```
+java -jar ~/Downloads/bundletool-all-1.11.2.jar build-bundle --modules=basewithlibs.zip --output sensors_for_ros.aab
+```
+
+```
+jarsigner -keystore /home/sloretz/.android/release.keystore -storepass ??? sensors_for_ros.aab adb_release_key
+```
